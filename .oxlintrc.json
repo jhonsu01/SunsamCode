@@ -15,7 +15,7 @@
       }
     },
     {
-      "files": ["**/i18n/locales/*.ts"],
+      "files": ["**/i18n/locales/*.ts", "docs/assets/i18n.js"],
       "rules": {
         "max-lines": "off"
       }

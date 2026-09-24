@@ -7,6 +7,7 @@ import { jsonSchema, tool, type ToolSet } from "ai";
 import { ModelErrorCode, type JsonSchema, type ModelToolContract } from "@zcode/contracts";
 import { AiSdkModelAdapterError } from "./errors.js";
 import { isAnthropicFirstPartyModelId, toStrictToolSchema } from "./strict-tool-schema.js";
+import { withExplicitAnyTypes } from "./sunsam-any-type-schema.js";
 
 export interface AiSdkToolTransformOptions {
   requiresMfjsToolSchema?: boolean;
@@ -37,7 +38,9 @@ export function toAiSdkTools(
       inputSchema: jsonSchema<unknown>(
         normalizeToolInputSchema(
           contract.name,
-          strictSchema ?? (contract.inputSchema as JsonSchema),
+          // Sunsam: tipos explícitos en nodos "cualquier valor" para que el llama.cpp de LM Studio
+          // pueda convertir los schemas a gramática (ver sunsam-any-type-schema.ts).
+          strictSchema ?? withExplicitAnyTypes(contract.inputSchema as JsonSchema),
           options,
         ),
       ),
