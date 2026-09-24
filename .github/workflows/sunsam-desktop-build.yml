@@ -1,0 +1,109 @@
+# Sunsam Code: compila los instaladores de escritorio para Windows, Linux y macOS.
+#
+# - Se ejecuta en push a main, en tags v*, en PRs hacia main y manualmente (workflow_dispatch).
+# - Los tags v* publican un GitHub Release con todos los instaladores.
+# - Los builds no están firmados (sin certificados de Apple/Windows). En macOS, tras instalar:
+#     xattr -rd com.apple.quarantine "/Applications/Sunsam Code.app"
+name: Sunsam desktop build
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: sunsam-desktop-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: "24.14.0"
+  ZCODE_ENV: production
+  # Upstream usa espejos chinos por defecto; en runners de GitHub se usan los orígenes oficiales.
+  ELECTRON_MIRROR: https://github.com/electron/electron/releases/download/
+  ELECTRON_BUILDER_BINARIES_MIRROR: https://github.com/electron-userland/electron-builder-binaries/releases/download/
+  ZCODE_NODE_DIST_MIRROR: https://nodejs.org/dist
+  CSC_IDENTITY_AUTO_DISCOVERY: "false"
+  ZCODE_ENABLE_MAC_SIGN: "0"
+
+jobs:
+  bundle:
+    name: ${{ matrix.os }}-${{ matrix.arch }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: win, arch: x64, runner: windows-latest }
+          - { os: linux, arch: x64, runner: ubuntu-22.04 }
+          - { os: linux, arch: arm64, runner: ubuntu-22.04-arm }
+          - { os: mac, arch: arm64, runner: macos-14 }
+          - { os: mac, arch: x64, runner: macos-15-intel }
+    env:
+      ZCODE_TARGET_OS: ${{ matrix.os }}
+      ZCODE_TARGET_ARCH: ${{ matrix.arch }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Linux packaging tools (rpm, pacman)
+        if: matrix.os == 'linux'
+        run: sudo apt-get update && sudo apt-get install -y rpm libarchive-tools
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Re-apply Sunsam icons (idempotent)
+        shell: bash
+        run: |
+          python3 -m pip install --quiet pillow || python -m pip install --quiet pillow
+          python3 branding/sunsam/generate-icons.py || python branding/sunsam/generate-icons.py
+
+      - name: Build workspace packages
+        run: pnpm -r --filter "./packages/*" --filter "!@zcode/desktop" build
+
+      - name: Bundle desktop app
+        run: pnpm bundle:desktop -- --os ${{ matrix.os }} --arch ${{ matrix.arch }}
+
+      - name: Upload installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunsam-code-${{ matrix.os }}-${{ matrix.arch }}
+          if-no-files-found: error
+          path: |
+            packages/desktop/dist/*.exe
+            packages/desktop/dist/*.dmg
+            packages/desktop/dist/*.zip
+            packages/desktop/dist/*.AppImage
+            packages/desktop/dist/*.deb
+            packages/desktop/dist/*.rpm
+            packages/desktop/dist/*.pkg.tar.zst
+
+  release:
+    name: GitHub Release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: bundle
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: installers
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: installers/*
+          generate_release_notes: true

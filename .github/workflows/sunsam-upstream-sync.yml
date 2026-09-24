@@ -1,0 +1,60 @@
+# Sunsam Code: mantiene el fork al día con upstream (zai-org/ZCode) conservando la capa Sunsam.
+#
+# Cada día (o manualmente) fusiona upstream/main en una rama `sync/upstream-<fecha>` y abre un PR
+# hacia main. Nunca empuja directamente a main: el PR pasa por el build multiplataforma antes de
+# fusionarse. Los ficheros de la capa Sunsam (ver .gitattributes → merge=ours) conservan nuestra
+# versión automáticamente; el resto de conflictos se dejan marcados en el PR para revisión.
+name: Sunsam upstream sync
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+    inputs:
+      upstream_ref:
+        description: "Rama o tag de upstream a fusionar"
+        required: false
+        default: main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  UPSTREAM_REPO: https://github.com/zai-org/ZCode.git
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
+          # Con GITHUB_TOKEN el PR creado no dispara el build (limitación de GitHub). Define el secreto
+          # SUNSAM_SYNC_TOKEN (PAT con contents+pull-requests) para que el build del PR se ejecute solo.
+          token: ${{ secrets.SUNSAM_SYNC_TOKEN || github.token }}
+
+      - name: Merge upstream into a sync branch
+        id: merge
+        shell: bash
+        env:
+          UPSTREAM_REF: ${{ github.event.inputs.upstream_ref || 'main' }}
+        run: bash scripts/sunsam/sync-upstream.sh
+
+      - name: Open or update pull request
+        if: steps.merge.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.SUNSAM_SYNC_TOKEN || secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ steps.merge.outputs.branch }}
+          CONFLICTS: ${{ steps.merge.outputs.conflicts }}
+          UPSTREAM_SHA: ${{ steps.merge.outputs.upstream_sha }}
+        shell: bash
+        run: |
+          existing=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number')
+          body=$(printf 'Fusión automática de `zai-org/ZCode` (%s) conservando la capa Sunsam.\n\nConflictos pendientes: %s\n\nChecklist:\n- [ ] Build multiplataforma en verde\n- [ ] `python3 branding/sunsam/generate-icons.py` sin cambios\n- [ ] Model settings muestra solo Custom providers\n' "$UPSTREAM_SHA" "${CONFLICTS:-ninguno}")
+          if [ -z "$existing" ]; then
+            gh pr create --base main --head "$BRANCH" --title "chore(sync): upstream ZCode ${UPSTREAM_SHA:0:7}" --body "$body"
+          else
+            gh pr comment "$existing" --body "$body"
+          fi
