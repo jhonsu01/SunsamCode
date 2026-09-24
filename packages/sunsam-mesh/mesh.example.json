@@ -1,0 +1,48 @@
+{
+  "server": { "host": "127.0.0.1", "port": 4141 },
+  "router": {
+    "classifier": "heuristic",
+    "threshold": 0.75,
+    "laya": { "url": "http://127.0.0.1:8000", "timeoutMs": 1500 }
+  },
+  "peers": [
+    {
+      "id": "lmstudio-edge",
+      "baseUrl": "http://192.168.1.8:1234/v1",
+      "apiFormats": ["openai", "anthropic"],
+      "tier": "local",
+      "models": ["qwen2.5-coder-1.5b-instruct"]
+    },
+    {
+      "id": "gpu-rig",
+      "baseUrl": "http://192.168.1.20:8000/v1",
+      "apiFormats": ["openai"],
+      "tier": "swarm",
+      "models": ["Qwen/Qwen2.5-Coder-32B-Instruct"],
+      "bpbProbe": true
+    },
+    {
+      "id": "petals-swarm",
+      "baseUrl": "http://127.0.0.1:8090/v1",
+      "apiFormats": ["openai"],
+      "tier": "swarm",
+      "models": ["meta-llama/Meta-Llama-3.1-70B-Instruct"],
+      "maxInflight": 2
+    }
+  ],
+  "mesh": { "nodeId": "sunsam-laptop", "maxHops": 1 },
+  "discovery": { "enabled": false, "port": 41414, "intervalMs": 5000, "sharedSecret": "" },
+  "feedback": {
+    "dataDir": "~/.sunsam/mesh-data",
+    "teacherPeer": "gpu-rig",
+    "rlcd": { "enabled": false, "sampleRate": 0.1, "reuseServedAsChosen": true },
+    "byteDistill": {
+      "enabled": false,
+      "sampleRate": 0.05,
+      "topLogprobs": 20,
+      "method": "end-of-token"
+    },
+    "layaSoftLabels": { "enabled": false, "sampleRate": 0.2 }
+  },
+  "health": { "intervalMs": 15000 }
+}

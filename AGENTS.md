@@ -80,3 +80,19 @@
 - `info` 用于进程和会话生命周期、权限结果、一次性初始化等生产可用事件。
 - `warn` 用于可恢复异常；`error` 用于崩溃、握手失败、鉴权丢失等不可恢复错误。
 - 不在日志、示例或提交中写入凭据、真实用户数据和内部服务地址。
+
+## Sunsam 定制层
+
+本仓库是 zai-org/ZCode 的 fork（Sunsam Code）。定制集中在隔离目录，便于同步上游：
+
+- 品牌：`packages/shared/src/sunsamBrand.ts`、`packages/ui/src/sunsam/`、`branding/sunsam/`（`python3 branding/sunsam/generate-icons.py` 重新生成图标）。
+- 仅显示 Custom providers：`SUNSAM_BRAND.hideBuiltinModelProviders`。
+- P2P 路由网关：`packages/sunsam-mesh`（受管模块，规格见其 `SPEC.md`）。
+- 修改上游文件时只做调用定制层的最小改动，并加 `// Sunsam:` 注释；新文案放在 `SUNSAM_MESSAGES`，不要写进 `i18n/locales/*`。
+- 同步上游：`scripts/sunsam/sync-upstream.sh` 与 `.github/workflows/sunsam-upstream-sync.yml`；多平台构建：`.github/workflows/sunsam-desktop-build.yml`。
+
+| 用途               | 命令                    |
+| ------------------ | ----------------------- |
+| Sunsam 测试        | `pnpm sunsam:test`      |
+| 启动 Sunsam Mesh   | `pnpm sunsam:mesh`      |
+| 生成 Mesh 示例配置 | `pnpm sunsam:mesh:init` |

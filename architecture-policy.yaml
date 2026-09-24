@@ -55,6 +55,15 @@ modules:
   - id: zcode-cli
     roots: [apps/zcode-cli]
     managed: false
+  # Sunsam: gateway P2P (router SLM local + enjambre) y utilidades byte-level del paper 2609.12303.
+  - id: sunsam-mesh
+    roots: [packages/sunsam-mesh/src]
+    managed: true
+    requires: []
+    publicEntrypoints: [packages/sunsam-mesh/src/contract.ts]
+    layers: { domain: domain, app: app, adapters: adapters }
+    layerOrder: [domain, app, adapters]
+    owner: sunsam
 
 global:
   maxFileLines: 400

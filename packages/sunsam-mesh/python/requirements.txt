@@ -1,0 +1,10 @@
+# Destilado del router (sólo numpy)
+numpy>=1.26
+# RLCD/DPO y estudiante byte-level
+torch>=2.3
+transformers>=4.46
+datasets>=3.0
+trl>=0.12
+accelerate>=1.0
+# Router Laya (opcional): pip install "laya[serve]"
+# Enjambre Petals (opcional): pip install petals fastapi uvicorn

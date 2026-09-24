@@ -1,0 +1,26 @@
+{
+  "name": "@sunsam/mesh",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sunsam Mesh: router P2P (SLM local + enjambre) compatible con OpenAI/Anthropic para Sunsam Code",
+  "license": "Apache-2.0",
+  "bin": {
+    "sunsam-mesh": "./dist/adapters/cli.js"
+  },
+  "type": "module",
+  "types": "./dist/contract.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/contract.d.ts",
+      "default": "./src/contract.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "tsx src/adapters/cli.ts serve",
+    "init-config": "tsx src/adapters/cli.ts init",
+    "test": "node --import tsx --test test/*.test.ts",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix"
+  }
+}
