@@ -1,6 +1,6 @@
 # Sunsam Code: compila los instaladores de escritorio para Windows, Linux y macOS.
 #
-# - Se ejecuta en push a main, en tags v*, en PRs hacia main y manualmente (workflow_dispatch).
+# - Se ejecuta en push a main (y ramas claude/**), en tags v*, en PRs hacia main y manualmente.
 # - Los tags v* publican un GitHub Release con todos los instaladores.
 # - Los builds no están firmados (sin certificados de Apple/Windows). En macOS, tras instalar:
 #     xattr -rd com.apple.quarantine "/Applications/Sunsam Code.app"
@@ -8,7 +8,8 @@ name: Sunsam desktop build
 
 on:
   push:
-    branches: [main]
+    # claude/** valida los instaladores (artefactos del run) antes de fusionar; sólo los tags publican Release.
+    branches: [main, "claude/**"]
     tags: ["v*"]
   pull_request:
     branches: [main]
