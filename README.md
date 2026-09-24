@@ -1,7 +1,6 @@
 # Sunsam Code
 
-<div align="center">
-  <img src="public/logo/icons/512x512.png" alt="Sunsam Code" width="128" height="128" />
+<p align="center"><img src="public/logo/icons/512x512.png" alt="Sunsam Code" width="128" height="128" /></p>
 
 **Agente de programación de escritorio con tus propios modelos y un router P2P entre máquinas.**
 
@@ -11,8 +10,6 @@
 [![Build](https://img.shields.io/github/actions/workflow/status/jhonsu01/SunsamCode/sunsam-desktop-build.yml?label=build)](https://github.com/jhonsu01/SunsamCode/actions/workflows/sunsam-desktop-build.yml)
 [![Página](https://img.shields.io/badge/web-jhonsu01.github.io%2FSunsamCode-15121c)](https://jhonsu01.github.io/SunsamCode/)
 [![Licencia](https://img.shields.io/badge/licencia-Apache--2.0-blue)](LICENSE)
-
-</div>
 
 Sunsam Code es un fork de [ZCode](https://github.com/zai-org/ZCode) (Z.ai) con marca propia,
 configuración de modelos limitada a **Custom providers** y **Sunsam Mesh**, un router que reparte

@@ -1,7 +1,7 @@
 # Sunsam Code: compila los instaladores de escritorio para Windows, Linux y macOS.
 #
 # - Se ejecuta en push a main (y ramas claude/**), en tags v*, en PRs hacia main y manualmente.
-# - Los tags v* publican un GitHub Release con todos los instaladores.
+# - Los tags v* (o un commit con "[release]" en el mensaje) publican un GitHub Release con todos los instaladores.
 # - Los builds no están firmados (sin certificados de Apple/Windows). En macOS, tras instalar:
 #     xattr -rd com.apple.quarantine "/Applications/Sunsam Code.app"
 name: Sunsam desktop build
@@ -90,19 +90,34 @@ jobs:
     name: GitHub Release
     # Se publica aunque falle alguna plataforma: el Release lleva los instaladores que sí se generaron
     # y el log del job fallido indica qué falta.
-    if: ${{ !cancelled() && startsWith(github.ref, 'refs/tags/v') }}
+    # También se publica desde un push cuyo mensaje de commit contenga "[release]" (el tag se crea aquí).
+    if: ${{ !cancelled() && (startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'push' && contains(github.event.head_commit.message, '[release]'))) }}
     needs: bundle
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: package.json
+      - name: Resolve release tag
+        id: tag
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            echo "name=$GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=v$(jq -r .version package.json)-sunsam.$GITHUB_RUN_NUMBER" >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/download-artifact@v4
         with:
           path: installers
           merge-multiple: true
       - uses: softprops/action-gh-release@v2
         with:
-          name: Sunsam Code ${{ github.ref_name }}
+          tag_name: ${{ steps.tag.outputs.name }}
+          target_commitish: ${{ github.sha }}
+          name: Sunsam Code ${{ steps.tag.outputs.name }}
           files: installers/*
           fail_on_unmatched_files: false
           make_latest: true

@@ -1,7 +1,6 @@
 # Sunsam Code
 
-<div align="center">
-  <img src="public/logo/icons/512x512.png" alt="Sunsam Code" width="128" height="128" />
+<p align="center"><img src="public/logo/icons/512x512.png" alt="Sunsam Code" width="128" height="128" /></p>
 
 **使用你自己的模型、并在多台机器之间进行 P2P 路由的桌面编程智能体。**
 
@@ -11,8 +10,6 @@
 [![Build](https://img.shields.io/github/actions/workflow/status/jhonsu01/SunsamCode/sunsam-desktop-build.yml?label=build)](https://github.com/jhonsu01/SunsamCode/actions/workflows/sunsam-desktop-build.yml)
 [![网站](https://img.shields.io/badge/web-jhonsu01.github.io%2FSunsamCode-15121c)](https://jhonsu01.github.io/SunsamCode/)
 [![许可证](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
-
-</div>
 
 Sunsam Code 是 [ZCode](https://github.com/zai-org/ZCode)（Z.ai）的分支：使用 Sunsam 品牌，模型设置只保留
 **自定义供应商**，并提供 **Sunsam Mesh**——把每个请求路由到本地小模型或局域网内其他机器上的大模型。

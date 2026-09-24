@@ -44,6 +44,9 @@ un tag `v*` crea un GitHub Release con todos los instaladores:
 git tag v3.14.3-sunsam.1 && git push origin v3.14.3-sunsam.1
 ```
 
+También se publica un Release en cualquier push (a `main` o a ramas `claude/**`) cuyo mensaje de
+commit contenga `[release]`: el tag `v<versión>-sunsam.<n>` lo crea el propio workflow.
+
 Los builds no están firmados. En macOS: `xattr -rd com.apple.quarantine "/Applications/Sunsam Code.app"`.
 En Windows, SmartScreen pedirá confirmación la primera vez.
 
@@ -77,6 +80,8 @@ Reglas para no perder la capa al actualizar:
 
 - La página del proyecto es `docs/index.html` (ES/EN/中文, descargas leídas en vivo del último
   Release): <https://jhonsu01.github.io/SunsamCode/>.
+- Si Pages publica "Deploy from a branch", elige la carpeta **`/docs`** para servir la página
+  directamente; si eliges `/ (root)`, el `index.html` de la raíz redirige a `docs/`.
 - Activación única: **Settings → Pages → Build and deployment → Source: GitHub Actions**. Después,
   `.github/workflows/sunsam-pages.yml` la publica en cada push a `main` que toque `docs/` (o a mano
   con _Run workflow_).

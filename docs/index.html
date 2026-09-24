@@ -122,25 +122,22 @@
       .spacer {
         flex: 1;
       }
-      .lang {
-        display: flex;
+      .lang select {
+        appearance: none;
+        background: var(--bg-raised)
+          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23b3abc0' fill='none' stroke-width='1.5'/%3E%3C/svg%3E")
+          no-repeat right 10px center;
         border: 1px solid var(--border);
         border-radius: 999px;
-        padding: 2px;
-      }
-      .lang button {
-        background: none;
-        border: 0;
-        color: var(--text-muted);
+        color: var(--text);
         font: inherit;
         font-size: 13px;
-        padding: 4px 10px;
-        border-radius: 999px;
+        padding: 5px 28px 5px 12px;
         cursor: pointer;
       }
-      .lang button[aria-pressed="true"] {
-        background: var(--bg-card);
-        color: var(--text);
+      .lang select:focus-visible {
+        outline: 2px solid var(--accent-2);
+        outline-offset: 2px;
       }
       .gh {
         display: inline-flex;
@@ -526,10 +523,18 @@
           <a href="#empezar" data-i18n="nav.start">Empezar</a>
         </nav>
         <div class="spacer"></div>
-        <div class="lang" role="group" aria-label="Idioma / Language">
-          <button type="button" data-lang="es" aria-pressed="true">ES</button>
-          <button type="button" data-lang="en" aria-pressed="false">EN</button>
-          <button type="button" data-lang="zh" aria-pressed="false">中文</button>
+        <div class="lang">
+          <select id="lang-select" aria-label="Idioma / Language">
+            <option value="es">Español</option>
+            <option value="en">English</option>
+            <option value="pt">Português</option>
+            <option value="fr">Français</option>
+            <option value="de">Deutsch</option>
+            <option value="it">Italiano</option>
+            <option value="zh">中文</option>
+            <option value="ja">日本語</option>
+            <option value="ko">한국어</option>
+          </select>
         </div>
         <a class="gh" href="https://github.com/jhonsu01/SunsamCode" aria-label="GitHub">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -939,6 +944,7 @@ pnpm sunsam:mesh</pre
       </div>
     </footer>
 
+    <script src="assets/i18n.js"></script>
     <script>
       (() => {
         const REPO = "jhonsu01/SunsamCode";
@@ -1141,6 +1147,8 @@ pnpm sunsam:mesh</pre
         });
         Object.assign(I18N.es, ES_DYNAMIC);
 
+        Object.assign(I18N, window.SUNSAM_I18N_EXTRA ?? {});
+        const HTML_LANG = { zh: "zh-CN" };
         let lang = "es";
         let release = null;
         let releaseState = "loading";
@@ -1255,9 +1263,7 @@ pnpm sunsam:mesh</pre
           }
           const line = document.getElementById("version-line");
           if (releaseState === "ready") {
-            const date = new Date(release.published_at).toLocaleDateString(
-              lang === "zh" ? "zh-CN" : lang,
-            );
+            const date = new Date(release.published_at).toLocaleDateString(HTML_LANG[lang] ?? lang);
             line.textContent = t("rel.latest", { tag: release.tag_name, date });
           } else if (releaseState === "none") {
             line.textContent = t("rel.none");
@@ -1268,26 +1274,23 @@ pnpm sunsam:mesh</pre
 
         function applyLang(next) {
           lang = I18N[next] ? next : "es";
-          document.documentElement.lang = lang === "zh" ? "zh-CN" : lang;
+          document.documentElement.lang = HTML_LANG[lang] ?? lang;
           document.querySelectorAll("[data-i18n]").forEach((el) => {
             if (el.id === "version-line" && releaseState !== "loading") return;
             el.textContent = t(el.dataset.i18n);
           });
-          document.querySelectorAll(".lang button").forEach((button) => {
-            button.setAttribute("aria-pressed", String(button.dataset.lang === lang));
-          });
+          document.getElementById("lang-select").value = lang;
           renderAssets();
         }
 
-        document.querySelectorAll(".lang button").forEach((button) => {
-          button.addEventListener("click", () => {
-            store(button.dataset.lang);
-            applyLang(button.dataset.lang);
-          });
+        document.getElementById("lang-select").addEventListener("change", (event) => {
+          store(event.target.value);
+          applyLang(event.target.value);
         });
 
         const fromUrl = new URLSearchParams(location.search).get("lang");
-        applyLang(fromUrl || readStored() || "es");
+        const browserLang = (navigator.language || "es").slice(0, 2).toLowerCase();
+        applyLang(fromUrl || readStored() || (I18N[browserLang] ? browserLang : "es"));
 
         fetch(`https://api.github.com/repos/${REPO}/releases/latest`, {
           headers: { Accept: "application/vnd.github+json" },
