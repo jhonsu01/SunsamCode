@@ -20,3 +20,6 @@ packages/web/public/favicon.ico merge=ours
 public/logo/icons/** merge=ours
 public/icon_512@2x.png merge=ours
 packages/ui/src/components/ui/ZCodeAboutLogo.tsx merge=ours
+# READMEs de Sunsam (es/en); la documentación original sigue enlazada en el repositorio de upstream.
+README.md merge=ours
+README.en.md merge=ours

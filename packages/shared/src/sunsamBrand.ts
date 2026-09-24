@@ -7,6 +7,9 @@
  */
 export const SUNSAM_PRODUCT_NAME = "Sunsam Code";
 
+/** Página pública del producto (GitHub Pages): descargas, resumen y documentación. */
+export const SUNSAM_HOMEPAGE_URL = "https://jhonsu01.github.io/SunsamCode/";
+
 const UPSTREAM_PRODUCT_NAME_PATTERN = /\bZ ?Code\b(?! (?:CLI|CDN)\b)/g;
 
 export function applySunsamBrandToText(text: string): string {

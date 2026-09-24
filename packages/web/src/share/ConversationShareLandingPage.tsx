@@ -9,7 +9,7 @@ import {
   type MouseEvent,
 } from "react";
 import { ArrowUpRightIcon, MoonIcon, SunIcon } from "lucide-react";
-import { BIGMODEL_PROVIDER_ID, ZAI_PROVIDER_ID } from "@zcode/shared";
+import { BIGMODEL_PROVIDER_ID, SUNSAM_HOMEPAGE_URL, ZAI_PROVIDER_ID } from "@zcode/shared";
 import type { ConversationSharePreview } from "@zcode/shared";
 import { ConversationShareReadonlyTimeline } from "@zcode/ui/conversation-share-readonly";
 import { renderOAuthProviderIcon } from "@zcode/ui/oauth-provider-icon";
@@ -88,7 +88,8 @@ interface Copy {
 }
 
 // 站点首页本身就是下载入口，没有 /download 这个 path（单独的下载链接会 404）。
-const ZCODE_DOWNLOAD_URL = "https://zcode.z.ai";
+// Sunsam: la descarga apunta a la página de Sunsam Code (GitHub Pages) en vez de zcode.z.ai.
+const ZCODE_DOWNLOAD_URL = SUNSAM_HOMEPAGE_URL;
 
 const COPY: Record<ConversationShareLandingLocale, Copy> = {
   "zh-CN": {

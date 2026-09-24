@@ -1,0 +1,1311 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sunsam Code</title>
+    <meta
+      name="description"
+      content="Sunsam Code: agente de programación de escritorio con tus propios modelos y un router P2P entre máquinas (Sunsam Mesh). Descargas para Windows, macOS y Linux."
+    />
+    <meta name="theme-color" content="#15121c" />
+    <meta name="color-scheme" content="dark" />
+    <meta property="og:title" content="Sunsam Code" />
+    <meta
+      property="og:description"
+      content="Agente de programación con tus propios modelos y router P2P entre máquinas."
+    />
+    <meta property="og:image" content="https://jhonsu01.github.io/SunsamCode/assets/og.png" />
+    <meta property="og:url" content="https://jhonsu01.github.io/SunsamCode/" />
+    <link rel="icon" type="image/png" href="assets/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #15121c;
+        --bg-raised: #1d1926;
+        --bg-card: #221d2d;
+        --border: #342d42;
+        --text: #f4f1f7;
+        --text-muted: #b3abc0;
+        --text-subtle: #857c94;
+        --accent-1: #fdb673;
+        --accent-2: #f4415e;
+        --accent-3: #dc447f;
+        --gradient: linear-gradient(
+          135deg,
+          var(--accent-1) 0%,
+          var(--accent-2) 55%,
+          var(--accent-3) 100%
+        );
+        --radius: 14px;
+        --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font:
+          16px/1.6 Inter,
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          "PingFang SC",
+          "Microsoft YaHei",
+          sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      a {
+        color: inherit;
+      }
+      code,
+      pre {
+        font-family: var(--mono);
+      }
+      .wrap {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 0 16px;
+      }
+      /* Cabecera */
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: color-mix(in srgb, var(--bg) 86%, transparent);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--border);
+      }
+      .bar {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        height: 60px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+        text-decoration: none;
+        letter-spacing: 0.01em;
+      }
+      .brand img {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+      }
+      nav.links {
+        display: flex;
+        gap: 18px;
+        margin-left: 12px;
+      }
+      nav.links a {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 14px;
+      }
+      nav.links a:hover {
+        color: var(--text);
+      }
+      .spacer {
+        flex: 1;
+      }
+      .lang {
+        display: flex;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 2px;
+      }
+      .lang button {
+        background: none;
+        border: 0;
+        color: var(--text-muted);
+        font: inherit;
+        font-size: 13px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        cursor: pointer;
+      }
+      .lang button[aria-pressed="true"] {
+        background: var(--bg-card);
+        color: var(--text);
+      }
+      .gh {
+        display: inline-flex;
+        color: var(--text-muted);
+      }
+      .gh:hover {
+        color: var(--text);
+      }
+      /* Hero */
+      .hero {
+        /* Sólo vertical: el padding lateral de .wrap mantiene el margen de 16px en móvil. */
+        padding-top: 72px;
+        padding-bottom: 56px;
+        display: grid;
+        grid-template-columns: 1.3fr 1fr;
+        gap: 40px;
+        align-items: center;
+      }
+      .eyebrow {
+        display: inline-block;
+        font-size: 13px;
+        color: var(--accent-1);
+        border: 1px solid color-mix(in srgb, var(--accent-1) 40%, transparent);
+        border-radius: 999px;
+        padding: 3px 12px;
+        margin-bottom: 18px;
+      }
+      h1 {
+        font-size: clamp(34px, 5.4vw, 56px);
+        line-height: 1.08;
+        letter-spacing: -0.02em;
+        margin: 0 0 18px;
+      }
+      h1 .grad {
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .lead {
+        font-size: 18px;
+        color: var(--text-muted);
+        margin: 0 0 28px;
+        max-width: 34em;
+      }
+      .cta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 20px;
+        border-radius: 10px;
+        font-weight: 600;
+        text-decoration: none;
+        border: 1px solid var(--border);
+        background: var(--bg-card);
+        transition:
+          transform 0.15s ease,
+          border-color 0.15s ease;
+      }
+      .btn:hover {
+        transform: translateY(-1px);
+        border-color: var(--text-subtle);
+      }
+      .btn.primary {
+        background: var(--gradient);
+        border: 0;
+        color: #1a1020;
+      }
+      .version {
+        font-size: 13px;
+        color: var(--text-subtle);
+        margin-top: 14px;
+      }
+      .hero-art {
+        display: flex;
+        justify-content: center;
+      }
+      .hero-art img {
+        width: min(320px, 70vw);
+        height: auto;
+        border-radius: 22%;
+        box-shadow: 0 30px 80px -20px color-mix(in srgb, var(--accent-2) 45%, transparent);
+      }
+      /* Secciones */
+      section {
+        padding: 56px 0;
+        border-top: 1px solid var(--border);
+      }
+      h2 {
+        font-size: clamp(26px, 3.4vw, 34px);
+        letter-spacing: -0.01em;
+        margin: 0 0 8px;
+      }
+      .section-lead {
+        color: var(--text-muted);
+        margin: 0 0 32px;
+        max-width: 42em;
+      }
+      .grid {
+        display: grid;
+        gap: 16px;
+      }
+      /* Los hijos de grid no deben crecer por el contenido largo (pre): evita scroll horizontal en móvil. */
+      .grid > *,
+      .flow > * {
+        min-width: 0;
+      }
+      .grid.cols-3 {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .grid.cols-2 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .grid.cols-4 {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      .card {
+        background: var(--bg-raised);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 22px;
+      }
+      .card h3 {
+        margin: 0 0 6px;
+        font-size: 17px;
+      }
+      .card p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 15px;
+      }
+      .icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        background: color-mix(in srgb, var(--accent-2) 16%, transparent);
+        color: var(--accent-1);
+        margin-bottom: 14px;
+      }
+      /* Descargas */
+      .os-card h3 {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .assets {
+        list-style: none;
+        padding: 0;
+        margin: 14px 0 0;
+        display: grid;
+        gap: 8px;
+      }
+      .assets a {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 9px 12px;
+        border-radius: 9px;
+        border: 1px solid var(--border);
+        text-decoration: none;
+        font-size: 14px;
+        background: var(--bg-card);
+      }
+      .assets a:hover {
+        border-color: var(--accent-2);
+      }
+      .assets .meta {
+        color: var(--text-subtle);
+        font-family: var(--mono);
+        font-size: 12px;
+        white-space: nowrap;
+      }
+      .empty {
+        color: var(--text-subtle);
+        font-size: 14px;
+        margin-top: 14px;
+      }
+      .note {
+        margin-top: 20px;
+        font-size: 14px;
+        color: var(--text-muted);
+        background: var(--bg-raised);
+        border: 1px dashed var(--border);
+        border-radius: var(--radius);
+        padding: 14px 16px;
+      }
+      .note code {
+        font-size: 12.5px;
+        background: var(--bg-card);
+        padding: 1px 6px;
+        border-radius: 6px;
+        overflow-wrap: anywhere;
+      }
+      /* Diagrama Mesh */
+      .flow {
+        display: grid;
+        grid-template-columns: 1fr auto 1.2fr auto 1.3fr;
+        align-items: center;
+        gap: 12px;
+      }
+      .node {
+        background: var(--bg-raised);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 14px 16px;
+        font-size: 14px;
+      }
+      .node strong {
+        display: block;
+        font-size: 15px;
+        margin-bottom: 2px;
+      }
+      .node span {
+        color: var(--text-muted);
+      }
+      .node.router {
+        border-color: color-mix(in srgb, var(--accent-2) 60%, var(--border));
+        box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-2) 10%, transparent);
+      }
+      .arrow {
+        color: var(--text-subtle);
+        font-size: 20px;
+      }
+      .tiers {
+        display: grid;
+        gap: 10px;
+      }
+      .tier-label {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--accent-1);
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 24px;
+      }
+      .chip {
+        font-size: 13px;
+        padding: 5px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        background: var(--bg-raised);
+      }
+      /* Paper */
+      .bars {
+        display: grid;
+        gap: 8px;
+        margin-top: 16px;
+      }
+      .bar-row {
+        display: grid;
+        grid-template-columns: 64px 1fr 52px;
+        gap: 10px;
+        align-items: center;
+        font-family: var(--mono);
+        font-size: 13px;
+        color: var(--text-muted);
+      }
+      .bar-track {
+        height: 10px;
+        border-radius: 99px;
+        background: var(--bg-card);
+        overflow: hidden;
+      }
+      .bar-fill {
+        height: 100%;
+        background: var(--gradient);
+        border-radius: 99px;
+      }
+      /* Código */
+      pre {
+        margin: 12px 0 0;
+        padding: 14px 16px;
+        background: #0f0d14;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow-x: auto;
+        font-size: 13px;
+        line-height: 1.55;
+        color: #e6e1ee;
+      }
+      .step-num {
+        font-family: var(--mono);
+        font-size: 13px;
+        color: var(--accent-1);
+      }
+      /* Hoja de ruta */
+      .roadmap {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 10px;
+      }
+      .roadmap li {
+        display: flex;
+        gap: 12px;
+        align-items: baseline;
+        padding: 12px 16px;
+        background: var(--bg-raised);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        color: var(--text-muted);
+      }
+      .roadmap li b {
+        color: var(--text);
+        font-weight: 600;
+      }
+      .tag {
+        font-size: 11px;
+        font-family: var(--mono);
+        padding: 2px 8px;
+        border-radius: 99px;
+        border: 1px solid var(--border);
+        white-space: nowrap;
+      }
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 32px 0 48px;
+        color: var(--text-subtle);
+        font-size: 14px;
+      }
+      footer .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px 24px;
+        justify-content: space-between;
+      }
+      footer a {
+        color: var(--text-muted);
+      }
+      @media (max-width: 860px) {
+        nav.links {
+          display: none;
+        }
+        .hero {
+          grid-template-columns: 1fr;
+          gap: 24px;
+          padding-top: 40px;
+        }
+        .hero-art {
+          order: -1;
+          justify-content: flex-start;
+        }
+        .hero-art img {
+          width: 120px;
+        }
+        .grid.cols-3,
+        .grid.cols-4,
+        .grid.cols-2 {
+          grid-template-columns: 1fr;
+        }
+        .flow {
+          grid-template-columns: 1fr;
+        }
+        .arrow {
+          transform: rotate(90deg);
+          justify-self: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap bar">
+        <a class="brand" href="#top"><img src="assets/sunsam-icon.png" alt="" />Sunsam Code</a>
+        <nav class="links">
+          <a href="#descargas" data-i18n="nav.downloads">Descargas</a>
+          <a href="#funciones" data-i18n="nav.features">Funciones</a>
+          <a href="#mesh" data-i18n="nav.mesh">Sunsam Mesh</a>
+          <a href="#paper" data-i18n="nav.paper">Paper</a>
+          <a href="#empezar" data-i18n="nav.start">Empezar</a>
+        </nav>
+        <div class="spacer"></div>
+        <div class="lang" role="group" aria-label="Idioma / Language">
+          <button type="button" data-lang="es" aria-pressed="true">ES</button>
+          <button type="button" data-lang="en" aria-pressed="false">EN</button>
+          <button type="button" data-lang="zh" aria-pressed="false">中文</button>
+        </div>
+        <a class="gh" href="https://github.com/jhonsu01/SunsamCode" aria-label="GitHub">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path
+              d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.1c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.8.1-.7.1-.7 1.2.1 1.9 1.2 1.9 1.2 1.1 1.9 2.9 1.3 3.6 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.6 18.3 5 18.3 5c.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5Z"
+            />
+          </svg>
+        </a>
+      </div>
+    </header>
+
+    <main id="top">
+      <div class="wrap hero">
+        <div>
+          <span class="eyebrow" data-i18n="hero.eyebrow"
+            >Fork de ZCode · código abierto · Apache-2.0</span
+          >
+          <h1>
+            <span data-i18n="hero.title1">Tu agente de programación,</span><br />
+            <span class="grad" data-i18n="hero.title2">con tus modelos.</span>
+          </h1>
+          <p class="lead" data-i18n="hero.lead">
+            Sunsam Code usa sólo los proveedores que tú configuras (LM Studio, Ollama, vLLM…) y
+            reparte cada petición entre un modelo pequeño local y modelos grandes en otras máquinas
+            de tu red.
+          </p>
+          <div class="cta">
+            <a
+              class="btn primary"
+              id="primary-download"
+              href="https://github.com/jhonsu01/SunsamCode/releases/latest"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16" />
+              </svg>
+              <span id="primary-download-label" data-i18n="hero.download">Descargar</span>
+            </a>
+            <a class="btn" href="https://github.com/jhonsu01/SunsamCode" data-i18n="hero.github"
+              >Ver en GitHub</a
+            >
+          </div>
+          <div class="version" id="version-line" data-i18n="hero.loading">
+            Buscando la última versión…
+          </div>
+        </div>
+        <div class="hero-art">
+          <img src="assets/sunsam-icon.png" alt="Sunsam Code" width="320" height="320" />
+        </div>
+      </div>
+
+      <section id="descargas">
+        <div class="wrap">
+          <h2 data-i18n="dl.title">Descargas</h2>
+          <p class="section-lead" data-i18n="dl.lead">
+            Instaladores del último Release, compilados automáticamente con GitHub Actions para cada
+            plataforma.
+          </p>
+          <div class="grid cols-3">
+            <div class="card os-card">
+              <h3>Windows</h3>
+              <p data-i18n="dl.win">Instalador NSIS para x64.</p>
+              <ul class="assets" id="assets-win"></ul>
+            </div>
+            <div class="card os-card">
+              <h3>macOS</h3>
+              <p data-i18n="dl.mac">Apple Silicon (arm64) e Intel (x64), en .dmg o .zip.</p>
+              <ul class="assets" id="assets-mac"></ul>
+            </div>
+            <div class="card os-card">
+              <h3>Linux</h3>
+              <p data-i18n="dl.linux">AppImage, .deb, .rpm y pacman para x64 y arm64.</p>
+              <ul class="assets" id="assets-linux"></ul>
+            </div>
+          </div>
+          <div class="note">
+            <span data-i18n="dl.unsigned">Los instaladores no están firmados.</span>
+            <strong>macOS:</strong>
+            <code>xattr -rd com.apple.quarantine "/Applications/Sunsam Code.app"</code> ·
+            <strong>Windows:</strong>
+            <span data-i18n="dl.smartscreen"
+              >SmartScreen → «Más información» → «Ejecutar de todas formas»</span
+            >
+            · <strong>Linux:</strong> <code>chmod +x Sunsam*.AppImage</code>
+          </div>
+        </div>
+      </section>
+
+      <section id="funciones">
+        <div class="wrap">
+          <h2 data-i18n="feat.title">Qué incluye</h2>
+          <p class="section-lead" data-i18n="feat.lead">
+            Todo lo de ZCode, más una capa de personalización aislada que se mantiene al día con
+            upstream.
+          </p>
+          <div class="grid cols-4">
+            <div class="card">
+              <div class="icon">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="130 180 760 660"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <g stroke="currentColor" stroke-width="40" stroke-linecap="round">
+                    <path d="M475 208L489 285" />
+                    <path d="M477 741L487 815" />
+                    <path d="M156 510L228 487" />
+                    <path d="M793 468L870 445" />
+                  </g>
+                  <path d="M383 394L733 442L436 629Z" />
+                </svg>
+              </div>
+              <h3 data-i18n="feat.brand.t">Marca Sunsam</h3>
+              <p data-i18n="feat.brand.d">
+                Logo y nombre propios en la app, instaladores, menús y bandeja. Se instala junto a
+                ZCode.
+              </p>
+            </div>
+            <div class="card">
+              <div class="icon">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  aria-hidden="true"
+                >
+                  <rect x="3" y="4" width="18" height="6" rx="2" />
+                  <rect x="3" y="14" width="18" height="6" rx="2" />
+                  <path d="M7 7h.01M7 17h.01" />
+                </svg>
+              </div>
+              <h3 data-i18n="feat.custom.t">Sólo Custom providers</h3>
+              <p data-i18n="feat.custom.d">
+                Model settings muestra únicamente tus endpoints compatibles con OpenAI o Anthropic.
+              </p>
+            </div>
+            <div class="card">
+              <div class="icon">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="5" cy="12" r="2.5" />
+                  <circle cx="19" cy="5" r="2.5" />
+                  <circle cx="19" cy="19" r="2.5" />
+                  <path d="M7.3 11 16.7 6M7.3 13l9.4 5" />
+                </svg>
+              </div>
+              <h3 data-i18n="feat.mesh.t">Router P2P</h3>
+              <p data-i18n="feat.mesh.d">
+                Sunsam Mesh decide por petición entre el modelo local y el grande, con
+                descubrimiento en la LAN.
+              </p>
+            </div>
+            <div class="card">
+              <div class="icon">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M4 12a8 8 0 0 1 14-5.3L20 9M20 4v5h-5M20 12a8 8 0 0 1-14 5.3L4 15M4 20v-5h5"
+                  />
+                </svg>
+              </div>
+              <h3 data-i18n="feat.sync.t">Al día con upstream</h3>
+              <p data-i18n="feat.sync.d">
+                Un workflow diario fusiona las versiones nuevas de zai-org/ZCode conservando la capa
+                Sunsam.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="mesh">
+        <div class="wrap">
+          <h2>Sunsam Mesh</h2>
+          <p class="section-lead" data-i18n="mesh.lead">
+            Un gateway local compatible con OpenAI y Anthropic. En la app eliges el modelo y eso es
+            elegir la ruta: sunsam-auto, sunsam-local o sunsam-swarm.
+          </p>
+          <div class="flow">
+            <div class="node">
+              <strong>Sunsam Code</strong
+              ><span data-i18n="mesh.app">Custom provider → 127.0.0.1:4141</span>
+            </div>
+            <div class="arrow" aria-hidden="true">→</div>
+            <div class="node router">
+              <strong data-i18n="mesh.router.t">Router</strong
+              ><span data-i18n="mesh.router.d"
+                >Laya (probabilidades calibradas) o heurística · umbral 0.75 · sticky por
+                conversación</span
+              >
+            </div>
+            <div class="arrow" aria-hidden="true">→</div>
+            <div class="tiers">
+              <div class="node">
+                <div class="tier-label">p_local ≥ 0.75 · local</div>
+                <span data-i18n="mesh.local">SLM destilado con RLCD (LM Studio, Ollama)</span>
+              </div>
+              <div class="node">
+                <div class="tier-label">p_local &lt; 0.75 · swarm</div>
+                <span data-i18n="mesh.swarm"
+                  >Modelo grande: GPU en la red, Petals u otro nodo Sunsam Mesh</span
+                >
+              </div>
+            </div>
+          </div>
+          <div class="chips">
+            <span class="chip" data-i18n="mesh.c1">Clasificador Laya</span>
+            <span class="chip" data-i18n="mesh.c2">Pares RLCD → DPO</span>
+            <span class="chip" data-i18n="mesh.c3">Destilación byte-level</span>
+            <span class="chip" data-i18n="mesh.c4">Etiquetas blandas para Laya</span>
+            <span class="chip" data-i18n="mesh.c5">Descubrimiento LAN firmado (HMAC)</span>
+            <span class="chip" data-i18n="mesh.c6">Fallback antes del primer byte</span>
+            <span class="chip" data-i18n="mesh.c7">Ranking por BPB y bytes/s</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="paper">
+        <div class="wrap">
+          <h2 data-i18n="paper.title">Del paper «Breaking the Token Ceiling»</h2>
+          <p class="section-lead" data-i18n="paper.lead">
+            Dos técnicas de arXiv 2609.12303 adaptadas para que la red sea más eficiente.
+          </p>
+          <div class="grid cols-2">
+            <div class="card">
+              <h3 data-i18n="paper.eot.t">Conversión token → byte (End-Of-Token)</h3>
+              <p data-i18n="paper.eot.d">
+                Convierte la distribución del teacher sobre ~128K tokens en ~257 símbolos sin
+                inferencias extra. Sirve para destilar modelos byte-level y para obtener etiquetas
+                del router independientes del tokenizador.
+              </p>
+              <div class="bars" aria-label="Tiramisu: P(u), P(k), P(eot)">
+                <div class="bar-row">
+                  <span>“isu”</span>
+                  <div class="bar-track"><div class="bar-fill" style="width: 66.7%"></div></div>
+                  <span>0.667</span>
+                </div>
+                <div class="bar-row">
+                  <span>“isk”</span>
+                  <div class="bar-track"><div class="bar-fill" style="width: 16.7%"></div></div>
+                  <span>0.167</span>
+                </div>
+                <div class="bar-row">
+                  <span>&lt;eot&gt;</span>
+                  <div class="bar-track"><div class="bar-fill" style="width: 16.7%"></div></div>
+                  <span>0.167</span>
+                </div>
+              </div>
+              <p class="version" data-i18n="paper.eot.caption">
+                Ejemplo «Tiramisu» del paper, reproducido en los tests.
+              </p>
+            </div>
+            <div class="card">
+              <h3 data-i18n="paper.bpb.t">Bits-per-byte y bytes/s</h3>
+              <p data-i18n="paper.bpb.d">
+                Tokens/s y la perplejidad por token no se pueden comparar entre modelos con
+                tokenizadores distintos. BPB y bytes/s sí, así que el router elige máquina por
+                calidad, latencia y velocidad reales.
+              </p>
+              <pre>
+coste = calidad·BPB + latencia·TTFT
+      + velocidad·(1000 / bytes_s) + carga·inflight</pre
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="empezar">
+        <div class="wrap">
+          <h2 data-i18n="start.title">Empezar en 3 pasos</h2>
+          <p class="section-lead" data-i18n="start.lead">
+            Instala la app, levanta el gateway y añádelo como Custom provider.
+          </p>
+          <div class="grid cols-3">
+            <div class="card">
+              <div class="step-num">01</div>
+              <h3 data-i18n="start.s1.t">Instala Sunsam Code</h3>
+              <p data-i18n="start.s1.d">
+                Descarga el instalador de tu sistema desde la sección Descargas.
+              </p>
+            </div>
+            <div class="card">
+              <div class="step-num">02</div>
+              <h3 data-i18n="start.s2.t">Arranca Sunsam Mesh</h3>
+              <p data-i18n="start.s2.d">Desde el código fuente, configura tus peers de la LAN:</p>
+              <pre>
+pnpm sunsam:mesh:init
+pnpm sunsam:mesh</pre
+              >
+            </div>
+            <div class="card">
+              <div class="step-num">03</div>
+              <h3 data-i18n="start.s3.t">Añade el provider</h3>
+              <p data-i18n="start.s3.d">
+                Model settings → Add provider → Base URL http://127.0.0.1:4141 y elige sunsam-auto.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="roadmap">
+        <div class="wrap">
+          <h2 data-i18n="road.title">Próximas mejoras</h2>
+          <p class="section-lead" data-i18n="road.lead">Hoja de ruta ordenada por impacto.</p>
+          <ul class="roadmap">
+            <li>
+              <span class="tag" data-i18n="road.high">alto</span
+              ><span
+                ><b data-i18n="road.r1.t">Panel Sunsam Mesh en Settings</b> —
+                <span data-i18n="road.r1.d"
+                  >estado de peers, umbral y opciones de feedback desde la app.</span
+                ></span
+              >
+            </li>
+            <li>
+              <span class="tag" data-i18n="road.high">alto</span
+              ><span
+                ><b data-i18n="road.r2.t">Escalado automático</b> —
+                <span data-i18n="road.r2.d"
+                  >si el modelo local falla, reenviar al grande y aprender de ello.</span
+                ></span
+              >
+            </li>
+            <li>
+              <span class="tag" data-i18n="road.high">alto</span
+              ><span
+                ><b data-i18n="road.r3.t">Evaluación en sombra con Laya</b> —
+                <span data-i18n="road.r3.d"
+                  >etiquetas automáticas para recalibrar el router.</span
+                ></span
+              >
+            </li>
+            <li>
+              <span class="tag" data-i18n="road.high">alto</span
+              ><span
+                ><b data-i18n="road.r4.t">Speculative decoding en red</b> —
+                <span data-i18n="road.r4.d"
+                  >el modelo local propone y el grande verifica.</span
+                ></span
+              >
+            </li>
+            <li>
+              <span class="tag" data-i18n="road.mid">medio</span
+              ><span
+                ><b data-i18n="road.r5.t">Logits completos con vLLM</b> —
+                <span data-i18n="road.r5.d"
+                  >End-Of-Token sin el límite top-20 de las APIs.</span
+                ></span
+              >
+            </li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap row">
+        <span data-i18n="footer.license">Apache-2.0 · Derivado de ZCode (Z.ai)</span>
+        <span>
+          <a href="https://github.com/jhonsu01/SunsamCode">GitHub</a> ·
+          <a href="https://github.com/jhonsu01/SunsamCode/releases" data-i18n="footer.releases"
+            >Releases</a
+          >
+          ·
+          <a
+            href="https://github.com/jhonsu01/SunsamCode/blob/main/docs/sunsam/README.md"
+            data-i18n="footer.docs"
+            >Documentación</a
+          >
+          ·
+          <a href="https://github.com/zai-org/ZCode">ZCode upstream</a>
+        </span>
+      </div>
+    </footer>
+
+    <script>
+      (() => {
+        const REPO = "jhonsu01/SunsamCode";
+        const I18N = {
+          es: {},
+          en: {
+            "nav.downloads": "Downloads",
+            "nav.features": "Features",
+            "nav.mesh": "Sunsam Mesh",
+            "nav.paper": "Paper",
+            "nav.start": "Get started",
+            "hero.eyebrow": "ZCode fork · open source · Apache-2.0",
+            "hero.title1": "Your coding agent,",
+            "hero.title2": "on your own models.",
+            "hero.lead":
+              "Sunsam Code only uses the providers you configure (LM Studio, Ollama, vLLM…) and routes each request between a small local model and larger models on other machines in your network.",
+            "hero.download": "Download",
+            "hero.github": "View on GitHub",
+            "hero.loading": "Looking for the latest version…",
+            "dl.title": "Downloads",
+            "dl.lead":
+              "Installers from the latest Release, built automatically with GitHub Actions for every platform.",
+            "dl.win": "NSIS installer for x64.",
+            "dl.mac": "Apple Silicon (arm64) and Intel (x64), as .dmg or .zip.",
+            "dl.linux": "AppImage, .deb, .rpm and pacman for x64 and arm64.",
+            "dl.unsigned": "Installers are not code-signed.",
+            "dl.smartscreen": "SmartScreen → “More info” → “Run anyway”",
+            "feat.title": "What's included",
+            "feat.lead":
+              "Everything in ZCode, plus an isolated customization layer that stays in sync with upstream.",
+            "feat.brand.t": "Sunsam branding",
+            "feat.brand.d":
+              "Its own logo and name in the app, installers, menus and tray. Installs side by side with ZCode.",
+            "feat.custom.t": "Custom providers only",
+            "feat.custom.d":
+              "Model settings only shows your OpenAI- or Anthropic-compatible endpoints.",
+            "feat.mesh.t": "P2P router",
+            "feat.mesh.d":
+              "Sunsam Mesh picks between the local and the large model per request, with LAN discovery.",
+            "feat.sync.t": "In sync with upstream",
+            "feat.sync.d":
+              "A daily workflow merges new zai-org/ZCode releases while keeping the Sunsam layer.",
+            "mesh.lead":
+              "A local OpenAI- and Anthropic-compatible gateway. Choosing the model in the app is choosing the route: sunsam-auto, sunsam-local or sunsam-swarm.",
+            "mesh.app": "Custom provider → 127.0.0.1:4141",
+            "mesh.router.t": "Router",
+            "mesh.router.d":
+              "Laya (calibrated probabilities) or heuristic · 0.75 threshold · sticky per conversation",
+            "mesh.local": "RLCD-distilled SLM (LM Studio, Ollama)",
+            "mesh.swarm": "Large model: GPU on the network, Petals or another Sunsam Mesh node",
+            "mesh.c1": "Laya classifier",
+            "mesh.c2": "RLCD pairs → DPO",
+            "mesh.c3": "Byte-level distillation",
+            "mesh.c4": "Soft labels for Laya",
+            "mesh.c5": "Signed LAN discovery (HMAC)",
+            "mesh.c6": "Fallback before the first byte",
+            "mesh.c7": "Ranking by BPB and bytes/s",
+            "paper.title": "From “Breaking the Token Ceiling”",
+            "paper.lead":
+              "Two techniques from arXiv 2609.12303, adapted to make the network more efficient.",
+            "paper.eot.t": "Token → byte conversion (End-Of-Token)",
+            "paper.eot.d":
+              "Turns the teacher's distribution over ~128K tokens into ~257 symbols with no extra inference. Used to distill byte-level models and to get tokenizer-independent router labels.",
+            "paper.eot.caption": "The paper's “Tiramisu” example, reproduced in the tests.",
+            "paper.bpb.t": "Bits-per-byte and bytes/s",
+            "paper.bpb.d":
+              "Tokens/s and per-token perplexity can't be compared across tokenizers. BPB and bytes/s can, so the router picks machines by real quality, latency and speed.",
+            "start.title": "Get started in 3 steps",
+            "start.lead": "Install the app, start the gateway and add it as a Custom provider.",
+            "start.s1.t": "Install Sunsam Code",
+            "start.s1.d": "Download the installer for your OS from the Downloads section.",
+            "start.s2.t": "Start Sunsam Mesh",
+            "start.s2.d": "From the source code, configure your LAN peers:",
+            "start.s3.t": "Add the provider",
+            "start.s3.d":
+              "Model settings → Add provider → Base URL http://127.0.0.1:4141 and pick sunsam-auto.",
+            "road.title": "Coming next",
+            "road.lead": "Roadmap ordered by impact.",
+            "road.high": "high",
+            "road.mid": "medium",
+            "road.r1.t": "Sunsam Mesh panel in Settings",
+            "road.r1.d": "peer status, threshold and feedback options from the app.",
+            "road.r2.t": "Automatic escalation",
+            "road.r2.d": "if the local model fails, resend to the large one and learn from it.",
+            "road.r3.t": "Shadow evaluation with Laya",
+            "road.r3.d": "automatic labels to recalibrate the router.",
+            "road.r4.t": "Networked speculative decoding",
+            "road.r4.d": "the local model drafts and the large one verifies.",
+            "road.r5.t": "Full logits with vLLM",
+            "road.r5.d": "End-Of-Token without the APIs' top-20 limit.",
+            "footer.license": "Apache-2.0 · Derived from ZCode (Z.ai)",
+            "footer.releases": "Releases",
+            "footer.docs": "Documentation",
+            "rel.latest": "Latest version: {tag} · {date}",
+            "rel.none": "No Release published yet — the first build is in progress.",
+            "rel.error": "Couldn't load the Release; open the Releases page.",
+            "rel.for": "Download for {os}",
+            "rel.missing": "Not available in this Release yet.",
+            "rel.all": "All files",
+          },
+          zh: {
+            "nav.downloads": "下载",
+            "nav.features": "功能",
+            "nav.mesh": "Sunsam Mesh",
+            "nav.paper": "论文",
+            "nav.start": "快速开始",
+            "hero.eyebrow": "ZCode 分支 · 开源 · Apache-2.0",
+            "hero.title1": "你的编程智能体，",
+            "hero.title2": "运行在你自己的模型上。",
+            "hero.lead":
+              "Sunsam Code 只使用你配置的供应商（LM Studio、Ollama、vLLM…），并把每个请求分配给本地小模型或局域网内其他机器上的大模型。",
+            "hero.download": "下载",
+            "hero.github": "在 GitHub 查看",
+            "hero.loading": "正在获取最新版本…",
+            "dl.title": "下载",
+            "dl.lead": "来自最新 Release 的安装包，由 GitHub Actions 为各平台自动构建。",
+            "dl.win": "x64 NSIS 安装程序。",
+            "dl.mac": "Apple Silicon (arm64) 与 Intel (x64)，提供 .dmg 或 .zip。",
+            "dl.linux": "x64 与 arm64 的 AppImage、.deb、.rpm 和 pacman 包。",
+            "dl.unsigned": "安装包未签名。",
+            "dl.smartscreen": "SmartScreen → “更多信息” → “仍要运行”",
+            "feat.title": "包含内容",
+            "feat.lead": "ZCode 的全部功能，外加一层与上游保持同步的独立定制层。",
+            "feat.brand.t": "Sunsam 品牌",
+            "feat.brand.d": "应用、安装包、菜单和托盘使用独立的名称与图标，可与 ZCode 并存。",
+            "feat.custom.t": "仅自定义供应商",
+            "feat.custom.d": "模型设置只显示你自己的 OpenAI 或 Anthropic 兼容端点。",
+            "feat.mesh.t": "P2P 路由",
+            "feat.mesh.d": "Sunsam Mesh 按请求在本地模型与大模型之间选择，并支持局域网发现。",
+            "feat.sync.t": "与上游同步",
+            "feat.sync.d": "每日工作流合并 zai-org/ZCode 的新版本，同时保留 Sunsam 定制层。",
+            "mesh.lead":
+              "本地的 OpenAI 与 Anthropic 兼容网关。在应用里选择模型就是选择路由：sunsam-auto、sunsam-local 或 sunsam-swarm。",
+            "mesh.app": "自定义供应商 → 127.0.0.1:4141",
+            "mesh.router.t": "路由器",
+            "mesh.router.d": "Laya（校准概率）或启发式 · 阈值 0.75 · 按会话粘滞",
+            "mesh.local": "经 RLCD 蒸馏的小模型（LM Studio、Ollama）",
+            "mesh.swarm": "大模型：局域网 GPU、Petals 或其他 Sunsam Mesh 节点",
+            "mesh.c1": "Laya 分类器",
+            "mesh.c2": "RLCD 对比样本 → DPO",
+            "mesh.c3": "字节级蒸馏",
+            "mesh.c4": "Laya 软标签",
+            "mesh.c5": "签名的局域网发现（HMAC）",
+            "mesh.c6": "首字节前自动回退",
+            "mesh.c7": "按 BPB 与字节/秒排序",
+            "paper.title": "来自《Breaking the Token Ceiling》",
+            "paper.lead": "采用 arXiv 2609.12303 中的两项技术，让网络更高效。",
+            "paper.eot.t": "词元 → 字节转换（End-Of-Token）",
+            "paper.eot.d":
+              "无需额外推理，把教师模型在约 12.8 万词元上的分布转换为约 257 个符号。用于蒸馏字节级模型，并得到与分词器无关的路由标签。",
+            "paper.eot.caption": "论文中的 “Tiramisu” 示例，已在测试中复现。",
+            "paper.bpb.t": "每字节比特数与字节/秒",
+            "paper.bpb.d":
+              "不同分词器之间无法比较词元/秒或按词元计的困惑度，而 BPB 与字节/秒可以，因此路由器能按真实质量、延迟与速度选择机器。",
+            "start.title": "三步开始",
+            "start.lead": "安装应用，启动网关，并把它添加为自定义供应商。",
+            "start.s1.t": "安装 Sunsam Code",
+            "start.s1.d": "在“下载”部分获取适合你系统的安装包。",
+            "start.s2.t": "启动 Sunsam Mesh",
+            "start.s2.d": "在源码目录中配置局域网 peers：",
+            "start.s3.t": "添加供应商",
+            "start.s3.d":
+              "模型设置 → 添加供应商 → Base URL http://127.0.0.1:4141，然后选择 sunsam-auto。",
+            "road.title": "后续改进",
+            "road.lead": "按影响排序的路线图。",
+            "road.high": "高",
+            "road.mid": "中",
+            "road.r1.t": "设置中的 Sunsam Mesh 面板",
+            "road.r1.d": "在应用内查看 peers 状态、阈值和反馈选项。",
+            "road.r2.t": "自动升级",
+            "road.r2.d": "本地模型失败时转发给大模型并从中学习。",
+            "road.r3.t": "基于 Laya 的影子评估",
+            "road.r3.d": "自动生成标签以重新校准路由器。",
+            "road.r4.t": "网络化推测解码",
+            "road.r4.d": "本地模型起草，大模型验证。",
+            "road.r5.t": "vLLM 完整 logits",
+            "road.r5.d": "突破 API 的 top-20 限制实现 End-Of-Token。",
+            "footer.license": "Apache-2.0 · 派生自 ZCode（Z.ai）",
+            "footer.releases": "Releases",
+            "footer.docs": "文档",
+            "rel.latest": "最新版本：{tag} · {date}",
+            "rel.none": "尚未发布 Release——首次构建正在进行。",
+            "rel.error": "无法加载 Release，请打开 Releases 页面。",
+            "rel.for": "下载 {os} 版",
+            "rel.missing": "此 Release 中暂不可用。",
+            "rel.all": "全部文件",
+          },
+        };
+        const ES_DYNAMIC = {
+          "rel.latest": "Última versión: {tag} · {date}",
+          "rel.none": "Aún no hay Releases publicados — la primera compilación está en curso.",
+          "rel.error": "No se pudo cargar el Release; abre la página de Releases.",
+          "rel.for": "Descargar para {os}",
+          "rel.missing": "Aún no disponible en este Release.",
+          "rel.all": "Todos los archivos",
+        };
+        // Los textos en español viven en el HTML; se capturan una vez para poder volver a ES.
+        document.querySelectorAll("[data-i18n]").forEach((el) => {
+          I18N.es[el.dataset.i18n] ??= el.textContent.trim().replace(/\s+/g, " ");
+        });
+        Object.assign(I18N.es, ES_DYNAMIC);
+
+        let lang = "es";
+        let release = null;
+        let releaseState = "loading";
+        const t = (key, vars = {}) =>
+          (I18N[lang][key] ?? I18N.es[key] ?? key).replace(
+            /\{(\w+)\}/g,
+            (_, name) => vars[name] ?? "",
+          );
+
+        const readStored = () => {
+          try {
+            return localStorage.getItem("sunsam-lang");
+          } catch {
+            return null;
+          }
+        };
+        const store = (value) => {
+          try {
+            localStorage.setItem("sunsam-lang", value);
+          } catch {
+            /* almacenamiento no disponible */
+          }
+        };
+
+        function detectOs() {
+          const ua = (
+            navigator.userAgentData?.platform ||
+            navigator.platform ||
+            navigator.userAgent ||
+            ""
+          ).toLowerCase();
+          if (ua.includes("win")) return "win";
+          if (ua.includes("mac") || ua.includes("iphone") || ua.includes("ipad")) return "mac";
+          if (ua.includes("linux") || ua.includes("x11")) return "linux";
+          return null;
+        }
+
+        function classify(asset) {
+          const name = asset.name.toLowerCase();
+          if (/\.(blockmap|yml|yaml|txt)$/.test(name)) return null;
+          const arch = /arm64|aarch64/.test(name)
+            ? "arm64"
+            : /x64|x86_64|amd64/.test(name)
+              ? "x64"
+              : "";
+          if (name.endsWith(".exe")) return { os: "win", arch, kind: "exe" };
+          if (name.endsWith(".dmg")) return { os: "mac", arch, kind: "dmg" };
+          if (name.endsWith(".zip") && name.includes("mac"))
+            return { os: "mac", arch, kind: "zip" };
+          const linux = name.match(/\.(appimage|deb|rpm|pkg\.tar\.zst)$/);
+          if (linux)
+            return { os: "linux", arch, kind: linux[1] === "appimage" ? "AppImage" : linux[1] };
+          return null;
+        }
+
+        const size = (bytes) => `${(bytes / 1024 / 1024).toFixed(0)} MB`;
+
+        function renderAssets() {
+          const groups = { win: [], mac: [], linux: [] };
+          for (const asset of release?.assets ?? []) {
+            const info = classify(asset);
+            if (info) groups[info.os].push({ asset, info });
+          }
+          for (const os of Object.keys(groups)) {
+            const list = document.getElementById(`assets-${os}`);
+            list.replaceChildren();
+            if (groups[os].length === 0) {
+              const li = document.createElement("li");
+              li.className = "empty";
+              li.textContent =
+                releaseState === "ready"
+                  ? t("rel.missing")
+                  : releaseState === "none"
+                    ? t("rel.none")
+                    : releaseState === "error"
+                      ? t("rel.error")
+                      : t("hero.loading");
+              list.append(li);
+              continue;
+            }
+            for (const { asset, info } of groups[os]) {
+              const li = document.createElement("li");
+              const a = document.createElement("a");
+              a.href = asset.browser_download_url;
+              const label = document.createElement("span");
+              label.textContent = `${info.kind}${info.arch ? ` · ${info.arch}` : ""}`;
+              const meta = document.createElement("span");
+              meta.className = "meta";
+              meta.textContent = size(asset.size);
+              a.append(label, meta);
+              li.append(a);
+              list.append(li);
+            }
+          }
+          const os = detectOs();
+          const osNames = { win: "Windows", mac: "macOS", linux: "Linux" };
+          const preferred = { win: ["exe"], mac: ["dmg"], linux: ["AppImage", "deb"] };
+          const pick =
+            os &&
+            groups[os].find(
+              ({ info }) =>
+                preferred[os].includes(info.kind) && (os !== "mac" || info.arch !== "x64"),
+            );
+          const button = document.getElementById("primary-download");
+          const buttonLabel = document.getElementById("primary-download-label");
+          if (pick) {
+            button.href = pick.asset.browser_download_url;
+            buttonLabel.textContent = t("rel.for", { os: osNames[os] });
+          } else {
+            button.href = `https://github.com/${REPO}/releases/latest`;
+            buttonLabel.textContent = t("hero.download");
+          }
+          const line = document.getElementById("version-line");
+          if (releaseState === "ready") {
+            const date = new Date(release.published_at).toLocaleDateString(
+              lang === "zh" ? "zh-CN" : lang,
+            );
+            line.textContent = t("rel.latest", { tag: release.tag_name, date });
+          } else if (releaseState === "none") {
+            line.textContent = t("rel.none");
+          } else if (releaseState === "error") {
+            line.textContent = t("rel.error");
+          }
+        }
+
+        function applyLang(next) {
+          lang = I18N[next] ? next : "es";
+          document.documentElement.lang = lang === "zh" ? "zh-CN" : lang;
+          document.querySelectorAll("[data-i18n]").forEach((el) => {
+            if (el.id === "version-line" && releaseState !== "loading") return;
+            el.textContent = t(el.dataset.i18n);
+          });
+          document.querySelectorAll(".lang button").forEach((button) => {
+            button.setAttribute("aria-pressed", String(button.dataset.lang === lang));
+          });
+          renderAssets();
+        }
+
+        document.querySelectorAll(".lang button").forEach((button) => {
+          button.addEventListener("click", () => {
+            store(button.dataset.lang);
+            applyLang(button.dataset.lang);
+          });
+        });
+
+        const fromUrl = new URLSearchParams(location.search).get("lang");
+        applyLang(fromUrl || readStored() || "es");
+
+        fetch(`https://api.github.com/repos/${REPO}/releases/latest`, {
+          headers: { Accept: "application/vnd.github+json" },
+        })
+          .then(async (response) => {
+            if (response.status === 404) {
+              releaseState = "none";
+              return;
+            }
+            if (!response.ok) throw new Error(String(response.status));
+            release = await response.json();
+            releaseState = "ready";
+          })
+          .catch(() => {
+            releaseState = "error";
+          })
+          .finally(renderAssets);
+      })();
+    </script>
+  </body>
+</html>

@@ -460,7 +460,7 @@ export default {
     version: buildMetadata.appVersion,
     zcodeProductFlavor: desktopProductIdentity.flavor,
     description: `${desktopProductIdentity.productName} Desktop App`,
-    homepage: "https://github.com/jhonsu01/SunsamCode",
+    homepage: "https://jhonsu01.github.io/SunsamCode/",
     author: {
       name: "Sunsam",
       email: "sunsam-code@users.noreply.github.com",

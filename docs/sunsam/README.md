@@ -73,6 +73,19 @@ Reglas para no perder la capa al actualizar:
 - Si hace falta tocar un fichero de upstream, cambio mínimo que llame a la capa Sunsam + comentario `// Sunsam:`.
 - Textos nuevos → `SUNSAM_MESSAGES` en `packages/ui/src/sunsam/brand.ts`, no en `i18n/locales/*`.
 
+## Página web (GitHub Pages) y README
+
+- La página del proyecto es `docs/index.html` (ES/EN/中文, descargas leídas en vivo del último
+  Release): <https://jhonsu01.github.io/SunsamCode/>.
+- Activación única: **Settings → Pages → Build and deployment → Source: GitHub Actions**. Después,
+  `.github/workflows/sunsam-pages.yml` la publica en cada push a `main` que toque `docs/` (o a mano
+  con _Run workflow_).
+- Web del repositorio: en la portada del repo, **About → ⚙ → Website** →
+  `https://jhonsu01.github.io/SunsamCode/` (sustituye a `https://zcode.z.ai/` heredado del fork).
+- README: `README.md` (español, principal), `README.en.md` (inglés) y `README.zh-CN.md` (chino).
+  `README.md` y `README.en.md` usan `merge=ours` para que las actualizaciones de upstream no los pisen;
+  la documentación original de ZCode se enlaza en su repositorio.
+
 ## Tests de la capa
 
 ```bash

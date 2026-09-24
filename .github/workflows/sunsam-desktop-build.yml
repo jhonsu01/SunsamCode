@@ -65,12 +65,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Re-apply Sunsam icons (idempotent)
-        shell: bash
-        run: |
-          python3 -m pip install --quiet pillow || python -m pip install --quiet pillow
-          python3 branding/sunsam/generate-icons.py || python branding/sunsam/generate-icons.py
-
       - name: Build workspace packages
         run: pnpm -r --filter "./packages/*" --filter "!@zcode/desktop" build
 
@@ -93,7 +87,9 @@ jobs:
 
   release:
     name: GitHub Release
-    if: startsWith(github.ref, 'refs/tags/v')
+    # Se publica aunque falle alguna plataforma: el Release lleva los instaladores que sí se generaron
+    # y el log del job fallido indica qué falta.
+    if: ${{ !cancelled() && startsWith(github.ref, 'refs/tags/v') }}
     needs: bundle
     runs-on: ubuntu-latest
     permissions:
@@ -105,5 +101,21 @@ jobs:
           merge-multiple: true
       - uses: softprops/action-gh-release@v2
         with:
+          name: Sunsam Code ${{ github.ref_name }}
           files: installers/*
+          fail_on_unmatched_files: false
+          make_latest: true
           generate_release_notes: true
+          body: |
+            Instaladores de **Sunsam Code** (sin firmar).
+
+            | Sistema | Archivo |
+            | --- | --- |
+            | Windows x64 | `.exe` |
+            | macOS Apple Silicon / Intel | `.dmg` (o `.zip`) `arm64` / `x64` |
+            | Linux x64 / arm64 | `.AppImage`, `.deb`, `.rpm`, `.pkg.tar.zst` |
+
+            macOS: tras copiar la app a Aplicaciones ejecuta `xattr -rd com.apple.quarantine "/Applications/Sunsam Code.app"`.
+            Windows: SmartScreen → "Más información" → "Ejecutar de todas formas".
+
+            Página del proyecto: https://jhonsu01.github.io/SunsamCode/
