@@ -1,3 +1,4 @@
+import { toBaseLocale } from "@zcode/shared";
 import {
   useCallback,
   useEffect,
@@ -265,7 +266,8 @@ export function FeedbackSubmitForm({
         ticketSeverity,
         ticketModule,
         modelContext,
-        locale,
+        // Sunsam: el servicio de feedback sólo acepta zh-CN/en-US.
+        locale: toBaseLocale(locale),
         copy: submissionCopy,
         formatMessage: intl.formatMessage,
         onTicketCreated: shouldCloseOnTicketCreated

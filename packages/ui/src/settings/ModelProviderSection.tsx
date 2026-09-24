@@ -1,4 +1,5 @@
 /* eslint-disable max-lines -- Model Provider 设置页需要集中编排导航、表单和 OAuth 交互，后续整体拆分时再收敛。 */
+import { toBaseLocale } from "@zcode/shared";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   getProviderFormApiKey,
@@ -991,7 +992,7 @@ export function ModelProviderSection({
     async (input: { templateId?: string; providerName?: string }) => {
       setCreatingProvider(true);
       try {
-        const created = await createPersonalProvider({ ...input, locale });
+        const created = await createPersonalProvider({ ...input, locale: toBaseLocale(locale) });
         setPendingCreatedProviderId(created.providerId);
         setSelectedNodeKey(createCustomProviderNodeKey(created.providerId));
         setTemplatePickerOpen(false);

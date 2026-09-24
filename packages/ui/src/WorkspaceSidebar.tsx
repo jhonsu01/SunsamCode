@@ -1,4 +1,5 @@
 /* eslint-disable max-lines -- 归档视图开关沿用现有 sidebar 结构，先保持同文件收口。 */
+import { isSupportedLocale } from "@zcode/shared";
 import {
   memo,
   useCallback,
@@ -742,7 +743,7 @@ export const WorkspaceSidebar = memo(function WorkspaceSidebarComponent({
         setLocalePreference("system");
         return;
       }
-      if (value === "zh-CN" || value === "en-US") {
+      if (isSupportedLocale(value)) {
         setLocalePreference(value as Locale);
       }
     },

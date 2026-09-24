@@ -4,6 +4,7 @@ import {
   buildHelpAppConfigUrl,
   createHelpAppConfigReader,
   resolveHelpAppConfig,
+  toBaseLocale,
   type Locale,
 } from "@zcode/shared";
 import localDefaultAppConfig from "../../../config/default.json" with { type: "json" };
@@ -44,5 +45,5 @@ export async function resolveWebCommunityUrl(
   locale: Locale,
   options: ResolveWebCommunityUrlOptions = {},
 ): Promise<string | undefined> {
-  return (await resolveWebHelpConfig(options)).community_urls?.[locale];
+  return (await resolveWebHelpConfig(options)).community_urls?.[toBaseLocale(locale)]; // Sunsam: la config remota sólo trae zh-CN/en-US
 }

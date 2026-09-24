@@ -1,3 +1,4 @@
+import { toBaseLocale } from "@zcode/shared";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { XIcon } from "lucide-react";
 import type { IFeedbackService } from "@zcode/services";
@@ -135,7 +136,8 @@ export const FeatureRequestDialog = memo(function FeatureRequestDialogComponent(
         ticketSeverity: "P3-低",
         ticketModule: "其它",
         modelContext: {},
-        locale,
+        // Sunsam: el servicio de feedback sólo acepta zh-CN/en-US.
+        locale: toBaseLocale(locale),
         copy,
         formatMessage: intl.formatMessage,
         onCompleted: (ticketId) => {

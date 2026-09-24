@@ -81,6 +81,14 @@ const ABOUT_MESSAGES: Record<
     optimizedForAppleSilicon: "Optimized for Apple Silicon.",
     copyright: (year) => `Copyright © ${year} ZCode.`,
   },
+  // Sunsam
+  "es-ES": {
+    aboutTitle: "Acerca de Sunsam Code",
+    versionLabel: "versión",
+    okButtonLabel: "Aceptar",
+    optimizedForAppleSilicon: "Optimizado para Apple Silicon.",
+    copyright: (year) => `Copyright © ${year} ZCode / Sunsam Code.`,
+  },
 };
 
 function normalizeValue(value: string | undefined | null): string {

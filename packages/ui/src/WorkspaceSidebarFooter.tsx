@@ -259,6 +259,12 @@ export const WorkspaceSidebarFooter = memo(function WorkspaceSidebarFooterCompon
                       id: "sidebar.settings.locale.zh-CN",
                     })}
                   </DropdownMenuRadioItem>
+                  {/* Sunsam: español */}
+                  <DropdownMenuRadioItem value="es-ES">
+                    {intl.formatMessage({
+                      id: "sidebar.settings.locale.es-ES",
+                    })}
+                  </DropdownMenuRadioItem>
                 </DropdownMenuRadioGroup>
               </DropdownMenuSubContent>
             </DropdownMenuSub>

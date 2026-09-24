@@ -10,6 +10,8 @@ const WORKFLOW_VERSION = "5";
 const SERVICES_MENU_LABELS: Record<Locale, string> = {
   "zh-CN": "在ZCode中打开",
   "en-US": "Open in ZCode",
+  // Sunsam
+  "es-ES": "Abrir en Sunsam Code",
 };
 
 const workflowScript = `first=""

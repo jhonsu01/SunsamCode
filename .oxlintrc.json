@@ -15,7 +15,7 @@
       }
     },
     {
-      "files": ["**/i18n/locales/*.ts", "docs/assets/i18n.js"],
+      "files": ["**/i18n/locales/*.ts", "**/sunsam/locales/*.ts", "docs/assets/i18n.js"],
       "rules": {
         "max-lines": "off"
       }

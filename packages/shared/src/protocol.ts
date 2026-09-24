@@ -71,8 +71,34 @@ export interface SystemInfo {
   platform: string;
 }
 
+/** 支持的语言（Sunsam: 增加 es-ES；新增语言只需扩展此列表并提供 UI 文案）。 */
+export const SUPPORTED_LOCALES = ["zh-CN", "en-US", "es-ES"] as const;
+
 /** 支持的语言 */
-export type Locale = "zh-CN" | "en-US";
+export type Locale = (typeof SUPPORTED_LOCALES)[number];
+
+/** Idiomas de los servicios/contenidos de upstream que sólo existen en chino e inglés. */
+export type BaseLocale = "zh-CN" | "en-US";
+
+/** Sunsam: los idiomas añadidos usan el inglés en contenidos que upstream sólo ofrece en zh/en. */
+export function toBaseLocale(locale: Locale): BaseLocale {
+  return locale === "zh-CN" ? "zh-CN" : "en-US";
+}
+
+export function isSupportedLocale(value: unknown): value is Locale {
+  return typeof value === "string" && (SUPPORTED_LOCALES as readonly string[]).includes(value);
+}
+
+/**
+ * Sunsam: 把系统/浏览器语言标签映射到支持的语言（zh* → zh-CN，es* → es-ES，其余 → en-US）。
+ * 之前各处只判断 zh 前缀，西班牙语系统会被当成英文。
+ */
+export function resolveLocaleFromLanguageTag(tag: string | null | undefined): Locale {
+  const normalized = tag?.trim().toLowerCase() ?? "";
+  if (normalized.startsWith("zh")) return "zh-CN";
+  if (normalized.startsWith("es")) return "es-ES";
+  return "en-US";
+}
 
 /** 界面语言偏好；system 表示跟随当前运行端系统语言。 */
 export type LocalePreference = "system" | Locale;

@@ -31,6 +31,16 @@ const MESSAGES: Record<
     accessibility: "Accessibility",
     screen_recording: "Screen Recording",
   },
+  // Sunsam
+  "es-ES": {
+    documentTitle: "Permisos de Computer Use de Sunsam Code",
+    dragTitle: "Arrástrame a la lista de permisos de arriba",
+    hintPrefix: "Arrastra el icono de la izquierda a la lista ",
+    hintSuffix: " de arriba",
+    completion: "Suelta para conceder el acceso; no hace falta activar el interruptor",
+    accessibility: "Accesibilidad",
+    screen_recording: "Grabación de pantalla",
+  },
 };
 
 export function resolveCuaPermissionPanelMessages(

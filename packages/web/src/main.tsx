@@ -29,6 +29,7 @@ import {
   resolveConversationShareCodeFromPath,
 } from "./share/conversationShareRoute.js";
 import type { IPlatformService, RemoteTarget, ServerRemoteInfo } from "@zcode/shared";
+import { toBaseLocale } from "@zcode/shared";
 import { WEB_DEFAULT_THEME, resolveWebInitialTheme } from "./webThemeSeed.js";
 
 function resolveWebThemePreference(defaultTheme: Theme = WEB_DEFAULT_THEME): Theme {
@@ -116,7 +117,8 @@ function renderWebAuthCallbackPage(): void {
 
 async function renderConversationSharePage(): Promise<void> {
   // 页面语言跟随路径前缀：/cn/share 中文，裸 /share 英文。
-  const routeLocale = resolveConversationShareRouteLocale(window.location.pathname);
+  // Sunsam: la landing de conversaciones compartidas sólo tiene textos zh-CN/en-US.
+  const routeLocale = toBaseLocale(resolveConversationShareRouteLocale(window.location.pathname));
   // index.html 固定 lang="en"；不同步会让中文分享页对无障碍与浏览器翻译都报错语言。
   document.documentElement.lang = routeLocale;
   // 分享页必须设置 title：否则浏览器标签只显示 index.html 的通用标题。

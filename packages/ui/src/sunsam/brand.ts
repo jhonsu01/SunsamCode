@@ -8,7 +8,7 @@
  * para que las actualizaciones de upstream se fusionen con el menor número de conflictos.
  */
 
-import { SUNSAM_PRODUCT_NAME, applySunsamBrandToText } from "@zcode/shared";
+import { SUNSAM_PRODUCT_NAME, applySunsamBrandToText, type Locale } from "@zcode/shared";
 
 export const SUNSAM_BRAND = Object.freeze({
   productName: SUNSAM_PRODUCT_NAME,
@@ -25,14 +25,26 @@ export const SUNSAM_BRAND = Object.freeze({
  * Textos exclusivos de Sunsam. Viven aquí (y no en los locales de upstream) para que las
  * actualizaciones de `en-US.ts` / `zh-CN.ts` no choquen con la capa de personalización.
  */
-const SUNSAM_MESSAGES: Record<"zh-CN" | "en-US", Record<string, string>> = {
+const SUNSAM_LOCALE_LABELS: Record<string, string> = {
+  "settings.locale.es-ES": "Español",
+  "sidebar.settings.locale.es-ES": "Español",
+};
+
+const SUNSAM_MESSAGES: Record<Locale, Record<string, string>> = {
   "en-US": {
+    ...SUNSAM_LOCALE_LABELS,
     "sunsam.modelProvider.customOnlyEmpty":
       "No custom providers yet. Use “Add provider” to connect an OpenAI- or Anthropic-compatible endpoint (LM Studio, Ollama, vLLM, Sunsam Mesh…).",
   },
   "zh-CN": {
+    ...SUNSAM_LOCALE_LABELS,
     "sunsam.modelProvider.customOnlyEmpty":
       "还没有自定义供应商。点击“添加供应商”连接兼容 OpenAI 或 Anthropic 的端点（LM Studio、Ollama、vLLM、Sunsam Mesh 等）。",
+  },
+  "es-ES": {
+    ...SUNSAM_LOCALE_LABELS,
+    "sunsam.modelProvider.customOnlyEmpty":
+      "Aún no hay proveedores personalizados. Usa «Añadir proveedor» para conectar un endpoint compatible con OpenAI o Anthropic (LM Studio, Ollama, vLLM, Sunsam Mesh…).",
   },
 };
 

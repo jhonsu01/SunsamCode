@@ -6,16 +6,17 @@ aislada** para que las versiones nuevas de upstream se fusionen con el mínimo d
 
 ## Qué cambia respecto a upstream
 
-| Área                        | Dónde                                                                               | Cómo se aplica                                                                                                       |
-| --------------------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| Iconos (Win/Mac/Linux/Web)  | `branding/sunsam/` → `packages/desktop/build/**`, `packages/web/public/favicon.ico` | `python3 branding/sunsam/generate-icons.py` (idempotente)                                                            |
-| Nombre de producto en la UI | `packages/shared/src/sunsamBrand.ts`, `packages/ui/src/sunsam/brand.ts`             | Se reescribe "ZCode" → "Sunsam Code" en un único punto (i18n y menús nativos), sin tocar los ~200 textos de upstream |
-| Logos de la UI              | `packages/ui/src/sunsam/`, `packages/ui/src/assets/sunsam/`                         | `ZCodeAboutLogo.tsx` sólo reexporta la marca Sunsam                                                                  |
-| Identidad del instalador    | `packages/desktop/scripts/desktop-product-identity.mjs`                             | `appId dev.sunsam.code`, `Sunsam Code`, paquete Linux `sunsam-code`; se instala junto a ZCode oficial                |
-| Datos de la app             | `packages/desktop/src/main/desktopRuntimeEnv.ts`                                    | `userData` propio ("Sunsam Code"); `~/.zcode` se comparte con la CLI                                                 |
-| Sólo Custom providers       | flag `SUNSAM_BRAND.hideBuiltinModelProviders`                                       | Oculta Z.ai / Start Plan / Coding Plan en Model settings (reversible cambiando el flag)                              |
-| Router P2P                  | `packages/sunsam-mesh/`                                                             | Paquete nuevo, sin dependencias de upstream                                                                          |
-| CI                          | `.github/workflows/sunsam-*.yml`                                                    | Build multiplataforma y sincronización con upstream                                                                  |
+| Área                        | Dónde                                                                                               | Cómo se aplica                                                                                                       |
+| --------------------------- | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Iconos (Win/Mac/Linux/Web)  | `branding/sunsam/` → `packages/desktop/build/**`, `packages/web/public/favicon.ico`                 | `python3 branding/sunsam/generate-icons.py` (idempotente)                                                            |
+| Nombre de producto en la UI | `packages/shared/src/sunsamBrand.ts`, `packages/ui/src/sunsam/brand.ts`                             | Se reescribe "ZCode" → "Sunsam Code" en un único punto (i18n y menús nativos), sin tocar los ~200 textos de upstream |
+| Logos de la UI              | `packages/ui/src/sunsam/`, `packages/ui/src/assets/sunsam/`                                         | `ZCodeAboutLogo.tsx` sólo reexporta la marca Sunsam                                                                  |
+| Identidad del instalador    | `packages/desktop/scripts/desktop-product-identity.mjs`                                             | `appId dev.sunsam.code`, `Sunsam Code`, paquete Linux `sunsam-code`; se instala junto a ZCode oficial                |
+| Datos de la app             | `packages/desktop/src/main/desktopRuntimeEnv.ts`                                                    | `userData` propio ("Sunsam Code"); `~/.zcode` se comparte con la CLI                                                 |
+| Sólo Custom providers       | flag `SUNSAM_BRAND.hideBuiltinModelProviders`                                                       | Oculta Z.ai / Start Plan / Coding Plan en Model settings (reversible cambiando el flag)                              |
+| Idioma español de la UI     | `packages/ui/src/sunsam/locales/es-ES.ts`, `SUPPORTED_LOCALES` en `packages/shared/src/protocol.ts` | Traducción completa; las claves nuevas de upstream sin traducir se muestran en inglés                                |
+| Router P2P                  | `packages/sunsam-mesh/`                                                                             | Paquete nuevo, sin dependencias de upstream                                                                          |
+| CI                          | `.github/workflows/sunsam-*.yml`                                                                    | Build multiplataforma y sincronización con upstream                                                                  |
 
 Los ficheros de upstream tocados llevan comentarios `// Sunsam:` para localizarlos rápido
 (`git grep -n "Sunsam:"`).
@@ -90,6 +91,23 @@ Reglas para no perder la capa al actualizar:
 - README: `README.md` (español, principal), `README.en.md` (inglés) y `README.zh-CN.md` (chino).
   `README.md` y `README.en.md` usan `merge=ours` para que las actualizaciones de upstream no los pisen;
   la documentación original de ZCode se enlaza en su repositorio.
+
+## Idiomas de la interfaz
+
+La app incluye 中文, English y **Español** (Configuración → General → Idioma, o el menú de la barra
+lateral). Con «Predeterminado del sistema», cualquier variante `es-*` del sistema abre en español.
+
+Para añadir otro idioma (p. ej. `pt-BR`):
+
+1. Añádelo a `SUPPORTED_LOCALES` en `packages/shared/src/protocol.ts` y a
+   `resolveLocaleFromLanguageTag` si quieres detección automática.
+2. Crea `packages/ui/src/sunsam/locales/<locale>.ts` con las mismas claves que
+   `packages/ui/src/i18n/locales/en-US.ts` (las que falten se muestran en inglés) y regístralo en
+   `MESSAGES` de `packages/ui/src/i18n/IntlProvider.tsx`.
+3. `pnpm typecheck` señala cada tabla `Record<Locale, …>` que necesita la nueva entrada (menús
+   nativos, `SUNSAM_MESSAGES`, etiquetas del selector); los servicios que sólo tienen zh/en reciben
+   `toBaseLocale(locale)`.
+4. `pnpm sunsam:test` comprueba que las claves y los `{placeholders}` coinciden con el inglés.
 
 ## Tests de la capa
 

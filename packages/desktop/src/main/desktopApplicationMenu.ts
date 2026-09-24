@@ -1,3 +1,4 @@
+import { resolveLocaleFromLanguageTag } from "@zcode/shared";
 import { app, BrowserWindow, Menu } from "electron";
 import {
   DesktopCommandIds,
@@ -34,7 +35,8 @@ export function resolveSystemApplicationLocale(): Locale {
   // macOS 系统语言为中文时，Electron app.getLocale() 仍可能返回 en-US；
   // 优先读取系统首选语言列表，避免 System default 被误解析成英文。
   const systemLocale = app.getPreferredSystemLanguages?.()[0] ?? app.getLocale();
-  return systemLocale.toLowerCase().startsWith("zh") ? "zh-CN" : "en-US";
+  // Sunsam: español del sistema → es-ES.
+  return resolveLocaleFromLanguageTag(systemLocale);
 }
 
 export function updateZCodeStdioTapDevMenuState() {

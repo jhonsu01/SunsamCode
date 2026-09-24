@@ -14,7 +14,7 @@
     "dev:server": "pnpm --filter @zcode/server dev",
     "sunsam:mesh": "pnpm --filter @sunsam/mesh start --",
     "sunsam:mesh:init": "pnpm --filter @sunsam/mesh init-config --",
-    "sunsam:test": "pnpm --filter @sunsam/mesh test && node --import tsx --test packages/ui/test/sunsamBrand.test.ts apps/zcode-cli/packages/adapters/test/sunsamAnyTypeSchema.test.ts",
+    "sunsam:test": "pnpm --filter @sunsam/mesh test && node --import tsx --test packages/ui/test/sunsamBrand.test.ts packages/ui/test/sunsamLocaleEs.test.ts apps/zcode-cli/packages/adapters/test/sunsamAnyTypeSchema.test.ts",
     "prepare": "husky",
     "prepare:desktop-runtime": "pnpm --filter @zcode/desktop prepare:runtime-assets",
     "dep:graph": "node scripts/dependency-graph.mjs",

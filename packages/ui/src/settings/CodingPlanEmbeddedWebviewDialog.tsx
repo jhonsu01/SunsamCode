@@ -1,4 +1,5 @@
 /* oxlint-disable eslint(max-lines) -- Coding Plan webview 容器集中维护凭据注入、购买完成回传、三方支付导航和错误兜底。 */
+import { toBaseLocale } from "@zcode/shared";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ExternalLinkIcon, RefreshCwIcon } from "lucide-react";
 import { usePlatform } from "@/hooks/usePlatform.js";
@@ -91,7 +92,8 @@ export function CodingPlanEmbeddedWebviewDialog({
   const onOpenResultRef = useRef(onOpenResult);
   onOpenResultRef.current = onOpenResult;
   // 当前 locale 作为 webview 语言 hint / 注入值；Locale 与 CodingPlanWebviewLocale 同构。
-  const webviewLocale = locale;
+  // Sunsam: la web de planes sólo existe en zh/en.
+  const webviewLocale = toBaseLocale(locale);
   const webviewCleanupRef = useRef<(() => void) | null>(null);
   // webview 是否已 dom-ready：executeJavaScript 只在 ready 后调用，
   // 否则会抛 "WebView must be attached to the DOM and dom-ready emitted"。
