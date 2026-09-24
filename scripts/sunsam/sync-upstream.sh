@@ -47,8 +47,10 @@ fi
 # Re-aplica iconos por si upstream añadió tamaños nuevos que no están cubiertos por merge=ours.
 if command -v python3 >/dev/null && python3 -c "import PIL" 2>/dev/null; then
   python3 branding/sunsam/generate-icons.py
-  if ! git diff --quiet; then
-    git commit -am "chore(sync): re-apply Sunsam icons"
+  icon_paths=(packages/desktop/build packages/web/public/favicon.ico public/logo public/icon_512@2x.png)
+  if ! git diff --quiet -- "${icon_paths[@]}"; then
+    git add -- "${icon_paths[@]}"
+    git commit -m "chore(sync): re-apply Sunsam icons"
   fi
 fi
 
