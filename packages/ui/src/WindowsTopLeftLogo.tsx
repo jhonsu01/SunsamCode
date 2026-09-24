@@ -1,5 +1,6 @@
 import { cn } from "@/components/lib/utils.js";
-import zaiLogoUrl from "@/assets/provider-icons/logo-zai.svg";
+import { sunsamAppLogoUrl as zaiLogoUrl } from "@/sunsam/logo.js";
+import { SUNSAM_BRAND } from "@/sunsam/brand.js";
 
 export function WindowsTopLeftLogo({
   className,
@@ -21,7 +22,7 @@ export function WindowsTopLeftLogo({
     >
       <img
         src={zaiLogoUrl}
-        alt="ZCode"
+        alt={SUNSAM_BRAND.productName}
         className={cn("pointer-events-none size-5 select-none", imageClassName)}
         draggable={false}
       />

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" fill="none">
+  <defs>
+    <linearGradient id="sunsam-tri" x1="383" y1="394" x2="600" y2="640" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FDB673"/>
+      <stop offset="0.55" stop-color="#F4415E"/>
+      <stop offset="1" stop-color="#DC447F"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" rx="230" fill="#15121C"/>
+  <g stroke="#F4F1F7" stroke-width="26" stroke-linecap="round">
+    <path d="M475 208L489 285"/>
+    <path d="M477 741L487 815"/>
+    <path d="M156 510L228 487"/>
+    <path d="M793 468L870 445"/>
+  </g>
+  <path d="M383 394L733 442L436 629Z" fill="url(#sunsam-tri)"/>
+</svg>

@@ -9,3 +9,14 @@ third-party/upstream/** -text -whitespace
 third-party/native-search/licenses/** -text -whitespace
 third-party/runtime/*.txt -text -whitespace
 third-party/inventory.json linguist-generated=true
+
+# Sunsam Code: capa de personalización. En merges con upstream (zai-org/ZCode) se conserva siempre
+# la versión del fork (requiere `git config merge.ours.driver true`; lo hace scripts/sunsam/sync-upstream.sh).
+packages/desktop/build/icon*.png merge=ours
+packages/desktop/build/icon*.ico merge=ours
+packages/desktop/build/icon*.icns merge=ours
+packages/desktop/build/icons/** merge=ours
+packages/web/public/favicon.ico merge=ours
+public/logo/icons/** merge=ours
+public/icon_512@2x.png merge=ours
+packages/ui/src/components/ui/ZCodeAboutLogo.tsx merge=ours

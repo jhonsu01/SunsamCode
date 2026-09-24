@@ -37,6 +37,8 @@ import {
   type ModelProviderNavGroup,
 } from "./model-provider-section/constants.js";
 import { ModelProviderSectionDetail } from "./model-provider-section/Detail.js";
+import { PresetProviderPlaceholderCard } from "./model-provider-section/StatusCards.js";
+import { SUNSAM_BRAND } from "@/sunsam/brand.js";
 import { ModelProviderSectionLayout } from "./model-provider-section/SectionLayout.js";
 import { ProviderTemplatePicker } from "./model-provider-section/ProviderTemplatePicker.js";
 import type { CodingPlanLoginOptions } from "./model-provider-section/codingPlanPricingCards.js";
@@ -1094,6 +1096,12 @@ export function ModelProviderSection({
           onCreateCustom={(label) => {
             return handleCreateProvider({ providerName: label });
           }}
+        />
+      ) : SUNSAM_BRAND.hideBuiltinModelProviders && !loading && navigationItems.length === 0 ? (
+        // Sunsam: sin providers integrados, el detalle vacío quedaría en loading permanente.
+        <PresetProviderPlaceholderCard
+          displayName={intl.formatMessage({ id: "settings.modelProvider.customTitle" })}
+          messageId="sunsam.modelProvider.customOnlyEmpty"
         />
       ) : (
         <ModelProviderSectionDetail

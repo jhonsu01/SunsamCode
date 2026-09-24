@@ -18,6 +18,7 @@ import {
 } from "@/lib/browserEnvironment.js";
 import zhCN from "./locales/zh-CN.js";
 import enUS from "./locales/en-US.js";
+import { applySunsamBrandToMessages } from "@/sunsam/brand.js";
 
 /** 语言 → 翻译消息映射 */
 const MESSAGES: Record<Locale, Record<string, string>> = {
@@ -112,7 +113,11 @@ function shouldApplyLocaleBroadcastMessage(
 
 function createIntl(locale: Locale): IntlInstance {
   // noUncheckedIndexedAccess：用 ?? 回退到默认语言的翻译
-  const messages = MESSAGES[locale] ?? MESSAGES[DEFAULT_LOCALE]!;
+  // Sunsam: el nombre de producto se sustituye en un único punto para no divergir de upstream en i18n.
+  const messages = applySunsamBrandToMessages(
+    MESSAGES[locale] ?? MESSAGES[DEFAULT_LOCALE]!,
+    MESSAGES[locale] ? locale : DEFAULT_LOCALE,
+  );
   return {
     formatMessage({ id }, values) {
       let msg = messages[id] ?? id;

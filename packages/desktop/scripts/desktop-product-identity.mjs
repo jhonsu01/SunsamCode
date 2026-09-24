@@ -5,21 +5,22 @@
  */
 export const ZCODE_PREVIEW_IDENTITY_ENV = "ZCODE_PREVIEW_IDENTITY";
 
+// Sunsam: identidad propia para que Sunsam Code se instale junto a ZCode oficial sin sobrescribirlo.
 const PRODUCTION_IDENTITY = Object.freeze({
   flavor: "production",
-  appId: "dev.zcode.app",
-  productName: "ZCode",
-  linuxExecutableName: "zcode",
-  linuxPackageName: "zcode",
+  appId: "dev.sunsam.code",
+  productName: "Sunsam Code",
+  linuxExecutableName: "sunsam-code",
+  linuxPackageName: "sunsam-code",
   cuaHelperInstallVariant: null,
 });
 
 const PREVIEW_IDENTITY = Object.freeze({
   flavor: "preview",
-  appId: "dev.zcode.app.preview",
-  productName: "ZCode Preview",
-  linuxExecutableName: "zcode-preview",
-  linuxPackageName: "zcode-preview",
+  appId: "dev.sunsam.code.preview",
+  productName: "Sunsam Code Preview",
+  linuxExecutableName: "sunsam-code-preview",
+  linuxPackageName: "sunsam-code-preview",
   cuaHelperInstallVariant: "preview",
 });
 

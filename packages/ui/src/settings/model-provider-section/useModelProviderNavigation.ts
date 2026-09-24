@@ -36,6 +36,7 @@ import {
   buildVisibleFamilyConnectionItems,
   resolveCodingPlanEntitlementState,
 } from "@/settings/model-provider-section/providerFamilyConnectionVisibility.js";
+import { SUNSAM_BRAND } from "@/sunsam/brand.js";
 
 interface PresetProviderWithConfig extends PresetProviderSpec {
   provider: ProviderSettingsFormProvider | null;
@@ -223,7 +224,11 @@ export function useModelProviderNavigation({
       },
     ];
 
-    return groups;
+    // Sunsam: solo se muestran "Custom providers"; los preset/Coding Plan quedan fuera de la
+    // navegación para que tampoco puedan ser el nodo seleccionado por defecto.
+    return SUNSAM_BRAND.hideBuiltinModelProviders
+      ? groups.filter((group) => group.id === "custom")
+      : groups;
   }, [
     customProviders,
     codingPlanItems,
@@ -239,6 +244,10 @@ export function useModelProviderNavigation({
 
   const navigationItems = useMemo(() => {
     const visibleItems = navigationGroups.flatMap((group) => group.items);
+    if (SUNSAM_BRAND.hideBuiltinModelProviders) {
+      // Sunsam: sin grupo preset no hay que añadir los modos de conexión Coding Plan ocultos.
+      return visibleItems;
+    }
     const visibleKeys = new Set(visibleItems.map((item) => item.key));
     return [
       ...visibleItems,
@@ -287,6 +296,8 @@ export function useModelProviderNavigation({
       : null;
   const requestedSelection = requestedFamily ? connectionSelections[requestedFamily.id] : undefined;
   const navigationUnavailable =
+    // Sunsam: el estado de conexión de familias Z.ai/BigModel no afecta a Custom providers.
+    !SUNSAM_BRAND.hideBuiltinModelProviders &&
     !modelProvidersLoading &&
     !familyConnectionSettingsLoading &&
     (familyConnectionSettingsFailed ||

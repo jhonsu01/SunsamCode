@@ -31,6 +31,7 @@ import { ControlHintTooltip } from "@/ControlHintTooltip.js";
 import type { ModelProviderNavGroup, ModelProviderNavItem } from "./constants.js";
 import { useOptimisticReorder } from "./useOptimisticReorder.js";
 import { renderModelProviderNavIcon } from "./utils.js";
+import { SUNSAM_BRAND } from "@/sunsam/brand.js";
 
 // 侧栏会裁切水平溢出；排序只改变纵向位置，拖动时也必须保持 x=0。
 const restrictToVerticalAxis: Modifier = ({ transform }) => ({ ...transform, x: 0 });
@@ -387,7 +388,13 @@ export function ModelProviderSectionNavigation({
     <aside className="px-1.5 py-3 md:py-2 md:px-2">
       <div className="flex min-h-0 flex-col gap-3 max-md:gap-1">
         {navigationGroups
-          .filter((group) => group.id !== "custom" || group.items.length > 0)
+          .filter(
+            (group) =>
+              group.id !== "custom" ||
+              group.items.length > 0 ||
+              // Sunsam: al ser el único grupo, se mantiene visible aunque esté vacío.
+              SUNSAM_BRAND.hideBuiltinModelProviders,
+          )
           .map((group) => (
             <div key={group.id} className="flex flex-col gap-2 max-md:gap-1">
               <div className="flex h-7 items-center justify-between px-2 py-1 max-md:hidden">

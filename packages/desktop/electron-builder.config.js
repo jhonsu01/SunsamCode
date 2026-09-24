@@ -459,10 +459,11 @@ export default {
   extraMetadata: {
     version: buildMetadata.appVersion,
     zcodeProductFlavor: desktopProductIdentity.flavor,
-    homepage: "https://zcode.z.ai",
+    description: `${desktopProductIdentity.productName} Desktop App`,
+    homepage: "https://github.com/jhonsu01/SunsamCode",
     author: {
-      name: "ZCode",
-      email: "dev@zcode.z.ai",
+      name: "Sunsam",
+      email: "sunsam-code@users.noreply.github.com",
     },
   },
   // macOS 签名阶段会对 Electron Framework 下每个语言包逐个 codesign。
@@ -703,7 +704,7 @@ export default {
     // 与 /usr/share/icons/hicolor/*/apps/zcode.png 保持一致。
     executableName: desktopProductIdentity.linuxExecutableName,
     category: "Development",
-    maintainer: "ZCode <dev@zcode.z.ai>",
+    maintainer: "Sunsam <sunsam-code@users.noreply.github.com>",
   },
   deb: {
     // 生产版与 Preview 必须是两个 dpkg package；只改可执行名仍会让安装器把另一版本当成升级替换。

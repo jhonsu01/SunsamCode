@@ -1,3 +1,4 @@
+import { SUNSAM_BRAND } from "@/sunsam/brand.js";
 import type { IPlatformService, UpdateStatePayload } from "@zcode/shared";
 import { cn } from "@/components/lib/utils.js";
 import {
@@ -141,7 +142,7 @@ export function DesktopTopOverlay({
             >
               <img
                 src={appLogoUrl}
-                alt="ZCode"
+                alt={SUNSAM_BRAND.productName}
                 className="size-5 transition-opacity duration-150 group-hover:opacity-0"
                 draggable={false}
               />

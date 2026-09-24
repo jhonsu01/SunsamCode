@@ -1,4 +1,5 @@
 import { DEFAULT_LOCALE, type Locale } from "./protocol.js";
+import { applySunsamBrandToText } from "./sunsamBrand.js";
 
 export const desktopMenuMessageIds = {
   file: "titleBar.menu.file",
@@ -167,7 +168,8 @@ export const desktopMenuMessages: Record<Locale, DesktopMenuLocaleMessages> = {
 
 export function getDesktopMenuMessage(locale: Locale, id: DesktopMenuMessageId): string {
   const messages = desktopMenuMessages[locale] ?? desktopMenuMessages[DEFAULT_LOCALE];
-  return messages[id];
+  // Sunsam: menús nativos y bandeja muestran la marca Sunsam sin reescribir la tabla de upstream.
+  return applySunsamBrandToText(messages[id]);
 }
 
 export function formatDesktopMenuMessage(
