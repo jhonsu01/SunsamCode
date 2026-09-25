@@ -41,6 +41,42 @@ const MESSAGES: Record<
     accessibility: "Accesibilidad",
     screen_recording: "Grabación de pantalla",
   },
+  "pt-BR": {
+    documentTitle: "Permissões do Computer Use do Sunsam Code",
+    dragTitle: "Arraste-me para a lista de permissões acima",
+    hintPrefix: "Arraste o ícone da esquerda para a lista ",
+    hintSuffix: " acima",
+    completion: "Solte para conceder o acesso; não é preciso ativar a chave",
+    accessibility: "Acessibilidade",
+    screen_recording: "Gravação de Tela",
+  },
+  "fr-FR": {
+    documentTitle: "Autorisations Computer Use de Sunsam Code",
+    dragTitle: "Faites-moi glisser dans la liste des autorisations ci-dessus",
+    hintPrefix: "Faites glisser l’icône de gauche dans la liste ",
+    hintSuffix: " ci-dessus",
+    completion: "Relâchez pour accorder l’accès, inutile d’activer l’interrupteur",
+    accessibility: "Accessibilité",
+    screen_recording: "Enregistrement de l’écran",
+  },
+  "ru-RU": {
+    documentTitle: "Разрешения Computer Use для Sunsam Code",
+    dragTitle: "Перетащите меня в список разрешений выше",
+    hintPrefix: "Перетащите значок слева в список «",
+    hintSuffix: "» выше",
+    completion: "Отпустите, чтобы выдать доступ — переключатель включать не нужно",
+    accessibility: "Универсальный доступ",
+    screen_recording: "Запись экрана",
+  },
+  "ko-KR": {
+    documentTitle: "Sunsam Code Computer Use 권한",
+    dragTitle: "위의 권한 목록으로 끌어다 놓으세요",
+    hintPrefix: "왼쪽 아이콘을 위의 ",
+    hintSuffix: " 목록으로 끌어다 놓으세요",
+    completion: "놓으면 권한이 부여됩니다. 스위치를 켤 필요가 없습니다",
+    accessibility: "손쉬운 사용",
+    screen_recording: "화면 기록",
+  },
 };
 
 export function resolveCuaPermissionPanelMessages(

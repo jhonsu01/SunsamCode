@@ -18,15 +18,19 @@ import {
 } from "@/lib/browserEnvironment.js";
 import zhCN from "./locales/zh-CN.js";
 import enUS from "./locales/en-US.js";
-import esES from "@/sunsam/locales/es-ES.js";
+import { withEnglishFallback } from "@/sunsam/locales/index.js";
 import { applySunsamBrandToMessages } from "@/sunsam/brand.js";
 
 /** 语言 → 翻译消息映射 */
 const MESSAGES: Record<Locale, Record<string, string>> = {
   "zh-CN": zhCN,
   "en-US": enUS,
-  // Sunsam: español; las claves sin traducir caen al inglés.
-  "es-ES": { ...enUS, ...esES },
+  // Sunsam: idiomas añadidos; las claves sin traducir caen al inglés.
+  "es-ES": withEnglishFallback(enUS, "es-ES"),
+  "pt-BR": withEnglishFallback(enUS, "pt-BR"),
+  "fr-FR": withEnglishFallback(enUS, "fr-FR"),
+  "ru-RU": withEnglishFallback(enUS, "ru-RU"),
+  "ko-KR": withEnglishFallback(enUS, "ko-KR"),
 };
 
 /** 简易 intl 工具：根据 id 查找翻译，支持 {key} 占位符替换 */

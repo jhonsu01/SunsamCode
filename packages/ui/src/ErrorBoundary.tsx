@@ -1,5 +1,5 @@
 import { isSupportedLocale, resolveLocaleFromLanguageTag } from "@zcode/shared";
-import esES from "@/sunsam/locales/es-ES.js";
+import { withEnglishFallback } from "@/sunsam/locales/index.js";
 import { Component } from "react";
 import type { ErrorInfo, ReactNode } from "react";
 import type { Locale } from "@zcode/shared";
@@ -87,8 +87,9 @@ function resolveBoundaryLocale(): Locale {
 
 function formatBoundaryMessage(id: string): string {
   const locale = resolveBoundaryLocale();
-  // Sunsam: la pantalla de error usa español si hay traducción y, si no, inglés.
-  const messages = locale === "zh-CN" ? zhCN : locale === "es-ES" ? { ...enUS, ...esES } : enUS;
+  // Sunsam: la pantalla de error usa el idioma elegido si hay traducción y, si no, inglés.
+  const messages =
+    locale === "zh-CN" ? zhCN : locale === "en-US" ? enUS : withEnglishFallback(enUS, locale);
   return messages[id] ?? id;
 }
 

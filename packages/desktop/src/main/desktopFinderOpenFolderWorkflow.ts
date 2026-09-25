@@ -12,6 +12,10 @@ const SERVICES_MENU_LABELS: Record<Locale, string> = {
   "en-US": "Open in ZCode",
   // Sunsam
   "es-ES": "Abrir en Sunsam Code",
+  "pt-BR": "Abrir no Sunsam Code",
+  "fr-FR": "Ouvrir dans Sunsam Code",
+  "ru-RU": "Открыть в Sunsam Code",
+  "ko-KR": "Sunsam Code에서 열기",
 };
 
 const workflowScript = `first=""

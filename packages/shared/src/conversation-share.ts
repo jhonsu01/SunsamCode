@@ -14,8 +14,12 @@ import {
 const CONVERSATION_SHARE_LOCALE_PATH_PREFIX: Readonly<Record<Locale, string>> = {
   "zh-CN": "/cn",
   "en-US": "",
-  // Sunsam: el sitio de compartición no tiene versión en español; se usa la inglesa.
+  // Sunsam: el sitio de compartición sólo tiene zh/en; los idiomas añadidos usan el inglés.
   "es-ES": "",
+  "pt-BR": "",
+  "fr-FR": "",
+  "ru-RU": "",
+  "ko-KR": "",
 };
 
 const CONVERSATION_SHARE_PATHNAME_RE = /^\/(cn\/)?share\/([^/]+)\/?$/u;

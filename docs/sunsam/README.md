@@ -94,19 +94,21 @@ Reglas para no perder la capa al actualizar:
 
 ## Idiomas de la interfaz
 
-La app incluye 中文, English y **Español** (Configuración → General → Idioma, o el menú de la barra
-lateral). Con «Predeterminado del sistema», cualquier variante `es-*` del sistema abre en español.
+La app incluye 中文, English, **Español**, **Português (Brasil)**, **Français**, **Русский** y
+**한국어** (Configuración → General → Idioma, o el menú de la barra lateral). Con «Predeterminado del
+sistema», el idioma del sistema operativo elige el de la app (`es-*`, `pt-*`, `fr-*`, `ru-*`, `ko-*`).
 
-Para añadir otro idioma (p. ej. `pt-BR`):
+Para añadir otro idioma (p. ej. `de-DE`):
 
-1. Añádelo a `SUPPORTED_LOCALES` en `packages/shared/src/protocol.ts` y a
-   `resolveLocaleFromLanguageTag` si quieres detección automática.
+1. Añádelo a `SUPPORTED_LOCALES` y a `LANGUAGE_PREFIX_TO_LOCALE` en
+   `packages/shared/src/protocol.ts`.
 2. Crea `packages/ui/src/sunsam/locales/<locale>.ts` con las mismas claves que
    `packages/ui/src/i18n/locales/en-US.ts` (las que falten se muestran en inglés) y regístralo en
-   `MESSAGES` de `packages/ui/src/i18n/IntlProvider.tsx`.
+   `SUNSAM_LOCALE_OPTIONS` (`packages/ui/src/sunsam/locales/index.ts`): los selectores, el botón de
+   idioma y la pantalla de error lo recogen de ahí.
 3. `pnpm typecheck` señala cada tabla `Record<Locale, …>` que necesita la nueva entrada (menús
-   nativos, `SUNSAM_MESSAGES`, etiquetas del selector); los servicios que sólo tienen zh/en reciben
-   `toBaseLocale(locale)`.
+   nativos en `packages/shared/src/sunsamDesktopMenu.ts`, `SUNSAM_MESSAGES`, «Acerca de», permisos
+   de Computer Use); los servicios que sólo tienen zh/en reciben `toBaseLocale(locale)`.
 4. `pnpm sunsam:test` comprueba que las claves y los `{placeholders}` coinciden con el inglés.
 
 ## Tests de la capa

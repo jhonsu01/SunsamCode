@@ -1,5 +1,6 @@
 import { DEFAULT_LOCALE, type Locale } from "./protocol.js";
 import { applySunsamBrandToText } from "./sunsamBrand.js";
+import { SUNSAM_DESKTOP_MENU_MESSAGES } from "./sunsamDesktopMenu.js";
 
 export const desktopMenuMessageIds = {
   file: "titleBar.menu.file",
@@ -57,7 +58,7 @@ export const desktopMenuMessageIds = {
 export type DesktopMenuMessageId =
   (typeof desktopMenuMessageIds)[keyof typeof desktopMenuMessageIds];
 
-type DesktopMenuLocaleMessages = Record<DesktopMenuMessageId, string>;
+export type DesktopMenuLocaleMessages = Record<DesktopMenuMessageId, string>;
 
 export const desktopMenuMessages: Record<Locale, DesktopMenuLocaleMessages> = {
   "zh-CN": {
@@ -164,59 +165,8 @@ export const desktopMenuMessages: Record<Locale, DesktopMenuLocaleMessages> = {
     "tray.menu.openZCode": "Open ZCode",
     "tray.menu.quit": "Quit",
   },
-  // Sunsam: menús nativos y bandeja en español.
-  "es-ES": {
-    "titleBar.menu.file": "Archivo",
-    "titleBar.menu.edit": "Editar",
-    "titleBar.menu.view": "Ver",
-    "titleBar.menu.window": "Ventana",
-    "titleBar.menu.help": "Ayuda",
-    "titleBar.menu.file.newTask": "Nueva tarea",
-    "titleBar.menu.file.openWorkspace": "Abrir espacio de trabajo",
-    "titleBar.menu.file.closeWindow": "Cerrar ventana",
-    "titleBar.menu.edit.undo": "Deshacer",
-    "titleBar.menu.edit.redo": "Rehacer",
-    "titleBar.menu.edit.cut": "Cortar",
-    "titleBar.menu.edit.copy": "Copiar",
-    "titleBar.menu.edit.paste": "Pegar",
-    "titleBar.menu.edit.delete": "Eliminar",
-    "titleBar.menu.edit.selectAll": "Seleccionar todo",
-    "titleBar.menu.view.toggleFullScreen": "Pantalla completa",
-    "titleBar.menu.view.actualSize": "Tamaño real",
-    "titleBar.menu.view.zoomIn": "Acercar",
-    "titleBar.menu.view.zoomOut": "Alejar",
-    "titleBar.menu.window.minimize": "Minimizar",
-    "titleBar.menu.window.zoom": "Zoom",
-    "titleBar.menu.window.bringAllToFront": "Traer todo al frente",
-    "titleBar.menu.app.services": "Servicios",
-    "titleBar.menu.app.hide": "Ocultar {appName}",
-    "titleBar.menu.app.hideOthers": "Ocultar otros",
-    "titleBar.menu.app.showAll": "Mostrar todo",
-    "titleBar.menu.app.quit": "Salir de {appName}",
-    "titleBar.menu.help.about": "Acerca de ZCode",
-    "titleBar.menu.help.whatsNew": "Novedades",
-    "titleBar.menu.help.checkForUpdates": "Buscar actualizaciones",
-    "titleBar.menu.help.toggleDevTools": "Herramientas de desarrollo",
-    "titleBar.menu.help.resourceManager": "Administrador de recursos",
-    "titleBar.menu.help.toggleZCodeStdioTap": "Capturar tráfico stdio del agente",
-    "titleBar.menu.help.zcodeEndpoint": "ZCode Endpoint",
-    "titleBar.menu.help.zcodeEndpoint.production": "Producción (predeterminado)",
-    "titleBar.menu.help.zcodeEndpoint.test": "Pruebas",
-    "titleBar.menu.help.zcodeEndpoint.custom": "Personalizado...",
-    "titleBar.menu.help.zcodeEndpoint.reset": "Restablecer predeterminado",
-    "titleBar.menu.help.feedback": "Enviar comentarios",
-    "titleBar.menu.help.exportLogs": "Exportar registros",
-    "titleBar.menu.help.clearAllData": "Borrar todos los datos",
-    "desktopMenu.help.checkingForUpdates": "Buscando actualizaciones...",
-    "desktopMenu.help.updateAvailableVersion": "Actualización disponible {version}",
-    "desktopMenu.help.downloadingUpdateVersion": "Descargando actualización {version}...",
-    "desktopMenu.help.downloadingUpdateProgress": "Descargando actualización... {progress}",
-    "desktopMenu.help.restartToUpdate": "Reiniciar para actualizar ({version})",
-    "dock.menu.showCurrentWindow": "Mostrar ventana actual",
-    "tray.tooltip": "ZCode",
-    "tray.menu.openZCode": "Abrir ZCode",
-    "tray.menu.quit": "Salir",
-  },
+  // Sunsam: menús nativos y bandeja de los idiomas añadidos (tabla en sunsamDesktopMenu.ts).
+  ...SUNSAM_DESKTOP_MENU_MESSAGES,
 };
 
 export function getDesktopMenuMessage(locale: Locale, id: DesktopMenuMessageId): string {

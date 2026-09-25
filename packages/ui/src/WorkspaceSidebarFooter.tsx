@@ -1,4 +1,5 @@
 /* oxlint-disable eslint(max-lines) -- footer 聚合账户、主题、模式和快捷键菜单。 */
+import { SUNSAM_LOCALE_OPTIONS } from "@/sunsam/locales/index.js";
 import { SUNSAM_BRAND } from "@/sunsam/brand.js";
 import type { Locale, UserInfo } from "@zcode/shared";
 import { memo, useCallback, useEffect, useState } from "react";
@@ -259,12 +260,12 @@ export const WorkspaceSidebarFooter = memo(function WorkspaceSidebarFooterCompon
                       id: "sidebar.settings.locale.zh-CN",
                     })}
                   </DropdownMenuRadioItem>
-                  {/* Sunsam: español */}
-                  <DropdownMenuRadioItem value="es-ES">
-                    {intl.formatMessage({
-                      id: "sidebar.settings.locale.es-ES",
-                    })}
-                  </DropdownMenuRadioItem>
+                  {/* Sunsam: idiomas añadidos por la capa Sunsam */}
+                  {SUNSAM_LOCALE_OPTIONS.map(({ locale }) => (
+                    <DropdownMenuRadioItem key={locale} value={locale}>
+                      {intl.formatMessage({ id: `sidebar.settings.locale.${locale}` })}
+                    </DropdownMenuRadioItem>
+                  ))}
                 </DropdownMenuRadioGroup>
               </DropdownMenuSubContent>
             </DropdownMenuSub>

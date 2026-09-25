@@ -89,6 +89,34 @@ const ABOUT_MESSAGES: Record<
     optimizedForAppleSilicon: "Optimizado para Apple Silicon.",
     copyright: (year) => `Copyright © ${year} ZCode / Sunsam Code.`,
   },
+  "pt-BR": {
+    aboutTitle: "Sobre o Sunsam Code",
+    versionLabel: "versão",
+    okButtonLabel: "OK",
+    optimizedForAppleSilicon: "Otimizado para Apple Silicon.",
+    copyright: (year) => `Copyright © ${year} ZCode / Sunsam Code.`,
+  },
+  "fr-FR": {
+    aboutTitle: "À propos de Sunsam Code",
+    versionLabel: "version",
+    okButtonLabel: "OK",
+    optimizedForAppleSilicon: "Optimisé pour Apple Silicon.",
+    copyright: (year) => `Copyright © ${year} ZCode / Sunsam Code.`,
+  },
+  "ru-RU": {
+    aboutTitle: "О программе Sunsam Code",
+    versionLabel: "версия",
+    okButtonLabel: "ОК",
+    optimizedForAppleSilicon: "Оптимизировано для Apple Silicon.",
+    copyright: (year) => `Copyright © ${year} ZCode / Sunsam Code.`,
+  },
+  "ko-KR": {
+    aboutTitle: "Sunsam Code 정보",
+    versionLabel: "버전",
+    okButtonLabel: "확인",
+    optimizedForAppleSilicon: "Apple Silicon에 최적화됨.",
+    copyright: (year) => `Copyright © ${year} ZCode / Sunsam Code.`,
+  },
 };
 
 function normalizeValue(value: string | undefined | null): string {

@@ -2,13 +2,21 @@ import { useCallback } from "react";
 import type { Locale } from "@zcode/shared";
 import { TID_LOCALE_TOGGLE } from "@zcode/shared";
 import { useZCodeIntl } from "./IntlProvider.js";
+import { SUNSAM_LOCALE_OPTIONS, type SunsamLocale } from "@/sunsam/locales/index.js";
 
-const LOCALE_CYCLE: Locale[] = ["zh-CN", "en-US", "es-ES"];
+// Sunsam: los idiomas añadidos vienen del registro de la capa Sunsam.
+const LOCALE_CYCLE: Locale[] = [
+  "zh-CN",
+  "en-US",
+  ...SUNSAM_LOCALE_OPTIONS.map((option) => option.locale),
+];
 
 const LOCALE_LABELS: Record<Locale, string> = {
   "zh-CN": "中",
   "en-US": "En",
-  "es-ES": "Es",
+  ...(Object.fromEntries(
+    SUNSAM_LOCALE_OPTIONS.map((option) => [option.locale, option.shortLabel]),
+  ) as Record<SunsamLocale, string>),
 };
 
 /**
