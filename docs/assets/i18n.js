@@ -28,9 +28,9 @@ window.SUNSAM_I18N_EXTRA = {
     "feat.brand.t": "Marca Sunsam",
     "feat.brand.d":
       "Logo e nome próprios no app, instaladores, menus e bandeja. Instala-se ao lado do ZCode.",
-    "feat.custom.t": "Só Custom providers",
+    "feat.custom.t": "Seus provedores + Z.ai opcional",
     "feat.custom.d":
-      "Model settings mostra apenas seus endpoints compatíveis com OpenAI ou Anthropic.",
+      "Provedores personalizados compatíveis com OpenAI ou Anthropic e, se quiser, o provedor oficial Z.ai com seu plano e uso.",
     "feat.mesh.t": "Roteador P2P",
     "feat.mesh.d":
       "O Sunsam Mesh decide por pedido entre o modelo local e o grande, com descoberta na LAN.",
@@ -122,8 +122,9 @@ window.SUNSAM_I18N_EXTRA = {
     "feat.brand.t": "Marque Sunsam",
     "feat.brand.d":
       "Logo et nom propres dans l'app, les installeurs, les menus et la barre système. S'installe à côté de ZCode.",
-    "feat.custom.t": "Custom providers uniquement",
-    "feat.custom.d": "Model settings n'affiche que vos endpoints compatibles OpenAI ou Anthropic.",
+    "feat.custom.t": "Vos fournisseurs + Z.ai en option",
+    "feat.custom.d":
+      "Fournisseurs personnalisés compatibles OpenAI ou Anthropic et, si vous le souhaitez, le fournisseur officiel Z.ai avec son forfait et son utilisation.",
     "feat.mesh.t": "Routeur P2P",
     "feat.mesh.d":
       "Sunsam Mesh choisit, requête par requête, entre le modèle local et le grand modèle, avec découverte LAN.",
@@ -216,8 +217,9 @@ window.SUNSAM_I18N_EXTRA = {
     "feat.brand.t": "Sunsam-Branding",
     "feat.brand.d":
       "Eigenes Logo und Name in App, Installern, Menüs und Tray. Wird neben ZCode installiert.",
-    "feat.custom.t": "Nur Custom Providers",
-    "feat.custom.d": "Model settings zeigt nur deine OpenAI- oder Anthropic-kompatiblen Endpunkte.",
+    "feat.custom.t": "Eigene Provider + optional Z.ai",
+    "feat.custom.d":
+      "OpenAI- oder Anthropic-kompatible Custom Providers und bei Bedarf der offizielle Z.ai-Provider mit Tarif und Nutzung.",
     "feat.mesh.t": "P2P-Router",
     "feat.mesh.d":
       "Sunsam Mesh wählt pro Anfrage zwischen lokalem und großem Modell, mit LAN-Erkennung.",
@@ -309,9 +311,9 @@ window.SUNSAM_I18N_EXTRA = {
     "feat.brand.t": "Marchio Sunsam",
     "feat.brand.d":
       "Logo e nome propri nell'app, negli installer, nei menu e nella tray. Si installa accanto a ZCode.",
-    "feat.custom.t": "Solo Custom providers",
+    "feat.custom.t": "I tuoi provider + Z.ai opzionale",
     "feat.custom.d":
-      "Model settings mostra solo i tuoi endpoint compatibili con OpenAI o Anthropic.",
+      "Provider personalizzati compatibili con OpenAI o Anthropic e, se vuoi, il provider ufficiale Z.ai con piano e utilizzo.",
     "feat.mesh.t": "Router P2P",
     "feat.mesh.d":
       "Sunsam Mesh sceglie per ogni richiesta tra il modello locale e quello grande, con scoperta in LAN.",
@@ -402,9 +404,9 @@ window.SUNSAM_I18N_EXTRA = {
     "feat.brand.t": "Sunsam ブランド",
     "feat.brand.d":
       "アプリ、インストーラー、メニュー、トレイに独自のロゴと名前。ZCode と共存してインストールできます。",
-    "feat.custom.t": "Custom providers のみ",
+    "feat.custom.t": "独自プロバイダー + Z.ai（任意）",
     "feat.custom.d":
-      "Model settings には OpenAI / Anthropic 互換のエンドポイントだけが表示されます。",
+      "OpenAI／Anthropic 互換のカスタムプロバイダーに加え、必要なら公式 Z.ai プロバイダーでプランと使用量も確認できます。",
     "feat.mesh.t": "P2P ルーター",
     "feat.mesh.d":
       "Sunsam Mesh がリクエストごとにローカルモデルと大型モデルを選択。LAN 自動検出付き。",
@@ -493,8 +495,9 @@ window.SUNSAM_I18N_EXTRA = {
     "feat.lead": "ZCode의 모든 기능에 upstream과 동기화되는 독립 커스터마이징 레이어를 더했습니다.",
     "feat.brand.t": "Sunsam 브랜드",
     "feat.brand.d": "앱, 설치 파일, 메뉴, 트레이에 고유 로고와 이름. ZCode와 나란히 설치됩니다.",
-    "feat.custom.t": "Custom providers 전용",
-    "feat.custom.d": "Model settings에는 OpenAI 또는 Anthropic 호환 엔드포인트만 표시됩니다.",
+    "feat.custom.t": "내 공급자 + 선택형 Z.ai",
+    "feat.custom.d":
+      "OpenAI 또는 Anthropic 호환 사용자 지정 공급자와, 원하면 공식 Z.ai 공급자의 플랜과 사용량도 볼 수 있습니다.",
     "feat.mesh.t": "P2P 라우터",
     "feat.mesh.d":
       "Sunsam Mesh가 요청마다 로컬 모델과 대형 모델 중에서 선택하며, LAN 탐색을 지원합니다.",

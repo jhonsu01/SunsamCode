@@ -12,7 +12,7 @@
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 
 Sunsam Code is a fork of [ZCode](https://github.com/zai-org/ZCode) (Z.ai) with its own branding,
-model settings limited to **Custom providers**, and **Sunsam Mesh**, a router that sends each
+**Custom providers** (with the official Z.ai provider optional), and **Sunsam Mesh**, a router that sends each
 request either to a small local model or to larger models on other machines in your network.
 
 🌐 **Project page:** <https://jhonsu01.github.io/SunsamCode/>
@@ -38,13 +38,13 @@ Every `v*` tag builds Windows, macOS and Linux with GitHub Actions and publishes
 
 ## What changes compared to ZCode
 
-|                  | ZCode                                          | Sunsam Code                                                                |
-| ---------------- | ---------------------------------------------- | -------------------------------------------------------------------------- |
-| Branding         | ZCode                                          | Sunsam logo and name in the app, installers, menus and tray                |
-| Model settings   | Built-in providers (Z.ai, Start Plan) + Custom | **Custom providers only** (LM Studio, Ollama, vLLM, Sunsam Mesh…)          |
-| Model routing    | Manual                                         | **Sunsam Mesh**: `sunsam-auto` picks between a local model and a large one |
-| Install identity | `dev.zcode.app`                                | `dev.sunsam.code`: installs side by side with ZCode                        |
-| Upstream updates | —                                              | Daily automatic sync with `zai-org/ZCode` that keeps the Sunsam layer      |
+|                  | ZCode                                          | Sunsam Code                                                                  |
+| ---------------- | ---------------------------------------------- | ---------------------------------------------------------------------------- |
+| Branding         | ZCode                                          | Sunsam logo and name in the app, installers, menus and tray                  |
+| Model settings   | Built-in providers (Z.ai, Start Plan) + Custom | **Custom providers** (LM Studio, Ollama, vLLM, Sunsam Mesh…) + optional Z.ai |
+| Model routing    | Manual                                         | **Sunsam Mesh**: `sunsam-auto` picks between a local model and a large one   |
+| Install identity | `dev.zcode.app`                                | `dev.sunsam.code`: installs side by side with ZCode                          |
+| Upstream updates | —                                              | Daily automatic sync with `zai-org/ZCode` that keeps the Sunsam layer        |
 
 ## Sunsam Mesh: P2P router across machines
 

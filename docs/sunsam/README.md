@@ -1,7 +1,7 @@
 # Sunsam Code — capa de personalización
 
-Sunsam Code es un fork de [zai-org/ZCode](https://github.com/zai-org/ZCode) con marca propia, sólo
-_Custom providers_ y un router P2P (Sunsam Mesh). Toda la personalización vive en una **capa
+Sunsam Code es un fork de [zai-org/ZCode](https://github.com/zai-org/ZCode) con marca propia,
+_Custom providers_ (Z.ai opcional) y un router P2P (Sunsam Mesh). Toda la personalización vive en una **capa
 aislada** para que las versiones nuevas de upstream se fusionen con el mínimo de conflictos.
 
 ## Qué cambia respecto a upstream
@@ -13,7 +13,7 @@ aislada** para que las versiones nuevas de upstream se fusionen con el mínimo d
 | Logos de la UI              | `packages/ui/src/sunsam/`, `packages/ui/src/assets/sunsam/`                                         | `ZCodeAboutLogo.tsx` sólo reexporta la marca Sunsam                                                                  |
 | Identidad del instalador    | `packages/desktop/scripts/desktop-product-identity.mjs`                                             | `appId dev.sunsam.code`, `Sunsam Code`, paquete Linux `sunsam-code`; se instala junto a ZCode oficial                |
 | Datos de la app             | `packages/desktop/src/main/desktopRuntimeEnv.ts`                                                    | `userData` propio ("Sunsam Code"); `~/.zcode` se comparte con la CLI                                                 |
-| Sólo Custom providers       | flag `SUNSAM_BRAND.hideBuiltinModelProviders`                                                       | Oculta Z.ai / Start Plan / Coding Plan en Model settings (reversible cambiando el flag)                              |
+| Proveedores de modelos      | flag `SUNSAM_BRAND.hideBuiltinModelProviders`                                                       | `false`: Z.ai visible junto a los Custom providers; `true` lo oculta                                                 |
 | Idioma español de la UI     | `packages/ui/src/sunsam/locales/es-ES.ts`, `SUPPORTED_LOCALES` en `packages/shared/src/protocol.ts` | Traducción completa; las claves nuevas de upstream sin traducir se muestran en inglés                                |
 | Router P2P                  | `packages/sunsam-mesh/`                                                                             | Paquete nuevo, sin dependencias de upstream                                                                          |
 | CI                          | `.github/workflows/sunsam-*.yml`                                                                    | Build multiplataforma y sincronización con upstream                                                                  |
@@ -91,6 +91,39 @@ Reglas para no perder la capa al actualizar:
 - README: `README.md` (español, principal), `README.en.md` (inglés) y `README.zh-CN.md` (chino).
   `README.md` y `README.en.md` usan `merge=ours` para que las actualizaciones de upstream no los pisen;
   la documentación original de ZCode se enlaza en su repositorio.
+
+## Convivencia con ZCode oficial
+
+Sunsam Code y ZCode oficial comparten `~/.zcode/v2/setting.json` (ruta de datos `dataBaseDir`,
+proyectos recientes, sesión del espacio de trabajo). Antes, un locale como `es-ES` hacía fallar la
+validación del ZCode oficial, que volvía a los valores por defecto y en su siguiente escritura borraba
+`dataBaseDir` y `recentProjects`: Sunsam arrancaba con los espacios de trabajo vacíos.
+
+Reglas (`packages/services/src/setting/sunsamSettingsCompat.ts`; el único escritor es `settingService`):
+
+1. `setting.json` sólo recibe locales que upstream entiende (`toBaseLocale`); el idioma Sunsam real
+   se guarda en `~/.zcode/v2/sunsam-setting.json`, que el ZCode oficial nunca toca.
+2. Al leer, el idioma Sunsam se aplica sólo si `setting.json` sigue en su idioma base; si el ZCode
+   oficial cambió el idioma, gana ese cambio.
+3. Si `setting.json` trae un campo que este build no entiende, se descarta sólo ese campo en lugar de
+   volver a los valores por defecto.
+
+```mermaid
+sequenceDiagram
+  participant S as Sunsam settingService
+  participant F as setting.json (compartido)
+  participant C as sunsam-setting.json
+  participant Z as ZCode oficial
+  S->>F: write { locale: en-US, dataBaseDir, recentProjects… }
+  S->>C: write { locale: es-ES }
+  Z->>F: read (valida) → conserva dataBaseDir
+  Z->>F: write (cambios propios)
+  S->>F: read → descarta sólo campos inválidos
+  S->>C: read → es-ES si F sigue en en-US
+```
+
+Si prefieres historiales totalmente separados habría que mover los datos de Sunsam fuera de
+`~/.zcode`; hoy se comparten a propósito para ver las mismas sesiones en ambas apps.
 
 ## Idiomas de la interfaz
 

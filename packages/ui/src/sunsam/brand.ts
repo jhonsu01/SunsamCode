@@ -15,11 +15,11 @@ export const SUNSAM_BRAND = Object.freeze({
   productName: SUNSAM_PRODUCT_NAME,
   shortName: "Sunsam",
   /**
-   * Oculta en Model settings el grupo "Providers" (Z.ai / Start Plan / Coding Plan) y deja
-   * únicamente "Custom providers". Los datos de upstream no se borran: solo se ocultan en la UI,
-   * así que reactivarlo es cambiar este flag.
+   * true oculta en Model settings el grupo "Providers" (Z.ai / Start Plan / Coding Plan) y deja
+   * únicamente "Custom providers". Desactivado: el proveedor oficial Z.ai vuelve a mostrarse para
+   * quien quiera iniciar sesión y ver su plan y su uso, junto a los Custom providers.
    */
-  hideBuiltinModelProviders: true,
+  hideBuiltinModelProviders: false,
 });
 
 /**

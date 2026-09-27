@@ -12,7 +12,7 @@
 [![Licencia](https://img.shields.io/badge/licencia-Apache--2.0-blue)](LICENSE)
 
 Sunsam Code es un fork de [ZCode](https://github.com/zai-org/ZCode) (Z.ai) con marca propia,
-configuración de modelos limitada a **Custom providers** y **Sunsam Mesh**, un router que reparte
+**Custom providers** (con el proveedor oficial Z.ai opcional) y **Sunsam Mesh**, un router que reparte
 cada petición entre un modelo pequeño local y modelos grandes en otras máquinas de tu red.
 
 🌐 **Página del proyecto:** <https://jhonsu01.github.io/SunsamCode/>
@@ -41,7 +41,7 @@ Cada tag `v*` compila automáticamente Windows, macOS y Linux con GitHub Actions
 |                             | ZCode                                            | Sunsam Code                                                                     |
 | --------------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------- |
 | Marca                       | ZCode                                            | Logo y nombre Sunsam en app, instaladores, menús y bandeja                      |
-| Model settings              | Providers integrados (Z.ai, Start Plan) + Custom | **Sólo Custom providers** (LM Studio, Ollama, vLLM, Sunsam Mesh…)               |
+| Model settings              | Providers integrados (Z.ai, Start Plan) + Custom | **Custom providers** (LM Studio, Ollama, vLLM, Sunsam Mesh…) + Z.ai opcional    |
 | Enrutado de modelos         | Manual                                           | **Sunsam Mesh**: `sunsam-auto` decide entre modelo local y modelo grande en red |
 | Instalación                 | `dev.zcode.app`                                  | `dev.sunsam.code`: se instala junto a ZCode sin sobrescribirlo                  |
 | Actualizaciones de upstream | —                                                | Sincronización diaria con `zai-org/ZCode` conservando la capa Sunsam            |

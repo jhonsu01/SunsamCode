@@ -11,8 +11,8 @@
 [![网站](https://img.shields.io/badge/web-jhonsu01.github.io%2FSunsamCode-15121c)](https://jhonsu01.github.io/SunsamCode/)
 [![许可证](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 
-Sunsam Code 是 [ZCode](https://github.com/zai-org/ZCode)（Z.ai）的分支：使用 Sunsam 品牌，模型设置只保留
-**自定义供应商**，并提供 **Sunsam Mesh**——把每个请求路由到本地小模型或局域网内其他机器上的大模型。
+Sunsam Code 是 [ZCode](https://github.com/zai-org/ZCode)（Z.ai）的分支：使用 Sunsam 品牌，模型设置以
+**自定义供应商**为主（可选登录官方 Z.ai），并提供 **Sunsam Mesh**——把每个请求路由到本地小模型或局域网内其他机器上的大模型。
 
 🌐 **项目主页：** <https://jhonsu01.github.io/SunsamCode/>
 
@@ -36,13 +36,13 @@ Sunsam Code 是 [ZCode](https://github.com/zai-org/ZCode)（Z.ai）的分支：�
 
 ## 与 ZCode 的区别
 
-|          | ZCode                                  | Sunsam Code                                                   |
-| -------- | -------------------------------------- | ------------------------------------------------------------- |
-| 品牌     | ZCode                                  | 应用、安装包、菜单和托盘均使用 Sunsam 名称与图标              |
-| 模型设置 | 内置供应商（Z.ai、Start Plan）+ 自定义 | **仅自定义供应商**（LM Studio、Ollama、vLLM、Sunsam Mesh…）   |
-| 模型路由 | 手动                                   | **Sunsam Mesh**：`sunsam-auto` 在本地模型与大模型之间自动选择 |
-| 安装身份 | `dev.zcode.app`                        | `dev.sunsam.code`：可与 ZCode 并存                            |
-| 上游更新 | —                                      | 每日自动同步 `zai-org/ZCode`，保留 Sunsam 定制层              |
+|          | ZCode                                  | Sunsam Code                                                          |
+| -------- | -------------------------------------- | -------------------------------------------------------------------- |
+| 品牌     | ZCode                                  | 应用、安装包、菜单和托盘均使用 Sunsam 名称与图标                     |
+| 模型设置 | 内置供应商（Z.ai、Start Plan）+ 自定义 | **自定义供应商**（LM Studio、Ollama、vLLM、Sunsam Mesh…）+ 可选 Z.ai |
+| 模型路由 | 手动                                   | **Sunsam Mesh**：`sunsam-auto` 在本地模型与大模型之间自动选择        |
+| 安装身份 | `dev.zcode.app`                        | `dev.sunsam.code`：可与 ZCode 并存                                   |
+| 上游更新 | —                                      | 每日自动同步 `zai-org/ZCode`，保留 Sunsam 定制层                     |
 
 ## Sunsam Mesh：多机 P2P 路由
 

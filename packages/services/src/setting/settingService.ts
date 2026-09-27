@@ -27,6 +27,13 @@ import {
   retainLegacyAccountConnectionFields,
   type LegacyTeamConnection,
 } from "#src/setting/legacyAccountConnectionSettings.js";
+import {
+  applySunsamLocaleSidecar,
+  readSunsamLocaleSidecar,
+  salvageSettings,
+  splitSunsamLocaleFields,
+  writeSunsamLocaleSidecar,
+} from "#src/setting/sunsamSettingsCompat.js";
 const MAX_RECENT_PROJECTS = 10;
 const DEFAULT_PROJECT_NAME = "ZCodeProject";
 const SETTINGS_PARSE_RETRY_DELAY_MS = 300;
@@ -144,8 +151,12 @@ async function readSettingsWithMeta(): Promise<ReadSettingsResult> {
         };
       }
     }
-    const result = appSettingsSchema.safeParse(migrateLegacyAccountConnectionSettings(rawValue));
-    if (!result.success) {
+    const migratedValue = migrateLegacyAccountConnectionSettings(rawValue);
+    const result = appSettingsSchema.safeParse(migratedValue);
+    // Sunsam: 官方 ZCode 与 Sunsam 共用 setting.json。原先校验失败就整体回退默认值，下一次写入会
+    // 抹掉 dataBaseDir / recentProjects（用户看到工作区清空）。这里只丢弃校验失败的顶层字段。
+    const salvaged = result.success ? null : salvageSettings(appSettingsSchema, migratedValue);
+    if (!result.success && !salvaged) {
       log(
         "read failed schema validation, returning defaults. error:",
         formatZodError(result.error),
@@ -155,10 +166,15 @@ async function readSettingsWithMeta(): Promise<ReadSettingsResult> {
         needsMigrationPersist: false,
       };
     }
-    debugLog("read result:", JSON.stringify(result.data));
+    if (salvaged) {
+      log("read dropped invalid settings fields:", salvaged.droppedKeys.join(", "));
+    }
+    const parsed = result.success ? result.data : (salvaged?.data ?? defaultSettings());
+    debugLog("read result:", JSON.stringify(parsed));
     return {
-      settings: result.data,
-      needsMigrationPersist: shouldPersistSettingsMigrations(rawValue),
+      // Sunsam: 西语等 Sunsam 语言保存在 sunsam-setting.json，官方 ZCode 不会读到无法解析的 locale。
+      settings: applySunsamLocaleSidecar(parsed, await readSunsamLocaleSidecar(getSettingsDir())),
+      needsMigrationPersist: result.success ? shouldPersistSettingsMigrations(rawValue) : false,
     };
   } catch (err) {
     if (
@@ -205,7 +221,10 @@ async function writeSettings(
   maybeThrowInjectedFsFault({ operation: "writeFile", path: settingsFile });
   const raw = await readLegacyAccountConnectionSettingsFile(settingsFile);
   const rollbackFields = retainLegacyAccountConnectionFields(raw);
-  const persisted = { ...rollbackFields, ...settings };
+  // Sunsam: setting.json 只写上游能解析的 locale，Sunsam 语言写入 sunsam-setting.json。
+  const { shared: sharedSettings, sidecar: sunsamLocaleSidecar } =
+    splitSunsamLocaleFields(settings);
+  const persisted = { ...rollbackFields, ...sharedSettings };
   // 旧 Team 尚待 OAuth 补组织时，schema 的默认 {} 不是用户的新选择。
   // 普通偏好保存必须保留新字段缺席；只有迁移提交或用户显式选连接才结束旧导入。
   if (!commitAccountSelection && readIncompleteLegacyTeamConnections(raw).length > 0) {
@@ -225,6 +244,7 @@ async function writeSettings(
         await renameFile();
       }),
   });
+  await writeSunsamLocaleSidecar(settingsDir, sunsamLocaleSidecar);
   log("write done");
 }
 
