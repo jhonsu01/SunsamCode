@@ -71,8 +71,50 @@ export interface SystemInfo {
   platform: string;
 }
 
+/** 支持的语言（新增语言只需扩展此列表并在 ui/src/i18n 提供文案）。 */
+export const SUPPORTED_LOCALES = [
+  "zh-CN",
+  "en-US",
+  "es-ES",
+  "pt-BR",
+  "fr-FR",
+  "ru-RU",
+  "ko-KR",
+] as const;
+
 /** 支持的语言 */
-export type Locale = "zh-CN" | "en-US";
+export type Locale = (typeof SUPPORTED_LOCALES)[number];
+
+/** Idiomas de los servicios/contenidos de upstream que sólo existen en chino e inglés. */
+export type BaseLocale = "zh-CN" | "en-US";
+
+/** 仅提供中英文的服务端内容（反馈、套餐页、模板名等）对社区语言回退到英文。 */
+export function toBaseLocale(locale: Locale): BaseLocale {
+  return locale === "zh-CN" ? "zh-CN" : "en-US";
+}
+
+export function isSupportedLocale(value: unknown): value is Locale {
+  return typeof value === "string" && (SUPPORTED_LOCALES as readonly string[]).includes(value);
+}
+
+/**
+ * 把系统/浏览器语言标签映射到支持的语言（zh* → zh-CN，es* → es-ES，pt* → pt-BR，
+ * fr* → fr-FR，ru* → ru-RU，ko* → ko-KR，其余 → en-US）。
+ * 之前各处只判断 zh 前缀，其他语言的系统会被当成英文。
+ */
+const LANGUAGE_PREFIX_TO_LOCALE: ReadonlyArray<readonly [string, Locale]> = [
+  ["zh", "zh-CN"],
+  ["es", "es-ES"],
+  ["pt", "pt-BR"],
+  ["fr", "fr-FR"],
+  ["ru", "ru-RU"],
+  ["ko", "ko-KR"],
+];
+
+export function resolveLocaleFromLanguageTag(tag: string | null | undefined): Locale {
+  const language = (tag?.trim().toLowerCase() ?? "").split(/[-_]/u)[0] ?? "";
+  return LANGUAGE_PREFIX_TO_LOCALE.find(([prefix]) => prefix === language)?.[1] ?? "en-US";
+}
 
 /** 界面语言偏好；system 表示跟随当前运行端系统语言。 */
 export type LocalePreference = "system" | Locale;

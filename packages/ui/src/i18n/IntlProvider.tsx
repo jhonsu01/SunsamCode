@@ -9,7 +9,7 @@ import {
 } from "react";
 import type { ReactNode } from "react";
 import type { Locale, LocalePreference } from "@zcode/shared";
-import { DEFAULT_LOCALE } from "@zcode/shared";
+import { DEFAULT_LOCALE, isSupportedLocale, resolveLocaleFromLanguageTag } from "@zcode/shared";
 import type { BroadcastMessage, IBroadcastService, ISettingService } from "@zcode/services";
 import {
   readNavigatorLanguage,
@@ -18,11 +18,18 @@ import {
 } from "@/lib/browserEnvironment.js";
 import zhCN from "./locales/zh-CN.js";
 import enUS from "./locales/en-US.js";
+import { withEnglishFallback } from "./additionalLocales.js";
 
 /** 语言 → 翻译消息映射 */
 const MESSAGES: Record<Locale, Record<string, string>> = {
   "zh-CN": zhCN,
   "en-US": enUS,
+  // 社区语言：未翻译的 key 回退到英文。Community locales: untranslated keys fall back to English.
+  "es-ES": withEnglishFallback(enUS, "es-ES"),
+  "pt-BR": withEnglishFallback(enUS, "pt-BR"),
+  "fr-FR": withEnglishFallback(enUS, "fr-FR"),
+  "ru-RU": withEnglishFallback(enUS, "ru-RU"),
+  "ko-KR": withEnglishFallback(enUS, "ko-KR"),
 };
 
 /** 简易 intl 工具：根据 id 查找翻译，支持 {key} 占位符替换 */
@@ -39,7 +46,7 @@ interface LocaleBroadcastPayload {
 }
 
 function isLocale(value: unknown): value is Locale {
-  return value === "zh-CN" || value === "en-US";
+  return isSupportedLocale(value);
 }
 
 function isLocalePreference(value: unknown): value is LocalePreference {
@@ -164,7 +171,7 @@ export function ZCodeIntlProvider({
       return DEFAULT_LOCALE;
     }
 
-    return language.toLowerCase().startsWith("zh") ? "zh-CN" : "en-US";
+    return resolveLocaleFromLanguageTag(language);
   }, []);
   const resolveSystemLocale = useCallback(async (): Promise<Locale> => {
     const resolvedLocale = await resolveHostSystemLocale?.();

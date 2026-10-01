@@ -1,5 +1,6 @@
 /* oxlint-disable eslint(max-lines) -- footer 聚合账户、主题、模式和快捷键菜单。 */
 import type { Locale, UserInfo } from "@zcode/shared";
+import { ADDITIONAL_LOCALE_OPTIONS } from "@/i18n/additionalLocales.js";
 import { memo, useCallback, useEffect, useState } from "react";
 import {
   DesktopCommandIds,
@@ -258,6 +259,11 @@ export const WorkspaceSidebarFooter = memo(function WorkspaceSidebarFooterCompon
                       id: "sidebar.settings.locale.zh-CN",
                     })}
                   </DropdownMenuRadioItem>
+                  {ADDITIONAL_LOCALE_OPTIONS.map(({ locale }) => (
+                    <DropdownMenuRadioItem key={locale} value={locale}>
+                      {intl.formatMessage({ id: `sidebar.settings.locale.${locale}` })}
+                    </DropdownMenuRadioItem>
+                  ))}
                 </DropdownMenuRadioGroup>
               </DropdownMenuSubContent>
             </DropdownMenuSub>

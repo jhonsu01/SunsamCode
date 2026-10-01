@@ -2,12 +2,20 @@ import { useCallback } from "react";
 import type { Locale } from "@zcode/shared";
 import { TID_LOCALE_TOGGLE } from "@zcode/shared";
 import { useZCodeIntl } from "./IntlProvider.js";
+import { ADDITIONAL_LOCALE_OPTIONS, type AdditionalLocale } from "./additionalLocales.js";
 
-const LOCALE_CYCLE: Locale[] = ["zh-CN", "en-US"];
+const LOCALE_CYCLE: Locale[] = [
+  "zh-CN",
+  "en-US",
+  ...ADDITIONAL_LOCALE_OPTIONS.map((option) => option.locale),
+];
 
 const LOCALE_LABELS: Record<Locale, string> = {
   "zh-CN": "中",
   "en-US": "En",
+  ...(Object.fromEntries(
+    ADDITIONAL_LOCALE_OPTIONS.map((option) => [option.locale, option.shortLabel]),
+  ) as Record<AdditionalLocale, string>),
 };
 
 /**

@@ -1,4 +1,5 @@
 /* oxlint-disable eslint(max-lines) -- settings helper 聚合多个设置分组；终端、网络与自动归档多侧能力暂时超过行数限制。 */
+import { ADDITIONAL_LOCALE_OPTIONS } from "@/i18n/additionalLocales.js";
 import type {
   IntegratedTerminalShellOption,
   IntegratedTerminalShellSelection,
@@ -313,6 +314,16 @@ export function GeneralSectionContent({
                 >
                   {intl.formatMessage({ id: "settings.locale.en-US" })}
                 </SelectItem>
+                {/* 社区贡献语言 / community locales */}
+                {ADDITIONAL_LOCALE_OPTIONS.map(({ locale }) => (
+                  <SelectItem
+                    key={locale}
+                    value={locale}
+                    data-testid={testId(TID_SETTINGS_LOCALE_SELECT_ITEM, locale)}
+                  >
+                    {intl.formatMessage({ id: `settings.locale.${locale}` })}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           }

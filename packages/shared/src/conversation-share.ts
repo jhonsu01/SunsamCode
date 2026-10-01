@@ -14,6 +14,12 @@ import {
 const CONVERSATION_SHARE_LOCALE_PATH_PREFIX: Readonly<Record<Locale, string>> = {
   "zh-CN": "/cn",
   "en-US": "",
+  // 分享站点只有中英文，社区语言使用英文路径。
+  "es-ES": "",
+  "pt-BR": "",
+  "fr-FR": "",
+  "ru-RU": "",
+  "ko-KR": "",
 };
 
 const CONVERSATION_SHARE_PATHNAME_RE = /^\/(cn\/)?share\/([^/]+)\/?$/u;

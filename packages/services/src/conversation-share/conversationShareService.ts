@@ -236,6 +236,11 @@ function previewPreflightKey(
 const IMPORTED_SHARE_TITLE_PREFIX: Readonly<Record<Locale, string>> = {
   "zh-CN": "来自分享：",
   "en-US": "From Share: ",
+  "es-ES": "Desde compartido: ",
+  "pt-BR": "Do compartilhamento: ",
+  "fr-FR": "Depuis un partage : ",
+  "ru-RU": "Из общего доступа: ",
+  "ko-KR": "공유에서: ",
 };
 
 function formatImportedShareSessionTitle(shareTitle: string, locale: Locale | undefined): string {

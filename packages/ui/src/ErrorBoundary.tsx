@@ -1,3 +1,5 @@
+import { isSupportedLocale, resolveLocaleFromLanguageTag } from "@zcode/shared";
+import { withEnglishFallback } from "@/i18n/additionalLocales.js";
 import { Component } from "react";
 import type { ErrorInfo, ReactNode } from "react";
 import type { Locale } from "@zcode/shared";
@@ -66,7 +68,7 @@ function resolveBoundaryLocale(): Locale {
   if (typeof localStorage !== "undefined" && typeof localStorage.getItem === "function") {
     try {
       const storedPreference = localStorage.getItem(LOCALE_PREFERENCE_KEY);
-      if (storedPreference === "zh-CN" || storedPreference === "en-US") {
+      if (isSupportedLocale(storedPreference)) {
         return storedPreference;
       }
     } catch {
@@ -77,7 +79,7 @@ function resolveBoundaryLocale(): Locale {
   }
 
   if (typeof navigator !== "undefined") {
-    return navigator.language.toLowerCase().startsWith("zh") ? "zh-CN" : "en-US";
+    return resolveLocaleFromLanguageTag(navigator.language);
   }
 
   return DEFAULT_LOCALE;
@@ -85,7 +87,9 @@ function resolveBoundaryLocale(): Locale {
 
 function formatBoundaryMessage(id: string): string {
   const locale = resolveBoundaryLocale();
-  const messages = locale === "en-US" ? enUS : zhCN;
+  // 社区语言优先使用译文，缺失时回退英文。
+  const messages =
+    locale === "zh-CN" ? zhCN : locale === "en-US" ? enUS : withEnglishFallback(enUS, locale);
   return messages[id] ?? id;
 }
 

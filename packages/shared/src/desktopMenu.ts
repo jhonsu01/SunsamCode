@@ -1,4 +1,5 @@
 import { DEFAULT_LOCALE, type Locale } from "./protocol.js";
+import { ADDITIONAL_DESKTOP_MENU_MESSAGES } from "./desktopMenuLocales.js";
 
 export const desktopMenuMessageIds = {
   file: "titleBar.menu.file",
@@ -56,7 +57,7 @@ export const desktopMenuMessageIds = {
 export type DesktopMenuMessageId =
   (typeof desktopMenuMessageIds)[keyof typeof desktopMenuMessageIds];
 
-type DesktopMenuLocaleMessages = Record<DesktopMenuMessageId, string>;
+export type DesktopMenuLocaleMessages = Record<DesktopMenuMessageId, string>;
 
 export const desktopMenuMessages: Record<Locale, DesktopMenuLocaleMessages> = {
   "zh-CN": {
@@ -163,6 +164,8 @@ export const desktopMenuMessages: Record<Locale, DesktopMenuLocaleMessages> = {
     "tray.menu.openZCode": "Open ZCode",
     "tray.menu.quit": "Quit",
   },
+  // 社区语言（es-ES / pt-BR / fr-FR / ru-RU / ko-KR）
+  ...ADDITIONAL_DESKTOP_MENU_MESSAGES,
 };
 
 export function getDesktopMenuMessage(locale: Locale, id: DesktopMenuMessageId): string {
