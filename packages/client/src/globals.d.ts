@@ -318,6 +318,8 @@ declare global {
       setApplicationLocale(locale: Locale): Promise<void>;
       /** 读取宿主系统语言 */
       getSystemLocale?(): Promise<Locale>;
+      /** Sunsam: extensiones MCP .mcpb / .dxt (sólo escritorio) */
+      sunsamMcpb?: import("@zcode/shared").SunsamMcpbBridge;
       /** 同步标题栏亮暗色 */
       setTitleBarTheme(theme: DesktopTitleBarTheme): Promise<void>;
     };

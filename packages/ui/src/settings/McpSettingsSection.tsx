@@ -13,6 +13,7 @@ import {
   testId,
 } from "@zcode/shared";
 import type {
+  McpServerConfig,
   RemoteTarget,
   ZCodeAvailablePluginSummary,
   ZCodeAgentMcpServer,
@@ -29,6 +30,7 @@ import { useZCodeIntl } from "@/i18n/IntlProvider.js";
 import { useConfirmDialog } from "@/hooks/useConfirmDialog.js";
 import { logger } from "@/logger.js";
 import { McpServerForm } from "@/settings/McpServerForm.js";
+import { SunsamMcpbInstaller, getSunsamMcpbBridge } from "@/sunsam/McpbInstaller.js";
 import { McpServerList, McpStatusDot } from "@/settings/McpServerList.js";
 import {
   formToConfig,
@@ -1273,6 +1275,40 @@ export function McpSettingsSection({
     onFormScopeKeyChange?.(null);
   }
 
+  // Sunsam: una extensión .mcpb/.dxt instalada se registra (o actualiza) como servidor MCP de usuario.
+  async function handleRegisterMcpb(serverName: string, config: McpServerConfig) {
+    if (!activeWorkspacePath) {
+      throw new Error("no active workspace");
+    }
+    const loaded = await ensureLoadedForWorkspace(
+      activeWorkspacePath,
+      services.mcpSyncService,
+      activeWorkspaceIdentity,
+    );
+    if (!loaded) {
+      return;
+    }
+    const existing = useMcpStore
+      .getState()
+      .servers.find(
+        (server) =>
+          server.name === serverName &&
+          server.source === DEFAULT_MCP_SOURCE &&
+          server.scope !== "workspace",
+      );
+    if (existing) {
+      await updateScopedMcpServer(
+        DEFAULT_MCP_SOURCE,
+        serverName,
+        { ...config, ...(existing.enabled === false ? { enable: false } : {}) },
+        undefined,
+      );
+    } else {
+      await addScopedMcpServer(DEFAULT_MCP_SOURCE, serverName, config, undefined);
+    }
+    await requestMcpServerStatusList({ trigger: "manual" });
+  }
+
   async function handleDelete(server: ZCodeMcpServer) {
     const confirmed = await confirmDialog({
       title: intl.formatMessage({ id: "settings.mcp.deleteConfirmTitle" }, { name: server.name }),
@@ -1290,6 +1326,10 @@ export function McpSettingsSection({
     }
 
     await deleteScopedMcpServer(server.source, server.name, server.projectPath);
+    // Sunsam: si el servidor venía de una extensión .mcpb/.dxt, se borran también sus archivos.
+    if (server.scope !== "workspace" && isSunsamMcpbServer(server)) {
+      await getSunsamMcpbBridge()?.uninstall(server.name);
+    }
     setEditingServer(null);
     setShowForm(false);
     setEditorMode("form");
@@ -1554,6 +1594,8 @@ export function McpSettingsSection({
           </section>
         ))}
       </div>
+      {/* Sunsam: instalar / actualizar extensiones .mcpb y .dxt (botón + arrastrar y soltar). */}
+      <SunsamMcpbInstaller onRegister={handleRegisterMcpb} />
       <McpServersImportDialog
         // 对话框携带的是 mcpStore 的 currentProjectPath，只有它与当前 target
         // 一致时才和 services 的 host 同源；不一致的过渡帧不能让导入按 A 的 host 落盘 B 的路径。
@@ -1591,5 +1633,14 @@ export function McpSettingsSection({
         }}
       />
     </div>
+  );
+}
+
+/** Sunsam: servidores cuyo comando/argumentos apuntan a la carpeta de extensiones instaladas. */
+function isSunsamMcpbServer(server: ZCodeMcpServer): boolean {
+  const marker = `extensions${server.name}`;
+  const flatten = (value: string) => value.replace(/[\\/]+/gu, "");
+  return [server.config.command ?? "", ...(server.config.args ?? [])].some((part) =>
+    flatten(String(part)).includes(marker),
   );
 }

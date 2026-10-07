@@ -85,6 +85,8 @@ jobs:
             packages/desktop/dist/*.deb
             packages/desktop/dist/*.rpm
             packages/desktop/dist/*.pkg.tar.zst
+            packages/desktop/dist/*.blockmap
+            packages/desktop/dist/latest*.yml
 
   release:
     name: GitHub Release
@@ -107,7 +109,8 @@ jobs:
           if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
             echo "name=$GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"
           else
-            echo "name=v$(jq -r .version package.json)-sunsam.$GITHUB_RUN_NUMBER" >> "$GITHUB_OUTPUT"
+            # La versión de package.json ya es "<upstream>-sunsam.<n>" (la que compara el actualizador).
+            echo "name=v$(jq -r .version package.json)" >> "$GITHUB_OUTPUT"
           fi
       - uses: actions/download-artifact@v4
         with:

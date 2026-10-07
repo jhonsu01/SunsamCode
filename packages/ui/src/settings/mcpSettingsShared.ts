@@ -1,4 +1,5 @@
 import type { McpServerConfig, ZCodeMcpServer } from "@zcode/shared";
+import { joinSunsamMcpArgs, splitSunsamMcpArgs } from "@/sunsam/mcpArgs.js";
 
 export const MCP_SECTIONS = ["zcodeagentmcp"] as const;
 
@@ -58,7 +59,7 @@ export function serverToForm(server: ZCodeMcpServer): FormState {
     storageLevel: server.scope === "workspace" ? "workspace" : "user",
     type,
     command: cfg.command ?? "",
-    args: (cfg.args ?? []).join(" "),
+    args: joinSunsamMcpArgs(cfg.args ?? []),
     env: cfg.env ? JSON.stringify(cfg.env, null, 2) : "",
     url: cfg.url ?? "",
     headers: cfg.headers ? JSON.stringify(cfg.headers, null, 2) : "",
@@ -85,7 +86,7 @@ export function formToConfig(form: FormState): McpServerConfig {
     return {
       type: "stdio",
       command: form.command,
-      args: form.args.trim() ? form.args.trim().split(/\s+/) : [],
+      args: splitSunsamMcpArgs(form.args),
       env,
       ...(timeoutMs !== undefined ? { timeoutMs } : {}),
       ...(form.protocolVersion
@@ -190,7 +191,7 @@ export function jsonDraftToForm(jsonText: string, fallback: FormState): FormStat
     storageLevel: fallback.storageLevel,
     type: normalizedType,
     command: normalizedConfig.command ?? "",
-    args: Array.isArray(normalizedConfig.args) ? normalizedConfig.args.join(" ") : "",
+    args: Array.isArray(normalizedConfig.args) ? joinSunsamMcpArgs(normalizedConfig.args) : "",
     env: normalizedConfig.env ? JSON.stringify(normalizedConfig.env, null, 2) : "",
     url: normalizedConfig.url ?? "",
     headers: normalizedConfig.headers ? JSON.stringify(normalizedConfig.headers, null, 2) : "",

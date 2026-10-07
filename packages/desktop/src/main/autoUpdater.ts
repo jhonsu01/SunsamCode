@@ -20,6 +20,7 @@ import pkg, { CancellationToken } from "electron-updater";
 import semver from "semver";
 import { logger } from "./logger.js";
 import { getElectronReleasePlatform, ManifestUpdateProvider } from "./manifestUpdateProvider.js";
+import { applySunsamGithubUpdateProvider } from "./sunsamUpdateFeed.js";
 const { autoUpdater } = pkg;
 
 export const CHECK_FOR_UPDATE_MENU_ID = "check-for-update";
@@ -751,6 +752,8 @@ async function syncAutoUpdateCheckChannelFromSettings(
   activeAutoUpdateCheckChannel = nextChannel;
 }
 
+// Sunsam: sustituido por applySunsamGithubUpdateProvider; se conserva para fusionar upstream sin conflictos.
+// oxlint-disable-next-line eslint(no-unused-vars)
 function applyManifestUpdateProvider(options: InitAutoUpdaterOptions): void {
   const manifestUrl = options.updateFeedSource?.url.trim();
   autoUpdater.setFeedURL({
@@ -1504,7 +1507,8 @@ export async function initAutoUpdater(options: InitAutoUpdaterOptions = {}): Pro
   // 这里仅在 Windows 关闭“退出即自动安装”，要求用户显式点更新；其他平台保持原有行为，避免改动既有升级链路。
   autoUpdater.autoInstallOnAppQuit = process.platform !== "win32";
   autoUpdater.logger = logger;
-  applyManifestUpdateProvider(options);
+  // Sunsam: actualizaciones sólo desde los GitHub Releases del fork, nunca del manifest de Z.ai.
+  applySunsamGithubUpdateProvider(autoUpdater, logger);
 
   const triggerCheckForUpdates = (reason: string) => {
     if (checkForUpdatesInFlight) {
