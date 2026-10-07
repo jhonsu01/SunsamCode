@@ -1,4 +1,5 @@
 import { resolveLocaleFromLanguageTag } from "@zcode/shared";
+import { setSunsamMainLocale } from "./sunsamLocalizedEditors.js";
 import { app, BrowserWindow, Menu } from "electron";
 import {
   DesktopCommandIds,
@@ -378,6 +379,8 @@ export function rebuildApplicationMenu(options: {
     ),
   );
   setAutoUpdaterMenuLocale(options.currentApplicationLocale);
+  // Sunsam: idioma para los nombres de editores (Explorador de Windows).
+  setSunsamMainLocale(options.currentApplicationLocale);
   if (!app.isPackaged) {
     updateZCodeStdioTapDevMenuState();
   }

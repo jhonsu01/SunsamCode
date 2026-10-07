@@ -14,15 +14,18 @@ import { randomBytes } from "node:crypto";
 import { existsSync } from "node:fs";
 import { mkdir, readdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { dirname, extname, isAbsolute, join, normalize, relative, sep } from "node:path";
-import { app, ipcMain } from "electron";
+import { app, BrowserWindow, dialog, ipcMain } from "electron";
+import { detectSunsamMcpbPaths } from "./sunsamMcpbDetect.js";
 import yauzl from "yauzl";
 import {
   SUNSAM_MCPB_CHANNELS,
   initialSunsamMcpbValues,
+  isSunsamMcpbServerKey,
   isSunsamMcpbFileName,
   missingSunsamMcpbValues,
   parseSunsamMcpbManifest,
   resolveSunsamMcpbServerConfig,
+  sunsamMcpbServerKey,
   type McpServerConfig,
   type SunsamMcpbInstallResult,
   type SunsamMcpbIpcResult,
@@ -221,38 +224,45 @@ async function install(
   try {
     await extractZip(Buffer.from(file.data), staging);
     const manifest = await readManifest(staging);
-    const previous = await readRecord(manifest.name);
+    const serverKey = sunsamMcpbServerKey(manifest.name);
+    const previous = await readRecord(serverKey);
     const installDir = join(
       extensionsRoot(),
-      manifest.name,
+      serverKey,
       `${manifest.version.replace(/[^\w.-]/gu, "_")}-${Date.now()}`,
     );
     await mkdir(dirname(installDir), { recursive: true });
     await rename(staging, installDir);
 
-    const values = initialSunsamMcpbValues(manifest.user_config, previous?.values);
-    await writeRecord(manifest.name, {
+    // Modo dual: lo guardado manda; si no hay, lo detectado; si tampoco, el default del manifest.
+    const detectedValues = await detectSunsamMcpbPaths(manifest.user_config);
+    const values = initialSunsamMcpbValues(manifest.user_config, {
+      ...detectedValues,
+      ...previous?.values,
+    });
+    await writeRecord(serverKey, {
       version: manifest.version,
       installDir,
       values,
       installedAt: new Date().toISOString(),
     });
-    await removeOldVersions(manifest.name, installDir, logger);
+    await removeOldVersions(serverKey, installDir, logger);
     logger.info(
-      `[sunsam-mcpb] installed ${manifest.name}@${manifest.version}` +
+      `[sunsam-mcpb] installed ${serverKey}@${manifest.version}` +
         (previous ? ` (was ${previous.version})` : "") +
         ` -> ${installDir}`,
     );
 
     const platforms = manifest.compatibility?.platforms;
     return {
-      serverName: manifest.name,
+      serverName: serverKey,
       displayName: manifest.display_name || manifest.name,
       version: manifest.version,
       ...(manifest.description ? { description: manifest.description } : {}),
       ...(previous ? { previousVersion: previous.version } : {}),
       userConfig: manifest.user_config ?? {},
       savedValues: values,
+      detectedValues,
       ...(platforms && platforms.length > 0 && !platforms.includes(process.platform)
         ? { unsupportedPlatform: platforms.join(", ") }
         : {}),
@@ -290,7 +300,7 @@ async function configure(name: string, values: SunsamMcpbUserValues): Promise<Mc
 }
 
 async function uninstall(name: string, logger: Logger): Promise<boolean> {
-  if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/u.test(name)) return false;
+  if (!isSunsamMcpbServerKey(name)) return false;
   const existed = (await readRecord(name)) !== null;
   await rm(recordPath(name), { force: true });
   await removeOldVersions(name, null, logger);
@@ -322,4 +332,24 @@ export function registerSunsamMcpbIpcHandlers(logger: Logger): void {
   ipcMain.handle(SUNSAM_MCPB_CHANNELS.uninstall, (_event, name: string) =>
     wrap(() => uninstall(name, logger), logger),
   );
+  ipcMain.handle(
+    SUNSAM_MCPB_CHANNELS.browse,
+    (event, kind: "directory" | "file", currentPath?: string) =>
+      wrap(async () => {
+        const owner = BrowserWindow.fromWebContents(event.sender);
+        const options: Electron.OpenDialogOptions = {
+          properties: [kind === "directory" ? "openDirectory" : "openFile"],
+          ...(currentPath ? { defaultPath: currentPath } : {}),
+        };
+        const picked = owner
+          ? await dialog.showOpenDialog(owner, options)
+          : await dialog.showOpenDialog(options);
+        return picked.canceled ? null : (picked.filePaths[0] ?? null);
+      }, logger),
+  );
+  ipcMain.handle(SUNSAM_MCPB_CHANNELS.relaunch, () => {
+    logger.info("[sunsam-mcpb] relaunch requested to load installed extensions");
+    app.relaunch();
+    app.quit();
+  });
 }

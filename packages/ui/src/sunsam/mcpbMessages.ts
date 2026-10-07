@@ -17,6 +17,12 @@ export const SUNSAM_MCPB_MESSAGES: Record<Locale, Record<string, string>> = {
     "sunsam.mcpb.directoryPlaceholder": "Full folder path",
     "sunsam.mcpb.filePlaceholder": "Full file path",
     "sunsam.mcpb.save": "Save and enable",
+    "sunsam.mcpb.restartNeeded": "Restart Sunsam Code to load {names}.",
+    "sunsam.mcpb.restartNow": "Restart now",
+    "sunsam.mcpb.restartHint":
+      "Installed or updated extensions are loaded after restarting Sunsam Code.",
+    "sunsam.mcpb.browse": "Browse…",
+    "sunsam.mcpb.autoDetected": "Detected automatically — you can change it",
   },
   "zh-CN": {
     "sunsam.mcpb.install": "安装扩展（.mcpb / .dxt）",
@@ -33,6 +39,11 @@ export const SUNSAM_MCPB_MESSAGES: Record<Locale, Record<string, string>> = {
     "sunsam.mcpb.directoryPlaceholder": "文件夹完整路径",
     "sunsam.mcpb.filePlaceholder": "文件完整路径",
     "sunsam.mcpb.save": "保存并启用",
+    "sunsam.mcpb.restartNeeded": "重启 Sunsam Code 以加载 {names}。",
+    "sunsam.mcpb.restartNow": "立即重启",
+    "sunsam.mcpb.restartHint": "安装或更新的扩展将在重启 Sunsam Code 后加载。",
+    "sunsam.mcpb.browse": "浏览…",
+    "sunsam.mcpb.autoDetected": "已自动检测，可手动修改",
   },
   "es-ES": {
     "sunsam.mcpb.install": "Instalar extensión (.mcpb / .dxt)",
@@ -50,6 +61,12 @@ export const SUNSAM_MCPB_MESSAGES: Record<Locale, Record<string, string>> = {
     "sunsam.mcpb.directoryPlaceholder": "Ruta completa de la carpeta",
     "sunsam.mcpb.filePlaceholder": "Ruta completa del archivo",
     "sunsam.mcpb.save": "Guardar y activar",
+    "sunsam.mcpb.restartNeeded": "Reinicia Sunsam Code para cargar {names}.",
+    "sunsam.mcpb.restartNow": "Reiniciar ahora",
+    "sunsam.mcpb.restartHint":
+      "Las extensiones instaladas o actualizadas se cargan al reiniciar Sunsam Code.",
+    "sunsam.mcpb.browse": "Examinar…",
+    "sunsam.mcpb.autoDetected": "Detectado automáticamente; puedes cambiarlo",
   },
   "pt-BR": {
     "sunsam.mcpb.install": "Instalar extensão (.mcpb / .dxt)",
@@ -66,6 +83,12 @@ export const SUNSAM_MCPB_MESSAGES: Record<Locale, Record<string, string>> = {
     "sunsam.mcpb.directoryPlaceholder": "Caminho completo da pasta",
     "sunsam.mcpb.filePlaceholder": "Caminho completo do arquivo",
     "sunsam.mcpb.save": "Salvar e ativar",
+    "sunsam.mcpb.restartNeeded": "Reinicie o Sunsam Code para carregar {names}.",
+    "sunsam.mcpb.restartNow": "Reiniciar agora",
+    "sunsam.mcpb.restartHint":
+      "As extensões instaladas ou atualizadas são carregadas ao reiniciar o Sunsam Code.",
+    "sunsam.mcpb.browse": "Procurar…",
+    "sunsam.mcpb.autoDetected": "Detectado automaticamente; você pode alterar",
   },
   "fr-FR": {
     "sunsam.mcpb.install": "Installer une extension (.mcpb / .dxt)",
@@ -84,6 +107,12 @@ export const SUNSAM_MCPB_MESSAGES: Record<Locale, Record<string, string>> = {
     "sunsam.mcpb.directoryPlaceholder": "Chemin complet du dossier",
     "sunsam.mcpb.filePlaceholder": "Chemin complet du fichier",
     "sunsam.mcpb.save": "Enregistrer et activer",
+    "sunsam.mcpb.restartNeeded": "Redémarrez Sunsam Code pour charger {names}.",
+    "sunsam.mcpb.restartNow": "Redémarrer maintenant",
+    "sunsam.mcpb.restartHint":
+      "Les extensions installées ou mises à jour sont chargées au redémarrage de Sunsam Code.",
+    "sunsam.mcpb.browse": "Parcourir…",
+    "sunsam.mcpb.autoDetected": "Détecté automatiquement — vous pouvez le modifier",
   },
   "ru-RU": {
     "sunsam.mcpb.install": "Установить расширение (.mcpb / .dxt)",
@@ -101,6 +130,12 @@ export const SUNSAM_MCPB_MESSAGES: Record<Locale, Record<string, string>> = {
     "sunsam.mcpb.directoryPlaceholder": "Полный путь к папке",
     "sunsam.mcpb.filePlaceholder": "Полный путь к файлу",
     "sunsam.mcpb.save": "Сохранить и включить",
+    "sunsam.mcpb.restartNeeded": "Перезапустите Sunsam Code, чтобы загрузить {names}.",
+    "sunsam.mcpb.restartNow": "Перезапустить",
+    "sunsam.mcpb.restartHint":
+      "Установленные или обновлённые расширения загружаются после перезапуска Sunsam Code.",
+    "sunsam.mcpb.browse": "Обзор…",
+    "sunsam.mcpb.autoDetected": "Определено автоматически — можно изменить",
   },
   "ko-KR": {
     "sunsam.mcpb.install": "확장 설치 (.mcpb / .dxt)",
@@ -117,5 +152,11 @@ export const SUNSAM_MCPB_MESSAGES: Record<Locale, Record<string, string>> = {
     "sunsam.mcpb.directoryPlaceholder": "폴더 전체 경로",
     "sunsam.mcpb.filePlaceholder": "파일 전체 경로",
     "sunsam.mcpb.save": "저장 후 활성화",
+    "sunsam.mcpb.restartNeeded": "{names}을(를) 불러오려면 Sunsam Code를 다시 시작하세요.",
+    "sunsam.mcpb.restartNow": "지금 다시 시작",
+    "sunsam.mcpb.restartHint":
+      "설치하거나 업데이트한 확장은 Sunsam Code를 다시 시작하면 불러옵니다.",
+    "sunsam.mcpb.browse": "찾아보기…",
+    "sunsam.mcpb.autoDetected": "자동으로 감지됨 — 변경할 수 있습니다",
   },
 };

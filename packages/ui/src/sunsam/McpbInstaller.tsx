@@ -4,7 +4,7 @@
  * lo actualiza conservando su configuración. Sólo aparece en escritorio (necesita el proceso main).
  */
 import { useCallback, useEffect, useRef, useState } from "react";
-import { PackagePlus, Upload } from "lucide-react";
+import { FolderOpen, PackagePlus, RotateCcw, Sparkles, Upload } from "lucide-react";
 import {
   isSunsamMcpbFileName,
   missingSunsamMcpbValues,
@@ -60,6 +60,8 @@ export function SunsamMcpbInstaller({ onRegister }: McpbInstallerProps) {
   const [queue, setQueue] = useState<PendingConfig[]>([]);
   const pending = queue[0] ?? null;
   const [saving, setSaving] = useState(false);
+  // Las extensiones instaladas/actualizadas se cargan en el agente al reiniciar Sunsam Code.
+  const [restartNames, setRestartNames] = useState<string[]>([]);
 
   const t = useCallback(
     (id: string, values?: Record<string, string | number>) => intl.formatMessage({ id }, values),
@@ -75,6 +77,9 @@ export function SunsamMcpbInstaller({ onRegister }: McpbInstallerProps) {
         return false;
       }
       await onRegister(result.serverName, configured.value);
+      setRestartNames((current) =>
+        current.includes(result.displayName) ? current : [...current, result.displayName],
+      );
       toast(
         result.previousVersion
           ? t("sunsam.mcpb.updated", {
@@ -181,11 +186,29 @@ export function SunsamMcpbInstaller({ onRegister }: McpbInstallerProps) {
       first ? [{ ...first, values: { ...first.values, [key]: value } }, ...rest] : [],
     );
   const closeCurrent = () => setQueue(([, ...rest]) => rest);
+  const browse = async (key: string, kind: "directory" | "file", current: string) => {
+    const picked = await bridge.browse(kind, current || undefined);
+    if (picked.ok && picked.value) setValue(key, picked.value);
+  };
 
   const missing = pending ? missingSunsamMcpbValues(pending.result.userConfig, pending.values) : [];
 
   return (
     <div ref={rootRef} data-sunsam-mcpb-dropzone="true">
+      {restartNames.length > 0 ? (
+        <div
+          role="status"
+          className="mt-2 flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card px-3 py-2.5"
+        >
+          <RotateCcw className="size-4 shrink-0 text-foreground-subtle" aria-hidden="true" />
+          <span className="min-w-0 flex-1 text-ui-base text-foreground">
+            {t("sunsam.mcpb.restartNeeded", { names: restartNames.join(", ") })}
+          </span>
+          <Button type="button" size="lg" onClick={() => void bridge.relaunch()}>
+            {t("sunsam.mcpb.restartNow")}
+          </Button>
+        </div>
+      ) : null}
       <div className="mt-2 flex flex-wrap items-center gap-3 border-t border-border pt-4">
         <Button
           type="button"
@@ -200,6 +223,9 @@ export function SunsamMcpbInstaller({ onRegister }: McpbInstallerProps) {
         <span className="flex items-center gap-1.5 text-ui-base text-foreground-subtle">
           <Upload className="size-3.5" aria-hidden="true" />
           {t("sunsam.mcpb.dropHint")}
+        </span>
+        <span className="basis-full text-ui-sm text-foreground-subtle">
+          {t("sunsam.mcpb.restartHint")}
         </span>
         <input
           ref={inputRef}
@@ -258,47 +284,75 @@ export function SunsamMcpbInstaller({ onRegister }: McpbInstallerProps) {
                           onCheckedChange={(checked) => setValue(key, checked)}
                         />
                       ) : (
-                        <Input
-                          id={`sunsam-mcpb-${key}`}
-                          type={
-                            field.sensitive
-                              ? "password"
-                              : field.type === "number"
-                                ? "number"
-                                : "text"
-                          }
-                          value={
-                            Array.isArray(value)
-                              ? value.join(", ")
-                              : value === undefined
-                                ? ""
-                                : String(value)
-                          }
-                          placeholder={
-                            field.type === "directory"
-                              ? t("sunsam.mcpb.directoryPlaceholder")
-                              : field.type === "file"
-                                ? t("sunsam.mcpb.filePlaceholder")
-                                : ""
-                          }
-                          onChange={(event) => {
-                            const raw = event.target.value;
-                            if (field.multiple) {
-                              setValue(
-                                key,
-                                raw
-                                  .split(",")
-                                  .map((item) => item.trim())
-                                  .filter(Boolean),
-                              );
-                            } else if (field.type === "number") {
-                              setValue(key, raw === "" ? "" : Number(raw));
-                            } else {
-                              setValue(key, raw);
+                        <div className="flex items-center gap-2">
+                          <Input
+                            className="min-w-0 flex-1"
+                            id={`sunsam-mcpb-${key}`}
+                            type={
+                              field.sensitive
+                                ? "password"
+                                : field.type === "number"
+                                  ? "number"
+                                  : "text"
                             }
-                          }}
-                        />
+                            value={
+                              Array.isArray(value)
+                                ? value.join(", ")
+                                : value === undefined
+                                  ? ""
+                                  : String(value)
+                            }
+                            placeholder={
+                              field.type === "directory"
+                                ? t("sunsam.mcpb.directoryPlaceholder")
+                                : field.type === "file"
+                                  ? t("sunsam.mcpb.filePlaceholder")
+                                  : ""
+                            }
+                            onChange={(event) => {
+                              const raw = event.target.value;
+                              if (field.multiple) {
+                                setValue(
+                                  key,
+                                  raw
+                                    .split(",")
+                                    .map((item) => item.trim())
+                                    .filter(Boolean),
+                                );
+                              } else if (field.type === "number") {
+                                setValue(key, raw === "" ? "" : Number(raw));
+                              } else {
+                                setValue(key, raw);
+                              }
+                            }}
+                          />
+                          {(field.type === "directory" || field.type === "file") &&
+                          !field.multiple ? (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="lg"
+                              onClick={() =>
+                                void browse(
+                                  key,
+                                  field.type as "directory" | "file",
+                                  String(value ?? ""),
+                                )
+                              }
+                            >
+                              <FolderOpen data-icon="inline-start" aria-hidden="true" />
+                              {t("sunsam.mcpb.browse")}
+                            </Button>
+                          ) : null}
+                        </div>
                       )}
+                      {pending.result.detectedValues[key] !== undefined &&
+                      pending.result.detectedValues[key] === value ? (
+                        <p className="flex items-center gap-1 text-ui-sm text-foreground-subtle">
+                          <Sparkles className="size-3" aria-hidden="true" />
+                          {t("sunsam.mcpb.autoDetected")}
+                        </p>
+                      ) : null}
                       {field.description ? (
                         <p className="text-ui-sm text-foreground-subtle">{field.description}</p>
                       ) : null}

@@ -55,7 +55,7 @@ test("recognises .mcpb and legacy .dxt files only", () => {
 test("validates the manifest", () => {
   const manifest = parseSunsamMcpbManifest(audacityManifest);
   assert.equal(manifest.display_name, "Audacity Bridge");
-  assert.throws(() => parseSunsamMcpbManifest({ ...audacityManifest, name: "../evil" }), /name/u);
+  assert.throws(() => parseSunsamMcpbManifest({ ...audacityManifest, name: "  " }), /name/u);
   assert.throws(
     () =>
       parseSunsamMcpbManifest({ ...audacityManifest, server: { type: "node", mcp_config: {} } }),
@@ -127,4 +127,57 @@ test("MCP form args keep paths with spaces", () => {
   assert.deepEqual(splitSunsamMcpArgs(text), args);
   assert.deepEqual(splitSunsamMcpArgs("-y  mcp-server-ssh"), ["-y", "mcp-server-ssh"]);
   assert.equal(joinSunsamMcpArgs(["-y", "pkg"]), "-y pkg");
+});
+
+test("any manifest.name becomes a safe server key (Illustrator MCP)", async () => {
+  const { sunsamMcpbServerKey, isSunsamMcpbServerKey } = await import("@zcode/shared");
+  assert.equal(sunsamMcpbServerKey("Illustrator MCP"), "illustrator-mcp");
+  assert.equal(sunsamMcpbServerKey("audacity-mcp-server"), "audacity-mcp-server");
+  assert.equal(sunsamMcpbServerKey("Diseño Pro: v2!"), "diseno-pro-v2");
+  assert.match(sunsamMcpbServerKey("插画"), /^extension-[a-z0-9]+$/u);
+  for (const name of ["Illustrator MCP", "../../evil", "插画"]) {
+    assert.equal(isSunsamMcpbServerKey(sunsamMcpbServerKey(name)), true);
+  }
+  assert.doesNotThrow(() =>
+    parseSunsamMcpbManifest({ ...audacityManifest, name: "Illustrator MCP" }),
+  );
+});
+
+test("auto-detection reads paths and executables from the manifest descriptions", async () => {
+  const { extractWindowsPaths, extractExecutableNames, titleKeyword } =
+    await import("../../desktop/src/main/sunsamMcpbDetect.ts");
+  assert.deepEqual(
+    extractWindowsPaths(
+      String.raw`Install folder of Audacity 4. Leave empty to use C:\Program Files\Audacity 4.`,
+    ),
+    [String.raw`C:\Program Files\Audacity 4`],
+  );
+  assert.deepEqual(
+    extractWindowsPaths(
+      String.raw`Full path of vmde.exe. Leave empty to use the default install folder (C:\Program Files (x86)\Vector Magic).`,
+    ),
+    [String.raw`C:\Program Files (x86)\Vector Magic`],
+  );
+  assert.deepEqual(extractExecutableNames("Full path of vmde.exe or FFmpeg.exe"), [
+    "vmde.exe",
+    "ffmpeg.exe",
+  ]);
+  assert.equal(
+    titleKeyword({ type: "directory", title: "Audacity 4 folder" }, "audacity_dir"),
+    "audacity",
+  );
+});
+
+test("Windows File Explorer is shown in the app language", async () => {
+  const { localizeSunsamEditors } =
+    await import("../../desktop/src/main/sunsamLocalizedEditors.ts");
+  const editors = [
+    { id: "explorer", name: "资源管理器" },
+    { id: "vscode", name: "VS Code" },
+  ] as Parameters<typeof localizeSunsamEditors>[0];
+  assert.deepEqual(
+    localizeSunsamEditors(editors, "es-ES").map((editor) => editor.name),
+    ["Explorador de archivos", "VS Code"],
+  );
+  assert.equal(localizeSunsamEditors(editors, "zh-CN")[0]!.name, "资源管理器");
 });

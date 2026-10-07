@@ -1,5 +1,6 @@
 /* eslint-disable max-lines -- 桌面平台 IPC 集中装配，拆散会让权限边界更难审计；行数随平台能力增长。 */
 import { registerSunsamMcpbIpcHandlers } from "./sunsamMcpbIpc.js";
+import { localizeSunsamEditors } from "./sunsamLocalizedEditors.js";
 import { BrowserWindow, dialog, ipcMain, nativeTheme } from "electron";
 import { readZCodeStdioTapDevState } from "@zcode/services/node";
 import {
@@ -382,7 +383,10 @@ export function registerPlatformIpcHandlers(options: {
     const senderWindow = BrowserWindow.fromWebContents(event.sender);
     return resolveDesktopWindowChromeState(senderWindow?.isMaximized() ?? false);
   });
-  ipcMain.handle(PlatformChannels.GetInstalledEditors, () => getInstalledEditors());
+  // Sunsam: el Explorador de Windows se muestra con su nombre en el idioma de la app.
+  ipcMain.handle(PlatformChannels.GetInstalledEditors, async () =>
+    localizeSunsamEditors(await getInstalledEditors()),
+  );
   ipcMain.handle(
     PlatformChannels.GetApplicationIcon,
     (_event, request: string | ApplicationIconRequest) => getApplicationIcon(request),

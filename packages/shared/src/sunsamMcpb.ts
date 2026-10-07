@@ -11,6 +11,8 @@ export const SUNSAM_MCPB_CHANNELS = {
   install: "sunsam:mcpb:install",
   configure: "sunsam:mcpb:configure",
   uninstall: "sunsam:mcpb:uninstall",
+  browse: "sunsam:mcpb:browse",
+  relaunch: "sunsam:mcpb:relaunch",
 } as const;
 
 export const SUNSAM_MCPB_FILE_EXTENSIONS = [".mcpb", ".dxt"] as const;
@@ -61,7 +63,7 @@ export type SunsamMcpbUserValues = Record<string, SunsamMcpbUserValue>;
 
 /** Resultado de instalar (o actualizar) un paquete, enviado del proceso principal a la UI. */
 export interface SunsamMcpbInstallResult {
-  /** Clave del servidor MCP (= manifest.name). */
+  /** Clave del servidor MCP (sunsamMcpbServerKey(manifest.name)). */
   serverName: string;
   displayName: string;
   version: string;
@@ -69,8 +71,10 @@ export interface SunsamMcpbInstallResult {
   /** Versión instalada antes de esta subida; presente cuando es una actualización. */
   previousVersion?: string;
   userConfig: Record<string, SunsamMcpbUserConfigField>;
-  /** Valores guardados de una instalación anterior (o los `default` del manifest). */
+  /** Valores iniciales: guardados de una instalación anterior > detectados > `default` del manifest. */
   savedValues: SunsamMcpbUserValues;
+  /** Rutas encontradas automáticamente para campos `directory` / `file` (modo automático). */
+  detectedValues: Record<string, string>;
   /** Plataformas declaradas que no incluyen la actual (aviso, no bloqueo). */
   unsupportedPlatform?: string;
   iconDataUrl?: string;
@@ -89,9 +93,38 @@ export interface SunsamMcpbBridge {
     values: SunsamMcpbUserValues,
   ): Promise<SunsamMcpbIpcResult<McpServerConfig>>;
   uninstall(serverName: string): Promise<SunsamMcpbIpcResult<boolean>>;
+  /** Selector nativo de carpeta o archivo (modo manual). Devuelve null si se cancela. */
+  browse(
+    kind: "directory" | "file",
+    currentPath?: string,
+  ): Promise<SunsamMcpbIpcResult<string | null>>;
+  /** Reinicia Sunsam Code para que el agente cargue las extensiones instaladas. */
+  relaunch(): Promise<void>;
 }
 
-const SAFE_NAME = /^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/u;
+/**
+ * Clave estable del servidor MCP y de su carpeta a partir de `manifest.name`. El formato admite
+ * cualquier texto ("Illustrator MCP"), así que se normaliza: "Illustrator MCP" → "illustrator-mcp".
+ */
+export function sunsamMcpbServerKey(name: string): string {
+  const slug = name
+    .normalize("NFKD")
+    .replace(/[̀-ͯ]/gu, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9._-]+/gu, "-")
+    .replace(/^[-._]+|[-._]+$/gu, "")
+    .slice(0, 64)
+    .replace(/[-._]+$/gu, "");
+  if (slug) return slug;
+  // Nombres sin letras latinas (p. ej. sólo CJK): hash corto y estable.
+  let hash = 0;
+  for (const char of name) hash = (Math.imul(hash, 31) + char.codePointAt(0)!) >>> 0;
+  return `extension-${hash.toString(36)}`;
+}
+
+export function isSunsamMcpbServerKey(value: string): boolean {
+  return /^[a-z0-9][a-z0-9._-]{0,63}$/u.test(value);
+}
 
 export function isSunsamMcpbFileName(fileName: string): boolean {
   const lower = fileName.toLowerCase();
@@ -104,8 +137,12 @@ export function parseSunsamMcpbManifest(raw: unknown): SunsamMcpbManifest {
     throw new Error("manifest.json is not a JSON object");
   }
   const manifest = raw as Partial<SunsamMcpbManifest>;
-  if (typeof manifest.name !== "string" || !SAFE_NAME.test(manifest.name)) {
-    throw new Error("manifest.name is missing or contains unsupported characters");
+  if (
+    typeof manifest.name !== "string" ||
+    manifest.name.trim() === "" ||
+    manifest.name.length > 200
+  ) {
+    throw new Error("manifest.name is missing");
   }
   if (typeof manifest.version !== "string" || manifest.version.trim() === "") {
     throw new Error("manifest.version is missing");

@@ -829,6 +829,9 @@ contextBridge.exposeInMainWorld("zcode", {
       ipcRenderer.invoke(SUNSAM_MCPB_CHANNELS.configure, serverName, values),
     uninstall: (serverName: string) =>
       ipcRenderer.invoke(SUNSAM_MCPB_CHANNELS.uninstall, serverName),
+    browse: (kind: "directory" | "file", currentPath?: string) =>
+      ipcRenderer.invoke(SUNSAM_MCPB_CHANNELS.browse, kind, currentPath),
+    relaunch: () => ipcRenderer.invoke(SUNSAM_MCPB_CHANNELS.relaunch),
   } satisfies SunsamMcpbBridge,
   /** 同步标题栏亮暗色 */
   setTitleBarTheme: (theme: DesktopTitleBarTheme) =>
