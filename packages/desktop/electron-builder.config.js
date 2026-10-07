@@ -694,6 +694,23 @@ export default {
   win: {
     target: ["nsis"],
     artifactName: buildDesktopArtifactName("win"),
+    // Sunsam: firma local con un certificado del almacén de Windows (por huella SHA1, sin PFX) y
+    // sello de tiempo RFC 3161, para que la firma siga siendo válida cuando caduque el certificado.
+    // Sin SUNSAM_WIN_CERT_SHA1 (p. ej. en CI) el build sale sin firmar, como antes.
+    ...(process.env.SUNSAM_WIN_CERT_SHA1
+      ? {
+          signtoolOptions: {
+            certificateSha1: process.env.SUNSAM_WIN_CERT_SHA1,
+            rfc3161TimeStampServer:
+              process.env.SUNSAM_WIN_TIMESTAMP_URL || "http://timestamp.digicert.com",
+            signingHashAlgorithms: ["sha256"],
+          },
+        }
+      : {}),
+    // Con un certificado propio (no de una CA pública) electron-updater rechazaría las
+    // actualizaciones en equipos que no lo tienen como confiable; la integridad la sigue
+    // garantizando el sha512 de latest.yml, descargado por HTTPS desde GitHub Releases.
+    verifyUpdateCodeSignature: false,
   },
   linux: {
     target: ["AppImage", "deb", "rpm", "pacman"],
@@ -757,14 +774,12 @@ export default {
     installerHeaderIcon: "build/icon_installer.ico",
   },
   detectUpdateChannel: false,
+  // Sunsam: las actualizaciones salen de los GitHub Releases del fork (ver main/sunsamUpdateFeed.ts);
+  // así app-update.yml y latest.yml apuntan al mismo origen que usa el actualizador.
   publish: {
-    provider: "generic",
-    // 当前 OSS/CDN 对多 Range 请求返回 206，但 Content-Type 仍是 application/x-msdownload，
-    // electron-updater 会因缺少 multipart/byteranges 直接回退整包下载。关闭 multiple range 后仍走差分，
-    // 只是按单 Range 顺序拉取差异块，避免 Windows 用户更新时从约 15MB 退化成 300MB+ 全量包。
-    useMultipleRangeRequest: false,
-    // 新客户端运行时使用服务端 manifest provider；这里仅保留 electron-builder 必需的
-    // generic publish 占位，避免打包产物继续携带可配置的旧 stable feed。
-    url: "http://localhost:8081",
+    provider: "github",
+    owner: "jhonsu01",
+    repo: "SunsamCode",
+    releaseType: "release",
   },
 };

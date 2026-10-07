@@ -710,6 +710,9 @@ async function main() {
     "electron-builder.config.js",
     osBuilderFlagMap[os],
     archBuilderFlagMap[arch],
+    // Sunsam: el release se sube aparte (gh release / workflow); el build nunca publica.
+    "--publish",
+    "never",
   ];
 
   console.log(`[bundle] target=${os}/${arch}`);
