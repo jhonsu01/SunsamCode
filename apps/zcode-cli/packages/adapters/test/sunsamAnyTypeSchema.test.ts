@@ -34,3 +34,32 @@ test("typed, referenced and enumerated nodes are left untouched", () => {
   };
   assert.deepEqual(withExplicitAnyTypes(schema), schema);
 });
+
+test("draft-07 tuple items (z.tuple) become a single items schema accepted by Z.ai", () => {
+  // Esquema real de FilmCraft Bridge 1.1.0 (edit_video → texts[].position) que causaba [1210].
+  const position = {
+    type: "array",
+    items: [{ type: "number" }, { type: "number" }],
+    additionalItems: false,
+    minItems: 2,
+    maxItems: 2,
+  };
+  const result = withExplicitAnyTypes({ type: "object", properties: { position } }) as Record<string, any>;
+  assert.deepEqual(result.properties.position, {
+    type: "array",
+    items: { type: "number" },
+    minItems: 2,
+    maxItems: 2,
+  });
+  const mixed = withExplicitAnyTypes({
+    type: "array",
+    items: [{ type: "number" }, { type: "string" }],
+    additionalItems: false,
+  }) as Record<string, any>;
+  assert.deepEqual(mixed.items, { anyOf: [{ type: "number" }, { type: "string" }] });
+  assert.equal(mixed.maxItems, 2);
+  assert.equal("additionalItems" in mixed, false);
+  // prefixItems (2020-12) sí lo acepta Z.ai: se mantiene.
+  const modern = { type: "array", prefixItems: [{ type: "number" }], items: false };
+  assert.deepEqual(withExplicitAnyTypes(modern), modern);
+});

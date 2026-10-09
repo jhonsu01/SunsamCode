@@ -7,6 +7,12 @@
  * `Failed to initialize samplers: failed to parse grammar`。由于每次请求都会携带全部工具，
  * 一个工具（workflow / save_workflow / submit_result 的 args 字段）就会让所有模型都报错。
  * 修复依据：补上 `type: [全部 JSON 类型]` 与原 schema 语义完全相同，新旧 llama.cpp 都能转换。
+ *
+ * Sunsam (2026-10-09): también se convierte la forma tupla de draft-07 (`"items": [{…}, {…}]`,
+ * la que genera `z.tuple()`) a `"items": {…}` + `minItems`/`maxItems`. La API de Z.ai / GLM
+ * rechaza la petición completa con `[1210] Invalid API parameter` si UNA herramienta la usa, y
+ * como cada petición lleva todas las herramientas, un solo MCP dejaba el chat sin respuesta.
+ * `prefixItems` (2020-12) sí lo acepta y se deja igual.
  */
 import type { JsonSchema } from "@zcode/contracts";
 
@@ -38,9 +44,26 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+/** `"items": [a, b]` → `"items": a` (o `anyOf`) con el número de elementos acotado. */
+function normalizeTupleItems(next: Record<string, unknown>): void {
+  const tuple = next["items"];
+  if (!Array.isArray(tuple)) return;
+  const distinct = tuple.filter(
+    (schema, index) =>
+      tuple.findIndex((other) => JSON.stringify(other) === JSON.stringify(schema)) === index,
+  );
+  next["items"] =
+    distinct.length === 0 ? {} : distinct.length === 1 ? distinct[0] : { anyOf: distinct };
+  if (next["additionalItems"] === false && next["maxItems"] === undefined) {
+    next["maxItems"] = tuple.length;
+  }
+  delete next["additionalItems"];
+}
+
 function normalizeNode(node: unknown): unknown {
   if (!isRecord(node)) return node;
   const next: Record<string, unknown> = { ...node };
+  normalizeTupleItems(next);
   for (const key of SCHEMA_MAP_KEYS) {
     const map = next[key];
     if (isRecord(map)) {
