@@ -16,11 +16,12 @@ window.SUNSAM_I18N_EXTRA = {
     "hero.loading": "Procurando a versão mais recente…",
     "dl.title": "Downloads",
     "dl.lead":
-      "Instaladores do Release mais recente, compilados automaticamente com GitHub Actions para cada plataforma.",
-    "dl.win": "Instalador NSIS para x64.",
+      "Instaladores do Release mais recente: Windows compilado e assinado; macOS e Linux com GitHub Actions. O app se atualiza sozinho a partir daqui.",
+    "dl.win": "Instalador NSIS assinado para x64.",
     "dl.mac": "Apple Silicon (arm64) e Intel (x64), em .dmg ou .zip.",
     "dl.linux": "AppImage, .deb, .rpm e pacman para x64 e arm64.",
-    "dl.unsigned": "Os instaladores não são assinados.",
+    "dl.unsigned":
+      "O instalador do Windows é assinado com um certificado próprio (não de uma CA pública); macOS e Linux não são assinados.",
     "dl.smartscreen": "SmartScreen → «Mais informações» → «Executar assim mesmo»",
     "feat.title": "O que inclui",
     "feat.lead":
@@ -93,6 +94,34 @@ window.SUNSAM_I18N_EXTRA = {
     "rel.for": "Baixar para {os}",
     "rel.missing": "Ainda não disponível neste Release.",
     "rel.all": "Todos os arquivos",
+    "nav.ext": "Extensões",
+    "feat.ext.t": "Extensões .mcpb / .dxt",
+    "feat.ext.d":
+      "Instale conectores MCP empacotados como no Claude Desktop: com um botão ou arrastando o arquivo.",
+    "feat.update.t": "Atualizações pelo GitHub",
+    "feat.update.d":
+      "O app procura novas versões nos Releases deste projeto e mostra o botão de atualizar.",
+    "ext.title": "Extensões MCP .mcpb e .dxt",
+    "ext.lead":
+      "Instale conectores MCP empacotados como as Extensões do Claude Desktop, em Configurações → Servidores MCP.",
+    "ext.c1.t": "Arraste e solte",
+    "ext.c1.d": "Clique em «Instalar extensão» ou solte um ou mais arquivos .mcpb / .dxt na tela.",
+    "ext.c2.t": "Caminhos automáticos ou manuais",
+    "ext.c2.d":
+      "As pastas e programas que a extensão pede são detectados sozinhos; «Procurar…» para escolher outro caminho.",
+    "ext.c3.t": "Atualizar é enviar de novo",
+    "ext.c3.d":
+      "Envie o mesmo pacote com uma versão nova: ele é atualizado e mantém sua configuração.",
+    "ext.c4.t": "Sem instalar Node.js",
+    "ext.c4.d": "Se o computador não tem Node.js, a extensão usa o Node incluído no Sunsam Code.",
+    "ext.c5.t": "Compatível com Z.ai (GLM)",
+    "ext.c5.d":
+      "Adapta os esquemas de ferramentas que a API do GLM rejeita (erro 1210), assim uma extensão não trava o chat.",
+    "ext.c6.t": "Reinício e desinstalação",
+    "ext.c6.d":
+      "Um aviso com «Reiniciar agora» carrega as novas extensões; ao excluir o servidor, seus arquivos são removidos.",
+    "ext.tested":
+      "Testadas com Audacity Bridge, Vector Magic Bridge, FilmCraft Bridge e Design Bridge (Adobe Illustrator).",
   },
   fr: {
     "nav.downloads": "Téléchargements",
@@ -110,11 +139,12 @@ window.SUNSAM_I18N_EXTRA = {
     "hero.loading": "Recherche de la dernière version…",
     "dl.title": "Téléchargements",
     "dl.lead":
-      "Installeurs de la dernière Release, compilés automatiquement avec GitHub Actions pour chaque plateforme.",
-    "dl.win": "Installeur NSIS pour x64.",
+      "Installeurs de la dernière Release : Windows compilé et signé ; macOS et Linux avec GitHub Actions. L’app se met à jour seule depuis ici.",
+    "dl.win": "Installeur NSIS signé pour x64.",
     "dl.mac": "Apple Silicon (arm64) et Intel (x64), en .dmg ou .zip.",
     "dl.linux": "AppImage, .deb, .rpm et pacman pour x64 et arm64.",
-    "dl.unsigned": "Les installeurs ne sont pas signés.",
+    "dl.unsigned":
+      "L’installeur Windows est signé avec un certificat propre (pas d’une AC publique) ; macOS et Linux ne sont pas signés.",
     "dl.smartscreen": "SmartScreen → « Informations complémentaires » → « Exécuter quand même »",
     "feat.title": "Ce qui est inclus",
     "feat.lead":
@@ -188,6 +218,36 @@ window.SUNSAM_I18N_EXTRA = {
     "rel.for": "Télécharger pour {os}",
     "rel.missing": "Pas encore disponible dans cette Release.",
     "rel.all": "Tous les fichiers",
+    "nav.ext": "Extensions",
+    "feat.ext.t": "Extensions .mcpb / .dxt",
+    "feat.ext.d":
+      "Installez des connecteurs MCP empaquetés comme dans Claude Desktop : avec un bouton ou en glissant le fichier.",
+    "feat.update.t": "Mises à jour depuis GitHub",
+    "feat.update.d":
+      "L’app cherche les nouvelles versions dans les Releases de ce projet et affiche le bouton de mise à jour.",
+    "ext.title": "Extensions MCP .mcpb et .dxt",
+    "ext.lead":
+      "Installez des connecteurs MCP empaquetés comme les Extensions de Claude Desktop, dans Paramètres → Serveurs MCP.",
+    "ext.c1.t": "Glisser-déposer",
+    "ext.c1.d":
+      "Cliquez sur « Installer une extension » ou déposez un ou plusieurs fichiers .mcpb / .dxt sur l’écran.",
+    "ext.c2.t": "Chemins automatiques ou manuels",
+    "ext.c2.d":
+      "Les dossiers et programmes demandés par l’extension sont détectés automatiquement ; « Parcourir… » pour en choisir un autre.",
+    "ext.c3.t": "Mettre à jour en renvoyant",
+    "ext.c3.d":
+      "Renvoyez le même paquet dans une nouvelle version : il est mis à jour et garde votre configuration.",
+    "ext.c4.t": "Sans installer Node.js",
+    "ext.c4.d":
+      "Si l’ordinateur n’a pas Node.js, l’extension utilise le Node intégré à Sunsam Code.",
+    "ext.c5.t": "Compatible Z.ai (GLM)",
+    "ext.c5.d":
+      "Les schémas d’outils refusés par l’API GLM (erreur 1210) sont adaptés : une extension ne bloque jamais le chat.",
+    "ext.c6.t": "Redémarrage et désinstallation",
+    "ext.c6.d":
+      "Un avis « Redémarrer maintenant » charge les nouvelles extensions ; supprimer le serveur efface aussi ses fichiers.",
+    "ext.tested":
+      "Testées avec Audacity Bridge, Vector Magic Bridge, FilmCraft Bridge et Design Bridge (Adobe Illustrator).",
   },
   de: {
     "nav.downloads": "Downloads",
@@ -205,11 +265,12 @@ window.SUNSAM_I18N_EXTRA = {
     "hero.loading": "Suche nach der neuesten Version…",
     "dl.title": "Downloads",
     "dl.lead":
-      "Installer aus dem neuesten Release, automatisch mit GitHub Actions für jede Plattform gebaut.",
-    "dl.win": "NSIS-Installer für x64.",
+      "Installer aus dem neuesten Release: Windows gebaut und signiert; macOS und Linux über GitHub Actions. Die App aktualisiert sich von hier aus selbst.",
+    "dl.win": "Signierter NSIS-Installer für x64.",
     "dl.mac": "Apple Silicon (arm64) und Intel (x64), als .dmg oder .zip.",
     "dl.linux": "AppImage, .deb, .rpm und pacman für x64 und arm64.",
-    "dl.unsigned": "Die Installer sind nicht signiert.",
+    "dl.unsigned":
+      "Der Windows-Installer ist mit einem eigenen Zertifikat signiert (keine öffentliche CA); macOS- und Linux-Builds sind nicht signiert.",
     "dl.smartscreen": "SmartScreen → „Weitere Informationen“ → „Trotzdem ausführen“",
     "feat.title": "Was enthalten ist",
     "feat.lead":
@@ -282,6 +343,36 @@ window.SUNSAM_I18N_EXTRA = {
     "rel.for": "Für {os} herunterladen",
     "rel.missing": "In diesem Release noch nicht verfügbar.",
     "rel.all": "Alle Dateien",
+    "nav.ext": "Erweiterungen",
+    "feat.ext.t": ".mcpb / .dxt-Erweiterungen",
+    "feat.ext.d":
+      "Gepackte MCP-Konnektoren wie in Claude Desktop installieren: per Schaltfläche oder durch Ziehen der Datei.",
+    "feat.update.t": "Updates von GitHub",
+    "feat.update.d":
+      "Die App sucht neue Versionen in den Releases dieses Projekts und zeigt die Update-Schaltfläche an.",
+    "ext.title": "MCP-Erweiterungen: .mcpb und .dxt",
+    "ext.lead":
+      "Gepackte MCP-Konnektoren wie die Erweiterungen von Claude Desktop installieren, unter Einstellungen → MCP-Server.",
+    "ext.c1.t": "Ziehen und ablegen",
+    "ext.c1.d":
+      "Auf „Erweiterung installieren“ klicken oder eine oder mehrere .mcpb- / .dxt-Dateien auf den Bildschirm ziehen.",
+    "ext.c2.t": "Automatische oder manuelle Pfade",
+    "ext.c2.d":
+      "Ordner und Programme, die die Erweiterung braucht, werden automatisch erkannt; „Durchsuchen…“ wählt einen anderen Pfad.",
+    "ext.c3.t": "Aktualisieren durch erneutes Hochladen",
+    "ext.c3.d":
+      "Dasselbe Paket in neuer Version hochladen: Es wird aktualisiert und behält deine Einstellungen.",
+    "ext.c4.t": "Ohne Node.js-Installation",
+    "ext.c4.d":
+      "Ist auf dem Rechner kein Node.js installiert, nutzt die Erweiterung das in Sunsam Code enthaltene Node.",
+    "ext.c5.t": "Kompatibel mit Z.ai (GLM)",
+    "ext.c5.d":
+      "Tool-Schemas, die die GLM-API ablehnt (Fehler 1210), werden angepasst – eine Erweiterung blockiert nie den Chat.",
+    "ext.c6.t": "Neustart und Deinstallation",
+    "ext.c6.d":
+      "Ein Hinweis „Jetzt neu starten“ lädt neue Erweiterungen; beim Löschen des Servers werden auch seine Dateien entfernt.",
+    "ext.tested":
+      "Getestet mit Audacity Bridge, Vector Magic Bridge, FilmCraft Bridge und Design Bridge (Adobe Illustrator).",
   },
   it: {
     "nav.downloads": "Download",
@@ -299,11 +390,12 @@ window.SUNSAM_I18N_EXTRA = {
     "hero.loading": "Ricerca dell'ultima versione…",
     "dl.title": "Download",
     "dl.lead":
-      "Installer dell'ultima Release, compilati automaticamente con GitHub Actions per ogni piattaforma.",
-    "dl.win": "Installer NSIS per x64.",
+      "Installer dell’ultima Release: Windows compilato e firmato; macOS e Linux con GitHub Actions. L’app si aggiorna da sola da qui.",
+    "dl.win": "Installer NSIS firmato per x64.",
     "dl.mac": "Apple Silicon (arm64) e Intel (x64), in .dmg o .zip.",
     "dl.linux": "AppImage, .deb, .rpm e pacman per x64 e arm64.",
-    "dl.unsigned": "Gli installer non sono firmati.",
+    "dl.unsigned":
+      "L’installer per Windows è firmato con un certificato proprio (non di una CA pubblica); macOS e Linux non sono firmati.",
     "dl.smartscreen": "SmartScreen → «Ulteriori informazioni» → «Esegui comunque»",
     "feat.title": "Cosa include",
     "feat.lead":
@@ -376,6 +468,35 @@ window.SUNSAM_I18N_EXTRA = {
     "rel.for": "Scarica per {os}",
     "rel.missing": "Non ancora disponibile in questa Release.",
     "rel.all": "Tutti i file",
+    "nav.ext": "Estensioni",
+    "feat.ext.t": "Estensioni .mcpb / .dxt",
+    "feat.ext.d":
+      "Installa connettori MCP pacchettizzati come in Claude Desktop: con un pulsante o trascinando il file.",
+    "feat.update.t": "Aggiornamenti da GitHub",
+    "feat.update.d":
+      "L’app cerca nuove versioni nelle Release di questo progetto e mostra il pulsante di aggiornamento.",
+    "ext.title": "Estensioni MCP .mcpb e .dxt",
+    "ext.lead":
+      "Installa connettori MCP pacchettizzati come le Estensioni di Claude Desktop, in Impostazioni → Server MCP.",
+    "ext.c1.t": "Trascina e rilascia",
+    "ext.c1.d":
+      "Fai clic su «Installa estensione» o rilascia uno o più file .mcpb / .dxt sullo schermo.",
+    "ext.c2.t": "Percorsi automatici o manuali",
+    "ext.c2.d":
+      "Le cartelle e i programmi richiesti dall’estensione vengono rilevati da soli; «Sfoglia…» per sceglierne un altro.",
+    "ext.c3.t": "Aggiornare è ricaricare",
+    "ext.c3.d":
+      "Carica lo stesso pacchetto in una nuova versione: viene aggiornato e mantiene la tua configurazione.",
+    "ext.c4.t": "Senza installare Node.js",
+    "ext.c4.d": "Se il computer non ha Node.js, l’estensione usa il Node incluso in Sunsam Code.",
+    "ext.c5.t": "Compatibile con Z.ai (GLM)",
+    "ext.c5.d":
+      "Adatta gli schemi degli strumenti che l’API GLM rifiuta (errore 1210), così un’estensione non blocca la chat.",
+    "ext.c6.t": "Riavvio e disinstallazione",
+    "ext.c6.d":
+      "Un avviso «Riavvia ora» carica le nuove estensioni; eliminando il server si cancellano anche i suoi file.",
+    "ext.tested":
+      "Testate con Audacity Bridge, Vector Magic Bridge, FilmCraft Bridge e Design Bridge (Adobe Illustrator).",
   },
   ja: {
     "nav.downloads": "ダウンロード",
@@ -393,11 +514,12 @@ window.SUNSAM_I18N_EXTRA = {
     "hero.loading": "最新バージョンを確認中…",
     "dl.title": "ダウンロード",
     "dl.lead":
-      "最新 Release のインストーラー。GitHub Actions で各プラットフォーム向けに自動ビルドされます。",
-    "dl.win": "x64 用 NSIS インストーラー。",
+      "最新 Release のインストーラー：Windows 版は署名済み、macOS と Linux は GitHub Actions でビルド。アプリはここから自動更新されます。",
+    "dl.win": "署名済みの x64 用 NSIS インストーラー。",
     "dl.mac": "Apple Silicon (arm64) と Intel (x64)、.dmg または .zip。",
     "dl.linux": "x64 / arm64 向け AppImage、.deb、.rpm、pacman。",
-    "dl.unsigned": "インストーラーは署名されていません。",
+    "dl.unsigned":
+      "Windows インストーラーは作者独自の証明書で署名されています（公的 CA ではありません）。macOS と Linux 版は未署名です。",
     "dl.smartscreen": "SmartScreen →「詳細情報」→「実行」",
     "feat.title": "含まれるもの",
     "feat.lead": "ZCode のすべてに加え、upstream と同期し続ける独立したカスタマイズ層。",
@@ -469,6 +591,35 @@ window.SUNSAM_I18N_EXTRA = {
     "rel.for": "{os} 版をダウンロード",
     "rel.missing": "この Release ではまだ提供されていません。",
     "rel.all": "すべてのファイル",
+    "nav.ext": "拡張機能",
+    "feat.ext.t": ".mcpb / .dxt 拡張機能",
+    "feat.ext.d":
+      "Claude Desktop と同じように、パッケージ化された MCP コネクターをボタンかドラッグ＆ドロップでインストール。",
+    "feat.update.t": "GitHub からの更新",
+    "feat.update.d":
+      "このプロジェクトの Releases で新しいバージョンを探し、更新ボタンを表示します。",
+    "ext.title": "MCP 拡張機能：.mcpb と .dxt",
+    "ext.lead":
+      "設定 → MCP サーバーで、Claude Desktop の拡張機能と同じ形式の MCP コネクターをインストールできます。",
+    "ext.c1.t": "ドラッグ＆ドロップ",
+    "ext.c1.d":
+      "「拡張機能をインストール」を押すか、.mcpb / .dxt ファイルを画面にドロップします（複数可）。",
+    "ext.c2.t": "自動または手動のパス",
+    "ext.c2.d":
+      "拡張機能が必要とするフォルダーやプログラムは自動検出。「参照…」で別のパスも選べます。",
+    "ext.c3.t": "再アップロードで更新",
+    "ext.c3.d":
+      "同じパッケージの新しいバージョンをアップロードすると、設定を保ったまま更新されます。",
+    "ext.c4.t": "Node.js のインストール不要",
+    "ext.c4.d": "PC に Node.js がなくても、Sunsam Code 内蔵の Node で動作します。",
+    "ext.c5.t": "Z.ai（GLM）に対応",
+    "ext.c5.d":
+      "GLM API が拒否するツールスキーマ（エラー 1210）を自動調整し、1 つの拡張機能でチャットが止まることを防ぎます。",
+    "ext.c6.t": "再起動とアンインストール",
+    "ext.c6.d":
+      "「今すぐ再起動」で新しい拡張機能を読み込み、サーバーを削除するとファイルも削除されます。",
+    "ext.tested":
+      "動作確認済み：Audacity Bridge、Vector Magic Bridge、FilmCraft Bridge、Design Bridge（Adobe Illustrator）。",
   },
   ko: {
     "nav.downloads": "다운로드",
@@ -485,11 +636,13 @@ window.SUNSAM_I18N_EXTRA = {
     "hero.github": "GitHub에서 보기",
     "hero.loading": "최신 버전을 찾는 중…",
     "dl.title": "다운로드",
-    "dl.lead": "최신 Release의 설치 파일. GitHub Actions로 모든 플랫폼용으로 자동 빌드됩니다.",
-    "dl.win": "x64용 NSIS 설치 프로그램.",
+    "dl.lead":
+      "최신 Release의 설치 파일: Windows는 빌드 후 서명, macOS와 Linux는 GitHub Actions로 빌드합니다. 앱은 여기서 자동으로 업데이트됩니다.",
+    "dl.win": "서명된 x64용 NSIS 설치 프로그램.",
     "dl.mac": "Apple Silicon(arm64)과 Intel(x64), .dmg 또는 .zip.",
     "dl.linux": "x64·arm64용 AppImage, .deb, .rpm, pacman.",
-    "dl.unsigned": "설치 파일은 서명되지 않았습니다.",
+    "dl.unsigned":
+      "Windows 설치 프로그램은 작성자 자체 인증서로 서명되어 있습니다(공인 CA 아님). macOS와 Linux 빌드는 서명되지 않았습니다.",
     "dl.smartscreen": "SmartScreen → '추가 정보' → '실행'",
     "feat.title": "포함된 기능",
     "feat.lead": "ZCode의 모든 기능에 upstream과 동기화되는 독립 커스터마이징 레이어를 더했습니다.",
@@ -559,5 +712,30 @@ window.SUNSAM_I18N_EXTRA = {
     "rel.for": "{os}용 다운로드",
     "rel.missing": "이 Release에서는 아직 제공되지 않습니다.",
     "rel.all": "모든 파일",
+    "nav.ext": "확장",
+    "feat.ext.t": ".mcpb / .dxt 확장",
+    "feat.ext.d":
+      "Claude Desktop처럼 패키지된 MCP 커넥터를 버튼이나 파일 끌어다 놓기로 설치합니다.",
+    "feat.update.t": "GitHub에서 업데이트",
+    "feat.update.d": "앱이 이 프로젝트의 Releases에서 새 버전을 찾아 업데이트 버튼을 표시합니다.",
+    "ext.title": "MCP 확장: .mcpb 및 .dxt",
+    "ext.lead": "설정 → MCP 서버에서 Claude Desktop 확장과 같은 형식의 MCP 커넥터를 설치합니다.",
+    "ext.c1.t": "끌어다 놓기",
+    "ext.c1.d": "“확장 설치”를 누르거나 .mcpb / .dxt 파일을 하나 이상 화면에 끌어다 놓으세요.",
+    "ext.c2.t": "자동 또는 수동 경로",
+    "ext.c2.d":
+      "확장에 필요한 폴더와 프로그램을 자동으로 감지하며, “찾아보기…”로 다른 경로를 고를 수 있습니다.",
+    "ext.c3.t": "다시 올리면 업데이트",
+    "ext.c3.d": "같은 패키지의 새 버전을 올리면 설정을 유지한 채 업데이트됩니다.",
+    "ext.c4.t": "Node.js 설치 불필요",
+    "ext.c4.d": "컴퓨터에 Node.js가 없으면 Sunsam Code에 포함된 Node를 사용합니다.",
+    "ext.c5.t": "Z.ai(GLM) 호환",
+    "ext.c5.d":
+      "GLM API가 거부하는 도구 스키마(오류 1210)를 자동으로 맞춰, 확장 하나 때문에 채팅이 멈추지 않습니다.",
+    "ext.c6.t": "재시작과 제거",
+    "ext.c6.d":
+      "“지금 다시 시작” 알림으로 새 확장을 불러오고, 서버를 삭제하면 파일도 함께 삭제됩니다.",
+    "ext.tested":
+      "테스트 완료: Audacity Bridge, Vector Magic Bridge, FilmCraft Bridge, Design Bridge(Adobe Illustrator).",
   },
 };

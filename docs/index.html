@@ -518,6 +518,7 @@
         <nav class="links">
           <a href="#descargas" data-i18n="nav.downloads">Descargas</a>
           <a href="#funciones" data-i18n="nav.features">Funciones</a>
+          <a href="#extensiones" data-i18n="nav.ext">Extensiones</a>
           <a href="#mesh" data-i18n="nav.mesh">Sunsam Mesh</a>
           <a href="#paper" data-i18n="nav.paper">Paper</a>
           <a href="#empezar" data-i18n="nav.start">Empezar</a>
@@ -599,13 +600,13 @@
         <div class="wrap">
           <h2 data-i18n="dl.title">Descargas</h2>
           <p class="section-lead" data-i18n="dl.lead">
-            Instaladores del último Release, compilados automáticamente con GitHub Actions para cada
-            plataforma.
+            Instaladores del último Release: Windows compilado y firmado; macOS y Linux con GitHub
+            Actions. La app se actualiza sola desde aquí.
           </p>
           <div class="grid cols-3">
             <div class="card os-card">
               <h3>Windows</h3>
-              <p data-i18n="dl.win">Instalador NSIS para x64.</p>
+              <p data-i18n="dl.win">Instalador NSIS firmado para x64.</p>
               <ul class="assets" id="assets-win"></ul>
             </div>
             <div class="card os-card">
@@ -620,7 +621,10 @@
             </div>
           </div>
           <div class="note">
-            <span data-i18n="dl.unsigned">Los instaladores no están firmados.</span>
+            <span data-i18n="dl.unsigned"
+              >El instalador de Windows está firmado con un certificado propio (no de una CA
+              pública); macOS y Linux no están firmados.</span
+            >
             <strong>macOS:</strong>
             <code>xattr -rd com.apple.quarantine "/Applications/Sunsam Code.app"</code> ·
             <strong>Windows:</strong>
@@ -639,7 +643,7 @@
             Todo lo de ZCode, más una capa de personalización aislada que se mantiene al día con
             upstream.
           </p>
-          <div class="grid cols-4">
+          <div class="grid cols-3">
             <div class="card">
               <div class="icon">
                 <svg
@@ -735,6 +739,117 @@
                 Sunsam.
               </p>
             </div>
+            <div class="card">
+              <div class="icon">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M21 8 12 3 3 8v8l9 5 9-5z" />
+                  <path d="M3 8l9 5 9-5M12 13v8" />
+                </svg>
+              </div>
+              <h3 data-i18n="feat.ext.t">Extensiones .mcpb / .dxt</h3>
+              <p data-i18n="feat.ext.d">
+                Instala conectores MCP empaquetados como en Claude Desktop: con un botón o
+                arrastrando el archivo.
+              </p>
+            </div>
+            <div class="card">
+              <div class="icon">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M12 3v12M7 10l5 5 5-5" />
+                  <path d="M5 21h14" />
+                </svg>
+              </div>
+              <h3 data-i18n="feat.update.t">Actualizaciones desde GitHub</h3>
+              <p data-i18n="feat.update.d">
+                La app busca versiones nuevas en los Releases de este proyecto y muestra el botón de
+                actualizar.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="extensiones">
+        <div class="wrap">
+          <h2 data-i18n="ext.title">Extensiones MCP .mcpb y .dxt</h2>
+          <p class="section-lead" data-i18n="ext.lead">
+            Instala conectores MCP empaquetados igual que las Extensiones de Claude Desktop, en
+            Ajustes → Servidores MCP.
+          </p>
+          <div class="grid cols-3">
+            <div class="card">
+              <div class="step-num">01</div>
+              <h3 data-i18n="ext.c1.t">Arrastra y suelta</h3>
+              <p data-i18n="ext.c1.d">
+                Pulsa «Instalar extensión» o suelta uno o varios archivos .mcpb / .dxt sobre la
+                pantalla.
+              </p>
+            </div>
+            <div class="card">
+              <div class="step-num">02</div>
+              <h3 data-i18n="ext.c2.t">Rutas automáticas o manuales</h3>
+              <p data-i18n="ext.c2.d">
+                Las carpetas y programas que pide la extensión se detectan solos; «Examinar…» para
+                elegir otra ruta.
+              </p>
+            </div>
+            <div class="card">
+              <div class="step-num">03</div>
+              <h3 data-i18n="ext.c3.t">Actualizar es volver a subir</h3>
+              <p data-i18n="ext.c3.d">
+                Sube el mismo paquete con una versión nueva: se actualiza y conserva tu
+                configuración.
+              </p>
+            </div>
+            <div class="card">
+              <div class="step-num">04</div>
+              <h3 data-i18n="ext.c4.t">Sin instalar Node.js</h3>
+              <p data-i18n="ext.c4.d">
+                Si el equipo no tiene Node.js, la extensión usa el Node incluido en Sunsam Code.
+              </p>
+            </div>
+            <div class="card">
+              <div class="step-num">05</div>
+              <h3 data-i18n="ext.c5.t">Compatible con Z.ai (GLM)</h3>
+              <p data-i18n="ext.c5.d">
+                Adapta los esquemas de herramientas que la API de GLM rechaza (error 1210), así una
+                extensión no bloquea el chat.
+              </p>
+            </div>
+            <div class="card">
+              <div class="step-num">06</div>
+              <h3 data-i18n="ext.c6.t">Reinicio y desinstalación</h3>
+              <p data-i18n="ext.c6.d">
+                Un aviso con «Reiniciar ahora» carga las extensiones nuevas; al borrar el servidor
+                se eliminan sus archivos.
+              </p>
+            </div>
+          </div>
+          <div class="note">
+            <span data-i18n="ext.tested"
+              >Probadas con Audacity Bridge, Vector Magic Bridge, FilmCraft Bridge y Design Bridge
+              (Adobe Illustrator).</span
+            >
           </div>
         </div>
       </section>
@@ -967,11 +1082,12 @@ pnpm sunsam:mesh</pre
             "hero.loading": "Looking for the latest version…",
             "dl.title": "Downloads",
             "dl.lead":
-              "Installers from the latest Release, built automatically with GitHub Actions for every platform.",
-            "dl.win": "NSIS installer for x64.",
+              "Installers from the latest Release: Windows built and signed; macOS and Linux with GitHub Actions. The app updates itself from here.",
+            "dl.win": "Signed NSIS installer for x64.",
             "dl.mac": "Apple Silicon (arm64) and Intel (x64), as .dmg or .zip.",
             "dl.linux": "AppImage, .deb, .rpm and pacman for x64 and arm64.",
-            "dl.unsigned": "Installers are not code-signed.",
+            "dl.unsigned":
+              "The Windows installer is signed with the author's own certificate (not a public CA); macOS and Linux builds are not signed.",
             "dl.smartscreen": "SmartScreen → “More info” → “Run anyway”",
             "feat.title": "What's included",
             "feat.lead":
@@ -1045,6 +1161,36 @@ pnpm sunsam:mesh</pre
             "rel.for": "Download for {os}",
             "rel.missing": "Not available in this Release yet.",
             "rel.all": "All files",
+            "nav.ext": "Extensions",
+            "feat.ext.t": ".mcpb / .dxt extensions",
+            "feat.ext.d":
+              "Install packaged MCP connectors like in Claude Desktop: with a button or by dragging the file.",
+            "feat.update.t": "Updates from GitHub",
+            "feat.update.d":
+              "The app looks for new versions in this project's Releases and shows the update button.",
+            "ext.title": "MCP extensions: .mcpb and .dxt",
+            "ext.lead":
+              "Install packaged MCP connectors just like Claude Desktop Extensions, under Settings → MCP servers.",
+            "ext.c1.t": "Drag and drop",
+            "ext.c1.d":
+              "Click “Install extension” or drop one or more .mcpb / .dxt files onto the screen.",
+            "ext.c2.t": "Automatic or manual paths",
+            "ext.c2.d":
+              "Folders and programs the extension asks for are detected automatically; “Browse…” picks another path.",
+            "ext.c3.t": "Update by uploading again",
+            "ext.c3.d":
+              "Upload the same package with a new version: it is updated and keeps your settings.",
+            "ext.c4.t": "No Node.js required",
+            "ext.c4.d":
+              "If the computer has no Node.js, the extension runs on the Node bundled with Sunsam Code.",
+            "ext.c5.t": "Works with Z.ai (GLM)",
+            "ext.c5.d":
+              "Tool schemas the GLM API rejects (error 1210) are adapted, so one extension never blocks the chat.",
+            "ext.c6.t": "Restart and uninstall",
+            "ext.c6.d":
+              "A “Restart now” prompt loads new extensions; deleting the server also removes its files.",
+            "ext.tested":
+              "Tested with Audacity Bridge, Vector Magic Bridge, FilmCraft Bridge and Design Bridge (Adobe Illustrator).",
           },
           zh: {
             "nav.downloads": "下载",
@@ -1061,11 +1207,13 @@ pnpm sunsam:mesh</pre
             "hero.github": "在 GitHub 查看",
             "hero.loading": "正在获取最新版本…",
             "dl.title": "下载",
-            "dl.lead": "来自最新 Release 的安装包，由 GitHub Actions 为各平台自动构建。",
-            "dl.win": "x64 NSIS 安装程序。",
+            "dl.lead":
+              "最新 Release 的安装包：Windows 版已签名；macOS 与 Linux 由 GitHub Actions 构建。应用会从这里自动更新。",
+            "dl.win": "已签名的 x64 NSIS 安装程序。",
             "dl.mac": "Apple Silicon (arm64) 与 Intel (x64)，提供 .dmg 或 .zip。",
             "dl.linux": "x64 与 arm64 的 AppImage、.deb、.rpm 和 pacman 包。",
-            "dl.unsigned": "安装包未签名。",
+            "dl.unsigned":
+              "Windows 安装包使用作者自有证书签名（非公共 CA）；macOS 与 Linux 安装包未签名。",
             "dl.smartscreen": "SmartScreen → “更多信息” → “仍要运行”",
             "feat.title": "包含内容",
             "feat.lead": "ZCode 的全部功能，外加一层与上游保持同步的独立定制层。",
@@ -1133,6 +1281,29 @@ pnpm sunsam:mesh</pre
             "rel.for": "下载 {os} 版",
             "rel.missing": "此 Release 中暂不可用。",
             "rel.all": "全部文件",
+            "nav.ext": "扩展",
+            "feat.ext.t": ".mcpb / .dxt 扩展",
+            "feat.ext.d": "像 Claude Desktop 一样安装打包的 MCP 连接器：点击按钮或直接拖放文件。",
+            "feat.update.t": "从 GitHub 更新",
+            "feat.update.d": "应用会在本项目的 Releases 中查找新版本，并显示更新按钮。",
+            "ext.title": "MCP 扩展：.mcpb 与 .dxt",
+            "ext.lead":
+              "在“设置 → MCP 服务器”中安装打包的 MCP 连接器，与 Claude Desktop 的扩展相同。",
+            "ext.c1.t": "拖放安装",
+            "ext.c1.d": "点击“安装扩展”，或将一个或多个 .mcpb / .dxt 文件拖到页面上。",
+            "ext.c2.t": "自动或手动路径",
+            "ext.c2.d": "扩展所需的文件夹和程序会自动检测；也可通过“浏览…”选择其他路径。",
+            "ext.c3.t": "再次上传即更新",
+            "ext.c3.d": "上传同一扩展的新版本：自动更新并保留你的配置。",
+            "ext.c4.t": "无需安装 Node.js",
+            "ext.c4.d": "若电脑未安装 Node.js，扩展会使用 Sunsam Code 自带的 Node。",
+            "ext.c5.t": "兼容 Z.ai（GLM）",
+            "ext.c5.d":
+              "自动适配 GLM API 拒绝的工具 schema（错误 1210），单个扩展不会导致对话失败。",
+            "ext.c6.t": "重启与卸载",
+            "ext.c6.d": "“立即重启”提示会加载新扩展；删除服务器时也会删除其文件。",
+            "ext.tested":
+              "已测试：Audacity Bridge、Vector Magic Bridge、FilmCraft Bridge 与 Design Bridge（Adobe Illustrator）。",
           },
         };
         const ES_DYNAMIC = {

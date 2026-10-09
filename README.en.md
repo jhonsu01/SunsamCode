@@ -23,28 +23,59 @@ Installers are published under **[Releases](https://github.com/jhonsu01/SunsamCo
 
 | OS      | Architecture                        | File                                        |
 | ------- | ----------------------------------- | ------------------------------------------- |
-| Windows | x64                                 | `Sunsam.Code-<version>-win-x64.exe`         |
+| Windows | x64                                 | `Sunsam-Code-<version>-win-x64.exe`         |
 | macOS   | Apple Silicon (arm64) / Intel (x64) | `.dmg` or `.zip`                            |
 | Linux   | x64 / arm64                         | `.AppImage`, `.deb`, `.rpm`, `.pkg.tar.zst` |
 
-> Installers are **not code-signed**.
+> The **Windows installer is signed** (Authenticode SHA-256 with a timestamp) with the author's own
+> certificate, not a public CA; macOS and Linux builds are not signed.
 > **macOS:** after copying the app to Applications run
 > `xattr -rd com.apple.quarantine "/Applications/Sunsam Code.app"`.
 > **Windows:** SmartScreen → _More info_ → _Run anyway_.
 > **Linux (AppImage):** `chmod +x Sunsam*.AppImage && ./Sunsam*.AppImage`.
 
-Every `v*` tag builds Windows, macOS and Linux with GitHub Actions and publishes the Release
-([workflow](.github/workflows/sunsam-desktop-build.yml)).
+The app **updates itself** from these Releases: on Windows and with the Linux AppImage the update button
+appears (on launch, every hour or via _Help → Check for updates_); on macOS download the new `.dmg`.
+Windows is built and signed locally; macOS and Linux come from the [workflow](.github/workflows/sunsam-desktop-build.yml), run manually.
 
 ## What changes compared to ZCode
 
-|                  | ZCode                                          | Sunsam Code                                                                  |
-| ---------------- | ---------------------------------------------- | ---------------------------------------------------------------------------- |
-| Branding         | ZCode                                          | Sunsam logo and name in the app, installers, menus and tray                  |
-| Model settings   | Built-in providers (Z.ai, Start Plan) + Custom | **Custom providers** (LM Studio, Ollama, vLLM, Sunsam Mesh…) + optional Z.ai |
-| Model routing    | Manual                                         | **Sunsam Mesh**: `sunsam-auto` picks between a local model and a large one   |
-| Install identity | `dev.zcode.app`                                | `dev.sunsam.code`: installs side by side with ZCode                          |
-| Upstream updates | —                                              | Daily automatic sync with `zai-org/ZCode` that keeps the Sunsam layer        |
+|                  | ZCode                                          | Sunsam Code                                                                             |
+| ---------------- | ---------------------------------------------- | --------------------------------------------------------------------------------------- |
+| Branding         | ZCode                                          | Sunsam logo and name in the app, installers, menus and tray                             |
+| Model settings   | Built-in providers (Z.ai, Start Plan) + Custom | **Custom providers** (LM Studio, Ollama, vLLM, Sunsam Mesh…) + optional Z.ai            |
+| Model routing    | Manual                                         | **Sunsam Mesh**: `sunsam-auto` picks between a local model and a large one              |
+| Install identity | `dev.zcode.app`                                | `dev.sunsam.code`: installs side by side with ZCode                                     |
+| Upstream updates | —                                              | Daily automatic sync with `zai-org/ZCode` that keeps the Sunsam layer                   |
+| MCP extensions   | Servers added by hand (command, args, JSON)    | **Install `.mcpb` / `.dxt`** with a button or by dragging the file, like Claude Desktop |
+| App updates      | Z.ai server (official ZCode)                   | **GitHub Releases** of this repository                                                  |
+| Tool schemas     | Sent as-is                                     | Adapted to what the Z.ai/GLM API accepts (avoids error `[1210]`)                        |
+
+## MCP extensions (`.mcpb` / `.dxt`)
+
+Sunsam Code installs packaged extensions in the [MCP Bundle](https://github.com/modelcontextprotocol/mcpb) format,
+the same one used by Claude Desktop _Extensions_ (`.mcpb`, and the older `.dxt`).
+
+1. Open **Settings → MCP servers**.
+2. Click **Install extension (.mcpb / .dxt)** or **drag** one or more files onto the screen.
+3. If the extension needs settings (`user_config`), a form appears:
+   - Folder and program paths are **detected automatically** (paths named by the extension, `PATH`,
+     Program Files) and marked _Detected automatically_.
+   - **Browse…** opens the system picker to choose another path by hand.
+4. Click **Restart now** so the agent loads the extension.
+
+| Action                               | Result                                                            |
+| ------------------------------------ | ----------------------------------------------------------------- |
+| Upload the same package again        | It is **updated** and keeps your settings                         |
+| Delete the server from the list      | It is uninstalled and its files are removed                       |
+| No Node.js installed on the computer | The Node bundled with Sunsam Code is used                         |
+| The extension uses "tuple" schemas   | Adapted automatically so Z.ai/GLM does not reject the chat (1210) |
+
+Extensions are stored in `%APPDATA%\Sunsam Code\extensions\` (macOS:
+`~/Library/Application Support/Sunsam Code/extensions/`, Linux: `~/.config/Sunsam Code/extensions/`).
+
+Tested with: [Audacity Bridge](https://github.com/jhonsu01/audacity-mcp-server/releases/latest), [Vector Magic Bridge](https://github.com/jhonsu01/VectorMagic-mcp-server/releases/latest),
+[FilmCraft Bridge](https://github.com/jhonsu01/filmcraft-mcp-server/releases/latest) and Design Bridge (Adobe Illustrator).
 
 ## Sunsam Mesh: P2P router across machines
 

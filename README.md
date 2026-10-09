@@ -23,28 +23,59 @@ Los instaladores están en **[Releases](https://github.com/jhonsu01/SunsamCode/r
 
 | Sistema | Arquitectura                        | Archivo                                     |
 | ------- | ----------------------------------- | ------------------------------------------- |
-| Windows | x64                                 | `Sunsam.Code-<versión>-win-x64.exe`         |
+| Windows | x64                                 | `Sunsam-Code-<versión>-win-x64.exe`         |
 | macOS   | Apple Silicon (arm64) / Intel (x64) | `.dmg` o `.zip`                             |
 | Linux   | x64 / arm64                         | `.AppImage`, `.deb`, `.rpm`, `.pkg.tar.zst` |
 
-> Los instaladores **no están firmados**.
+> El instalador de **Windows está firmado** (Authenticode SHA-256 con sello de tiempo) con un certificado
+> propio, no de una CA pública; macOS y Linux no están firmados.
 > **macOS:** tras copiar la app a Aplicaciones ejecuta
 > `xattr -rd com.apple.quarantine "/Applications/Sunsam Code.app"`.
 > **Windows:** SmartScreen → _Más información_ → _Ejecutar de todas formas_.
 > **Linux (AppImage):** `chmod +x Sunsam*.AppImage && ./Sunsam*.AppImage`.
 
-Cada tag `v*` compila automáticamente Windows, macOS y Linux con GitHub Actions y publica el Release
-([workflow](.github/workflows/sunsam-desktop-build.yml)).
+La app **se actualiza sola** desde estos Releases: en Windows y con la AppImage de Linux aparece el botón de
+actualizar (al abrir, cada hora o en _Ayuda → Buscar actualizaciones_); en macOS descarga el `.dmg` nuevo.
+Windows se compila y firma en local; macOS y Linux salen del [workflow](.github/workflows/sunsam-desktop-build.yml) lanzado a mano.
 
 ## Qué cambia respecto a ZCode
 
-|                             | ZCode                                            | Sunsam Code                                                                     |
-| --------------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------- |
-| Marca                       | ZCode                                            | Logo y nombre Sunsam en app, instaladores, menús y bandeja                      |
-| Model settings              | Providers integrados (Z.ai, Start Plan) + Custom | **Custom providers** (LM Studio, Ollama, vLLM, Sunsam Mesh…) + Z.ai opcional    |
-| Enrutado de modelos         | Manual                                           | **Sunsam Mesh**: `sunsam-auto` decide entre modelo local y modelo grande en red |
-| Instalación                 | `dev.zcode.app`                                  | `dev.sunsam.code`: se instala junto a ZCode sin sobrescribirlo                  |
-| Actualizaciones de upstream | —                                                | Sincronización diaria con `zai-org/ZCode` conservando la capa Sunsam            |
+|                             | ZCode                                                  | Sunsam Code                                                                                 |
+| --------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------- |
+| Marca                       | ZCode                                                  | Logo y nombre Sunsam en app, instaladores, menús y bandeja                                  |
+| Model settings              | Providers integrados (Z.ai, Start Plan) + Custom       | **Custom providers** (LM Studio, Ollama, vLLM, Sunsam Mesh…) + Z.ai opcional                |
+| Enrutado de modelos         | Manual                                                 | **Sunsam Mesh**: `sunsam-auto` decide entre modelo local y modelo grande en red             |
+| Instalación                 | `dev.zcode.app`                                        | `dev.sunsam.code`: se instala junto a ZCode sin sobrescribirlo                              |
+| Actualizaciones de upstream | —                                                      | Sincronización diaria con `zai-org/ZCode` conservando la capa Sunsam                        |
+| Extensiones MCP             | Servidores añadidos a mano (comando, argumentos, JSON) | **Instalar `.mcpb` / `.dxt`** con un botón o arrastrando el archivo, como en Claude Desktop |
+| Actualizaciones de la app   | Servidor de Z.ai (ZCode oficial)                       | **GitHub Releases** de este repositorio                                                     |
+| Esquemas de herramientas    | Se envían tal cual                                     | Se adaptan a lo que acepta la API de Z.ai/GLM (evita el error `[1210]`)                     |
+
+## Extensiones MCP (`.mcpb` / `.dxt`)
+
+Sunsam Code instala extensiones empaquetadas en formato [MCP Bundle](https://github.com/modelcontextprotocol/mcpb),
+el mismo de las _Extensiones_ de Claude Desktop (`.mcpb`, y el antiguo `.dxt`).
+
+1. Abre **Ajustes → Servidores MCP**.
+2. Pulsa **Instalar extensión (.mcpb / .dxt)** o **arrastra** uno o varios archivos sobre la pantalla.
+3. Si la extensión necesita ajustes (`user_config`), aparece un formulario:
+   - Las rutas de carpetas y programas **se detectan solas** (rutas que indica la extensión, `PATH`,
+     Program Files) y se marcan como _Detectado automáticamente_.
+   - **Examinar…** abre el selector del sistema para elegir otra ruta a mano.
+4. Pulsa **Reiniciar ahora** para que el agente cargue la extensión.
+
+| Acción                             | Qué ocurre                                                   |
+| ---------------------------------- | ------------------------------------------------------------ |
+| Volver a subir el mismo paquete    | Se **actualiza** y conserva tu configuración                 |
+| Borrar el servidor en la lista     | Se desinstala y se borran sus archivos                       |
+| Sin Node.js instalado en el equipo | Usa el Node incluido en Sunsam Code                          |
+| La extensión usa esquemas «tupla»  | Se adaptan solos para que Z.ai/GLM no rechace el chat (1210) |
+
+Las extensiones se guardan en `%APPDATA%\Sunsam Code\extensions\` (macOS:
+`~/Library/Application Support/Sunsam Code/extensions/`, Linux: `~/.config/Sunsam Code/extensions/`).
+
+Probadas con: [Audacity Bridge](https://github.com/jhonsu01/audacity-mcp-server/releases/latest), [Vector Magic Bridge](https://github.com/jhonsu01/VectorMagic-mcp-server/releases/latest),
+[FilmCraft Bridge](https://github.com/jhonsu01/filmcraft-mcp-server/releases/latest) y Design Bridge (Adobe Illustrator).
 
 ## Sunsam Mesh: router P2P entre máquinas
 

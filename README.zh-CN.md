@@ -22,27 +22,55 @@ Sunsam Code 是 [ZCode](https://github.com/zai-org/ZCode)（Z.ai）的分支：�
 
 | 系统    | 架构                                | 文件                                        |
 | ------- | ----------------------------------- | ------------------------------------------- |
-| Windows | x64                                 | `Sunsam.Code-<版本>-win-x64.exe`            |
+| Windows | x64                                 | `Sunsam-Code-<版本>-win-x64.exe`            |
 | macOS   | Apple Silicon (arm64) / Intel (x64) | `.dmg` 或 `.zip`                            |
 | Linux   | x64 / arm64                         | `.AppImage`、`.deb`、`.rpm`、`.pkg.tar.zst` |
 
-> 安装包**未签名**。
+> **Windows 安装包已签名**（Authenticode SHA-256，带时间戳），使用作者自有证书而非公共 CA；macOS 与 Linux 安装包未签名。
 > **macOS：** 拷贝到“应用程序”后执行 `xattr -rd com.apple.quarantine "/Applications/Sunsam Code.app"`。
 > **Windows：** SmartScreen → “更多信息” → “仍要运行”。
 > **Linux（AppImage）：** `chmod +x Sunsam*.AppImage && ./Sunsam*.AppImage`。
 
-每个 `v*` 标签都会通过 GitHub Actions 构建 Windows、macOS 和 Linux 并发布 Release
-（[workflow](.github/workflows/sunsam-desktop-build.yml)）。
+应用会从这些 Release **自动更新**：Windows 与 Linux AppImage 会显示更新按钮（启动时、每小时或通过“帮助 → 检查更新”）；macOS 请下载新的 `.dmg`。
+Windows 在本地构建并签名；macOS 与 Linux 由手动触发的 [workflow](.github/workflows/sunsam-desktop-build.yml) 构建。
 
 ## 与 ZCode 的区别
 
-|          | ZCode                                  | Sunsam Code                                                          |
-| -------- | -------------------------------------- | -------------------------------------------------------------------- |
-| 品牌     | ZCode                                  | 应用、安装包、菜单和托盘均使用 Sunsam 名称与图标                     |
-| 模型设置 | 内置供应商（Z.ai、Start Plan）+ 自定义 | **自定义供应商**（LM Studio、Ollama、vLLM、Sunsam Mesh…）+ 可选 Z.ai |
-| 模型路由 | 手动                                   | **Sunsam Mesh**：`sunsam-auto` 在本地模型与大模型之间自动选择        |
-| 安装身份 | `dev.zcode.app`                        | `dev.sunsam.code`：可与 ZCode 并存                                   |
-| 上游更新 | —                                      | 每日自动同步 `zai-org/ZCode`，保留 Sunsam 定制层                     |
+|             | ZCode                                  | Sunsam Code                                                          |
+| ----------- | -------------------------------------- | -------------------------------------------------------------------- |
+| 品牌        | ZCode                                  | 应用、安装包、菜单和托盘均使用 Sunsam 名称与图标                     |
+| 模型设置    | 内置供应商（Z.ai、Start Plan）+ 自定义 | **自定义供应商**（LM Studio、Ollama、vLLM、Sunsam Mesh…）+ 可选 Z.ai |
+| 模型路由    | 手动                                   | **Sunsam Mesh**：`sunsam-auto` 在本地模型与大模型之间自动选择        |
+| 安装身份    | `dev.zcode.app`                        | `dev.sunsam.code`：可与 ZCode 并存                                   |
+| 上游更新    | —                                      | 每日自动同步 `zai-org/ZCode`，保留 Sunsam 定制层                     |
+| MCP 扩展    | 手动添加服务器（命令、参数、JSON）     | 通过按钮或拖放**安装 `.mcpb` / `.dxt`**，与 Claude Desktop 相同      |
+| 应用更新    | Z.ai 服务器（官方 ZCode）              | 本仓库的 **GitHub Releases**                                         |
+| 工具 schema | 原样发送                               | 适配 Z.ai/GLM API 的要求（避免 `[1210]` 错误）                       |
+
+## MCP 扩展（`.mcpb` / `.dxt`）
+
+Sunsam Code 可安装 [MCP Bundle](https://github.com/modelcontextprotocol/mcpb) 格式的打包扩展，
+与 Claude Desktop 的“扩展”格式相同（`.mcpb` 及旧版 `.dxt`）。
+
+1. 打开 **设置 → MCP 服务器**。
+2. 点击 **安装扩展（.mcpb / .dxt）**，或将一个或多个文件**拖放**到页面上。
+3. 若扩展需要配置（`user_config`），会弹出表单：
+   - 文件夹和程序路径会**自动检测**（扩展说明中的路径、`PATH`、Program Files），并标记为“已自动检测”。
+   - **浏览…** 可打开系统选择器手动选择其他路径。
+4. 点击 **立即重启**，让智能体加载该扩展。
+
+| 操作                  | 结果                                         |
+| --------------------- | -------------------------------------------- |
+| 再次上传同一个包      | **更新**扩展并保留配置                       |
+| 在列表中删除该服务器  | 卸载扩展并删除其文件                         |
+| 电脑未安装 Node.js    | 使用 Sunsam Code 自带的 Node                 |
+| 扩展使用“元组” schema | 自动适配，避免 Z.ai/GLM 拒绝整个对话（1210） |
+
+扩展保存在 `%APPDATA%\Sunsam Code\extensions\`（macOS：
+`~/Library/Application Support/Sunsam Code/extensions/`，Linux：`~/.config/Sunsam Code/extensions/`）。
+
+已测试：[Audacity Bridge](https://github.com/jhonsu01/audacity-mcp-server/releases/latest)、[Vector Magic Bridge](https://github.com/jhonsu01/VectorMagic-mcp-server/releases/latest)、
+[FilmCraft Bridge](https://github.com/jhonsu01/filmcraft-mcp-server/releases/latest) 与 Design Bridge（Adobe Illustrator）。
 
 ## Sunsam Mesh：多机 P2P 路由
 
