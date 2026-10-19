@@ -170,6 +170,7 @@ describe("WorkspaceHeaderActionSection", () => {
     expect(renderSection({})).toContain("conversationShare.trigger");
     expect(renderSection({ remoteTarget: { kind: "ssh" } })).toContain("conversationShare.trigger");
     expect(renderSection({ isWebRemoteControl: true })).not.toContain("conversationShare.trigger");
+    expect(renderSection({ isDesktop: false })).not.toContain("conversationShare.trigger");
     expect(renderSection({ remoteTarget: { kind: "server" } })).not.toContain(
       "conversationShare.trigger",
     );
@@ -313,6 +314,7 @@ describe("WorkspaceHeaderActionSection", () => {
     expect(capturedHeaderHelp.exportLogs).not.toHaveBeenCalled();
   });
 
+<<<<<<< HEAD
   it("opens issue report without screenshots when window screenshot fails", async () => {
     capturedHeaderHelp.menuItems = [];
     capturedHeaderHelp.openSubmit.mockClear();
@@ -341,6 +343,8 @@ describe("WorkspaceHeaderActionSection", () => {
     );
   });
 
+=======
+>>>>>>> 0a1fc56d279fd1001f78387bd81aec1c26767411
   it("passes SSH remote context to the editor button group", async () => {
     capturedHeaderHelp.editorButtonProps = [];
     const { WorkspaceHeaderActionSection } =

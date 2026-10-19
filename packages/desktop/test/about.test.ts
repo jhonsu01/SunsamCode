@@ -6,7 +6,6 @@ import {
   formatAboutDetail,
   formatAboutOptimizationLine,
 } from "../src/main/about.js";
-import { createCustomAboutDialogHtml } from "../src/main/aboutWindow.js";
 
 describe("about", () => {
   const appleSiliconSnapshot = createAboutSnapshot({
@@ -72,6 +71,7 @@ describe("about", () => {
     });
   });
 
+<<<<<<< HEAD
   it("应生成参考图样式的自定义 About 内容", () => {
     const html = createCustomAboutDialogHtml({
       applicationName: "SunsamCode Desktop App",
@@ -117,6 +117,8 @@ describe("about", () => {
     expect(html).toContain(">确定</button>");
   });
 
+=======
+>>>>>>> 0a1fc56d279fd1001f78387bd81aec1c26767411
   it("非 Apple Silicon 不展示 Apple Silicon 优化文案", () => {
     expect(formatAboutOptimizationLine({ osPlatform: "darwin", osArch: "x64" }, "en-US")).toBe("");
     expect(formatAboutOptimizationLine({ osPlatform: "win32", osArch: "arm64" }, "en-US")).toBe("");
