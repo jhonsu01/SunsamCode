@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog.js";
 import { Input } from "@/components/ui/input.js";
 import { Textarea } from "@/components/ui/textarea.js";
-import { FeedbackErrorTip } from "@/feedback/feedbackBadges.js";
+import { FeedbackErrorTip, RequiredMarker } from "@/feedback/feedbackBadges.js";
 import {
   readFeedbackContactPreference,
   rememberFeedbackContactInput,
@@ -321,7 +321,7 @@ function FeatureRequestTextarea({
     <section className="space-y-2">
       <div className="flex items-center justify-between gap-2">
         <h3 className="text-ui-base font-semibold text-foreground">
-          {required ? <span className="mr-1 text-destructive">*</span> : null}
+          {required ? <RequiredMarker /> : null}
           {title}
         </h3>
         <span className="text-ui-xs tabular-nums text-foreground-subtle">
@@ -330,6 +330,9 @@ function FeatureRequestTextarea({
       </div>
       <Textarea
         autoFocus={autoFocus}
+        required={required}
+        aria-required={required}
+        aria-label={title}
         value={value}
         onChange={(event) => onChange(event.target.value)}
         rows={4}
