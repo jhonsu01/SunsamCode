@@ -4,7 +4,6 @@ import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { WebSocket } from "ws";
 import {
-  calculateSunsamRelayProof,
   createSunsamLocalRemoteServer,
   listSunsamRemoteAddresses,
   resolveSunsamRemoteHost,
@@ -23,13 +22,15 @@ class Client {
       else this.queue.push(message);
     });
   }
-  static async open(url: string): Promise<Client> {
+  static open(url: string): Promise<Client> {
     const socket = new WebSocket(url);
-    await new Promise((resolve, reject) => {
-      socket.once("open", resolve);
+    return new Promise((resolve, reject) => {
+      socket.once("open", () => resolve(new Client(socket)));
       socket.once("error", reject);
+      socket.once("unexpected-response", (_request, response) =>
+        reject(new Error(`HTTP ${response.statusCode}`)),
+      );
     });
-    return new Client(socket);
   }
   send(message: Message): void {
     this.socket.send(JSON.stringify(message));
@@ -44,17 +45,6 @@ class Client {
         resolve(message);
       });
     });
-  }
-  async authenticate(role: "device" | "terminal", deviceSid: string, passHash: string) {
-    this.send({ type: "auth_init", role, device_sid: deviceSid, meta: {} });
-    const challenge = await this.next();
-    expect(challenge.type).toBe("auth_challenge");
-    this.send({
-      type: "auth_response",
-      device_sid: deviceSid,
-      proof: calculateSunsamRelayProof(passHash, String(challenge.nonce), role, deviceSid),
-    });
-    return this.next();
   }
   close(): void {
     this.socket.close();
@@ -76,11 +66,7 @@ async function startServer(config?: Record<string, unknown>) {
   await mkdir(configDir, { recursive: true });
   await writeFile(
     join(configDir, "sunsam-remote-control.json"),
-    JSON.stringify({
-      port: 47950 + Math.floor(Math.random() * 40),
-      host: "lan",
-      ...config,
-    }),
+    JSON.stringify({ port: 47950 + Math.floor(Math.random() * 40), host: "lan", ...config }),
   );
   const server = createSunsamLocalRemoteServer({
     webRoot,
@@ -93,145 +79,123 @@ async function startServer(config?: Record<string, unknown>) {
   });
   const endpoints = await server.getEndpoints();
   const port = new URL(endpoints.relayWsUrl).port;
-  return { server, endpoints, port, configDir };
+  const api = async (path: string, body?: unknown, jwt = endpoints.login.jwt) => {
+    const response = await fetch(`${endpoints.origin}${path}`, {
+      method: body === undefined ? "GET" : "POST",
+      headers: { Authorization: `Bearer ${jwt}`, "Content-Type": "application/json" },
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
+    return { status: response.status, body: (await response.json()) as Message };
+  };
+  const token = async (role: "device" | "terminal") =>
+    String(((await api("/api/v1/remote/token", { role })).body.data as Message).token);
+  const connect = async (role: "device" | "terminal", deviceSid: string) => {
+    const client = await Client.open(`${endpoints.relayWsUrl}?token=${await token(role)}`);
+    cleanups.push(async () => client.close());
+    client.send({ type: "auth_init", device_sid: deviceSid, client_ts: 1 });
+    return { client, ack: await client.next() };
+  };
+  return { server, endpoints, port, configDir, api, token, connect };
 }
 
-describe("Sunsam local remote relay", () => {
-  it("pairs desktop and phone and forwards data both ways", async () => {
-    const { endpoints } = await startServer();
-    const desktop = await Client.open(endpoints.relayWsUrl);
-    cleanups.push(async () => desktop.close());
-    desktop.send({
-      type: "device_register_init",
-      device_mid: "m",
-      pass_hash: "h4sh",
-      meta: {},
-    });
-    const registered = await desktop.next();
-    expect(registered.type).toBe("device_register_ack");
-    const sid = String(registered.device_sid);
+describe("Sunsam local remote relay (Relay V2)", () => {
+  it("requires the local secret for every API call", async () => {
+    const { api } = await startServer();
+    expect((await api("/api/v1/remote/device", undefined, "wrong")).status).toBe(401);
+    expect((await api("/api/v1/remote/token", { role: "device" }, "")).status).toBe(401);
+    expect((await api("/api/v1/remote/token", { role: "admin" })).body.code).toBe(3001);
+    // Las notificaciones push necesitan un servicio externo: se informan como no disponibles.
+    expect((await api("/api/v1/remote/notification/status")).status).toBe(404);
+  });
 
-    const desktopAck = await desktop.authenticate("device", sid, "h4sh");
-    expect(desktopAck).toMatchObject({
-      type: "auth_ack",
-      pair_status: "waiting",
-    });
+  it("pairs desktop and phone, notifies status changes and forwards data both ways", async () => {
+    const { api, connect } = await startServer();
+    const sid = String(
+      ((await api("/api/v1/remote/device", { device_mid: "m" })).body.data as Message).device_sid,
+    );
+    const desktop = await connect("device", sid);
+    expect(desktop.ack).toMatchObject({ type: "auth_ack", pair_status: "waiting" });
 
-    const phone = await Client.open(endpoints.relayWsUrl);
-    cleanups.push(async () => phone.close());
-    const phoneAck = await phone.authenticate("terminal", sid, "h4sh");
-    expect(phoneAck).toMatchObject({
-      type: "auth_ack",
-      pair_status: "matched",
-    });
-    // El escritorio se entera sin esperar a su consulta periódica.
-    expect(await desktop.next()).toMatchObject({
+    const phone = await connect("terminal", sid);
+    expect(phone.ack).toMatchObject({ type: "auth_ack", pair_status: "matched" });
+    expect(String(phone.ack.terminal_sid)).toMatch(/^t_/);
+    expect(await desktop.client.next()).toMatchObject({
       type: "pair_status_ack",
       pair_status: "matched",
     });
+    // V2: marcas de tiempo en segundos.
+    expect(Number(phone.ack.server_ts)).toBeLessThan(1e11);
 
-    phone.send({
+    phone.client.send({ type: "data", payload: { zcode_type: "bootstrap-request" } });
+    expect(await desktop.client.next()).toMatchObject({
       type: "data",
-      payload: { zcode_type: "bootstrap-request", requestId: "1" },
+      payload: { zcode_type: "bootstrap-request" },
     });
-    expect(await desktop.next()).toMatchObject({
-      type: "data",
-      payload: { zcode_type: "bootstrap-request", requestId: "1" },
-    });
-    desktop.send({
-      type: "data",
-      payload: { zcode_type: "bootstrap-response", requestId: "1" },
-    });
-    expect(await phone.next()).toMatchObject({ type: "data" });
+    desktop.client.send({ type: "data", payload: { zcode_type: "bootstrap-response" } });
+    expect(await phone.client.next()).toMatchObject({ type: "data" });
 
-    desktop.send({ type: "pair_status_query", device_sid: sid });
-    expect(await desktop.next()).toMatchObject({
-      type: "pair_status_ack",
-      pair_status: "matched",
-    });
+    const listed = (await api("/api/v1/remote/device")).body.data as Message[];
+    expect(listed[0]).toMatchObject({ device_sid: sid, online: true });
 
-    phone.close();
-    expect(await desktop.next()).toMatchObject({
+    phone.client.close();
+    expect(await desktop.client.next()).toMatchObject({
       type: "pair_status_ack",
       pair_status: "waiting",
     });
   });
 
-  it("rejects a phone with the wrong password hash", async () => {
-    const { endpoints } = await startServer();
-    const desktop = await Client.open(endpoints.relayWsUrl);
-    cleanups.push(async () => desktop.close());
-    desktop.send({
-      type: "device_register_init",
-      device_mid: "m",
-      pass_hash: "right",
-      meta: {},
-    });
-    const sid = String((await desktop.next()).device_sid);
-    await desktop.authenticate("device", sid, "right");
+  it("accepts each token once, kicks a replaced phone and tells the phone when the desktop leaves", async () => {
+    const { api, token, connect, endpoints } = await startServer();
+    const sid = String(
+      ((await api("/api/v1/remote/device", { device_mid: "m" })).body.data as Message).device_sid,
+    );
+    const once = await token("terminal");
+    const first = await Client.open(`${endpoints.relayWsUrl}?token=${once}`);
+    cleanups.push(async () => first.close());
+    await expect(Client.open(`${endpoints.relayWsUrl}?token=${once}`)).rejects.toThrow(/401/);
 
-    const phone = await Client.open(endpoints.relayWsUrl);
-    cleanups.push(async () => phone.close());
-    expect(await phone.authenticate("terminal", sid, "wrong")).toMatchObject({
-      type: "error",
-      code: "AUTH_FAILED",
-    });
+    const desktop = await connect("device", sid);
+    const oldPhone = await connect("terminal", sid);
+    expect(await desktop.client.next()).toMatchObject({ pair_status: "matched" });
+    const newPhone = await connect("terminal", sid);
+    expect(await oldPhone.client.next()).toMatchObject({ type: "error", code: "KICKED" });
+    expect(newPhone.ack).toMatchObject({ pair_status: "matched" });
+
+    desktop.client.close();
+    expect(await newPhone.client.next()).toMatchObject({ pair_status: "waiting" });
+    expect(await newPhone.client.next()).toMatchObject({ type: "error", code: "DEVICE_OFFLINE" });
   });
 
-  it("reports DEVICE_OFFLINE to a phone before the desktop connects and AUTH_FAILED for unknown links", async () => {
-    const { endpoints, configDir } = await startServer();
-    const desktop = await Client.open(endpoints.relayWsUrl);
-    desktop.send({
-      type: "device_register_init",
-      device_mid: "m",
-      pass_hash: "h",
-      meta: {},
-    });
-    const sid = String((await desktop.next()).device_sid);
-    desktop.close();
-
-    const phone = await Client.open(endpoints.relayWsUrl);
-    cleanups.push(async () => phone.close());
-    phone.send({
-      type: "auth_init",
-      role: "terminal",
-      device_sid: sid,
-      meta: {},
-    });
-    expect(await phone.next()).toMatchObject({
-      type: "error",
-      code: "DEVICE_OFFLINE",
-    });
-    phone.send({
-      type: "auth_init",
-      role: "terminal",
-      device_sid: "nope",
-      meta: {},
-    });
-    expect(await phone.next()).toMatchObject({
+  it("rejects unknown devices and keeps the secret and devices across restarts", async () => {
+    const { api, connect, configDir } = await startServer();
+    expect((await connect("terminal", "nope")).ack).toMatchObject({
       type: "error",
       code: "AUTH_FAILED",
     });
-
-    // El enlace sobrevive a reiniciar la app: la sesión se guarda en disco.
+    const sid = String(
+      ((await api("/api/v1/remote/device", { device_mid: "m" })).body.data as Message).device_sid,
+    );
     await new Promise((resolve) => setTimeout(resolve, 50));
     const saved = JSON.parse(
-      await readFile(join(configDir, "sunsam-remote-sessions.json"), "utf8"),
-    ) as Record<string, string>;
-    expect(saved[sid]).toBe("h");
+      await readFile(join(configDir, "sunsam-remote-devices.json"), "utf8"),
+    ) as Record<string, Message>;
+    expect(saved[sid]).toMatchObject({ device_mid: "m" });
+    expect(
+      (await readFile(join(configDir, "sunsam-remote-secret"), "utf8")).length,
+    ).toBeGreaterThan(30);
   });
 
   it("serves the mobile page and its assets, and nothing outside it", async () => {
     const { endpoints, port } = await startServer();
-    expect(endpoints.remoteUrl).toMatch(new RegExp(`^http://.+:${port}/remote/v4$`));
+    expect(endpoints.remoteUrl).toMatch(new RegExp(`^http://.+:${port}/remote/v4#k=`));
     const base = `http://127.0.0.1:${port}`;
-    const page = await fetch(`${base}/remote/v4?sid=x&hash=y&t=1`);
+    const page = await fetch(`${base}/remote/v4?sid=x`);
     expect(page.status).toBe(200);
     expect(await page.text()).toContain("<title>remote</title>");
     const asset = await fetch(`${base}/remote/v4/assets/app.js`);
     expect(asset.headers.get("content-type")).toContain("javascript");
     expect((await fetch(`${base}/remote/v4/../../config/x`)).status).not.toBe(200);
-    expect((await fetch(`${base}/api/anything`)).status).toBe(404);
+    expect((await fetch(`${base}/other`)).status).toBe(404);
   });
 });
 

@@ -1,18 +1,17 @@
-import { createHash, createHmac } from "node:crypto";
+import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import {
   copyTextWithExecCommand,
-  hmacSha256,
+  createSunsamDigestOnlySubtle,
   installSunsamClipboardFallback,
-  resolveSunsamSameOriginRelayWsUrl,
   sha256,
-  withSunsamFragmentParams,
 } from "../src/sunsamInsecureContext.js";
+import { readSunsamLocalKey, resolveSunsamEntryAuth } from "../src/sunsamLocalAuth.js";
 
 const encoder = new TextEncoder();
-const hex = (bytes: Uint8Array) => Buffer.from(bytes).toString("hex");
+const hex = (bytes: Uint8Array | ArrayBuffer) => Buffer.from(new Uint8Array(bytes)).toString("hex");
 
-describe("Sunsam insecure-context crypto", () => {
+describe("Sunsam insecure-context polyfills", () => {
   it("matches Node's SHA-256 for empty, short and multi-block inputs", () => {
     for (const input of ["", "abc", "x".repeat(55), "y".repeat(64), "z".repeat(1000)]) {
       expect(hex(sha256(encoder.encode(input)))).toBe(
@@ -21,60 +20,19 @@ describe("Sunsam insecure-context crypto", () => {
     }
   });
 
-  it("matches Node's HMAC-SHA256 with the relay proof format", () => {
-    const passHash = "q1w2e3r4t5y6u7i8o9p0+/base64hash=";
-    const message = "nonce123|terminal|deviceSid456";
-    expect(hex(hmacSha256(encoder.encode(passHash), encoder.encode(message)))).toBe(
-      createHmac("sha256", passHash).update(message).digest("hex"),
+  it("provides crypto.subtle.digest('SHA-256') for attachments over HTTP, and nothing else", async () => {
+    const subtle = createSunsamDigestOnlySubtle() as SubtleCrypto;
+    const data = encoder.encode("adjunto.png");
+    expect(hex(await subtle.digest("SHA-256", data))).toBe(
+      createHash("sha256").update("adjunto.png").digest("hex"),
     );
-    const longKey = "k".repeat(100);
-    expect(hex(hmacSha256(encoder.encode(longKey), encoder.encode(message)))).toBe(
-      createHmac("sha256", longKey).update(message).digest("hex"),
+    expect(hex(await subtle.digest({ name: "SHA-256" }, data.buffer))).toBe(
+      createHash("sha256").update("adjunto.png").digest("hex"),
     );
-  });
-
-  it("uses the page's own server for the relay unless the page is on z.ai", () => {
-    const fallback = "wss://zcode.z.ai/ws";
-    expect(
-      resolveSunsamSameOriginRelayWsUrl(
-        {
-          protocol: "http:",
-          host: "192.168.1.20:47831",
-          hostname: "192.168.1.20",
-        },
-        fallback,
-      ),
-    ).toBe("ws://192.168.1.20:47831/ws");
-    expect(
-      resolveSunsamSameOriginRelayWsUrl(
-        {
-          protocol: "https:",
-          host: "pc.tail.ts.net",
-          hostname: "pc.tail.ts.net",
-        },
-        fallback,
-      ),
-    ).toBe("wss://pc.tail.ts.net/ws");
-    expect(
-      resolveSunsamSameOriginRelayWsUrl(
-        { protocol: "https:", host: "zcode.z.ai", hostname: "zcode.z.ai" },
-        fallback,
-      ),
-    ).toBe(fallback);
-  });
-
-  it("reads the pairing secrets from the URL fragment, which never reaches the network", () => {
-    const merged = withSunsamFragmentParams(
-      new URLSearchParams("mid=m&app_version=3.15.1-sunsam.14"),
-      "#sid=s1&hash=a%2Bb%3D&t=17",
-    );
-    expect(merged.get("sid")).toBe("s1");
-    expect(merged.get("hash")).toBe("a+b=");
-    expect(merged.get("app_version")).toBe("3.15.1-sunsam.14");
-    // Enlaces antiguos con todo en la query siguen funcionando.
-    expect(withSunsamFragmentParams(new URLSearchParams("sid=old&hash=h&t=1"), "").get("sid")).toBe(
-      "old",
-    );
+    await expect(subtle.digest("SHA-1", data)).rejects.toThrow();
+    await expect(
+      (subtle as unknown as { importKey: () => Promise<unknown> }).importKey(),
+    ).rejects.toThrow();
   });
 
   it("copies text without the Clipboard API, as served over HTTP on the LAN", async () => {
@@ -114,5 +72,46 @@ describe("Sunsam insecure-context crypto", () => {
     const original = secure.clipboard;
     installSunsamClipboardFallback(secure);
     expect(secure.clipboard).toBe(original);
+  });
+});
+
+describe("Sunsam local auth for the phone", () => {
+  const memory = () => {
+    const values = new Map<string, string>();
+    return {
+      getItem: (key: string) => values.get(key) ?? null,
+      setItem: (key: string, value: string) => void values.set(key, value),
+      removeItem: (key: string) => void values.delete(key),
+    };
+  };
+
+  it("takes the secret from the QR fragment and remembers it for reloads", () => {
+    const storage = memory();
+    expect(readSunsamLocalKey({ hash: "#k=s3cr3t", hostname: "192.168.1.8" }, storage)).toBe(
+      "s3cr3t",
+    );
+    expect(readSunsamLocalKey({ hash: "", hostname: "192.168.1.8" }, storage)).toBe("s3cr3t");
+  });
+
+  it("never uses a local secret on the official z.ai page", () => {
+    const storage = memory();
+    storage.setItem("sunsam-remote-local-key", "s3cr3t");
+    expect(readSunsamLocalKey({ hash: "#k=x", hostname: "zcode.z.ai" }, storage)).toBeNull();
+  });
+
+  it("uses the secret as the relay JWT, and forgets it on 'switch account'", async () => {
+    const storage = memory();
+    storage.setItem("sunsam-remote-local-key", "s3cr3t");
+    const base = {
+      getZCodeJwtToken: () => null,
+      getActiveAccount: () => null,
+      startLogin: async () => {},
+      logout: async () => {},
+    } as unknown as Parameters<typeof resolveSunsamEntryAuth>[0];
+    expect(resolveSunsamEntryAuth(base, null)).toBe(base);
+    const auth = resolveSunsamEntryAuth(base, "s3cr3t", storage);
+    expect(auth.getZCodeJwtToken()).toBe("s3cr3t");
+    await auth.logout();
+    expect(storage.getItem("sunsam-remote-local-key")).toBeNull();
   });
 });

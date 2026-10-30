@@ -7,28 +7,28 @@
  *
  * - Un servidor HTTP en la red local que sirve la página móvil (`packages/web`, compilada en
  *   `out/remote-web` con base `/remote/v4/`).
- * - Un relay WebSocket en `/ws` con el mismo protocolo que el de Z.ai (registro del equipo,
- *   reto HMAC con el hash de la contraseña del QR, estado de emparejamiento y reenvío de `data`).
+ * - El relay con el protocolo Relay V2 de Z.ai (`/api/v1/remote/*` y `/api/v1/remote/ws2`), con
+ *   un secreto local en lugar del JWT de la cuenta (ver sunsamLocalRelayProtocol.ts).
  *
  * El teléfono debe estar en la misma red (Wi-Fi) que el equipo. Para usarlo fuera de casa basta
  * con Tailscale (o WireGuard) en ambos: la dirección del QR pasa a ser la de la VPN.
  */
 import { createSocket } from "node:dgram";
 import { createReadStream } from "node:fs";
+import { randomBytes } from "node:crypto";
 import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from "node:http";
 import { networkInterfaces } from "node:os";
 import { dirname, extname, join, normalize, resolve, sep } from "node:path";
-import { WebSocketServer } from "ws";
-import { SunsamLocalRelay } from "./sunsamLocalRelayProtocol.js";
-
-export { calculateSunsamRelayProof } from "./sunsamLocalRelayProtocol.js";
+import { WEB_REMOTE_CONTROL_RELAY_V2_WS_PATH } from "@zcode/shared/web-remote-relay";
+import {
+  SUNSAM_LOCAL_USER_ID,
+  SunsamLocalRelayV2,
+  type SunsamRelayDeviceRecord,
+} from "./sunsamLocalRelayProtocol.js";
 
 export const SUNSAM_REMOTE_DEFAULT_PORT = 47831;
 const REMOTE_ROUTE = "/remote/v4";
-const RELAY_PATH = "/ws";
-/** Holgura sobre el límite de frame del protocolo (4 MiB) para el sobre JSON del relay. */
-const MAX_RELAY_FRAME_BYTES = 8 * 1024 * 1024;
 const PORT_ATTEMPTS = 10;
 
 export type SunsamRemoteHostMode = "auto" | "lan" | "tailscale";
@@ -231,14 +231,20 @@ export interface SunsamLocalRemoteServerOptions {
 }
 
 export interface SunsamLocalRemoteEndpoints {
+  /** Origen del API del relay para el escritorio (siempre loopback). */
+  origin: string;
   relayWsUrl: string;
+  /** Página móvil con el secreto en el fragmento `#k=` (no viaja en las peticiones HTTP). */
   remoteUrl: string;
+  /** "Login" local que sustituye a la cuenta de Z.ai en el manager de upstream. */
+  login: { userId: string; jwt: string };
 }
 
 export function createSunsamLocalRemoteServer(options: SunsamLocalRemoteServerOptions) {
   const configPath = join(options.configDir, "sunsam-remote-control.json");
-  const sessionsPath = join(options.configDir, "sunsam-remote-sessions.json");
-  let starting: Promise<{ server: Server; port: number }> | undefined;
+  const devicesPath = join(options.configDir, "sunsam-remote-devices.json");
+  const secretPath = join(options.configDir, "sunsam-remote-secret");
+  let starting: Promise<{ server: Server; port: number; secret: string }> | undefined;
 
   async function readJson<T>(path: string, fallback: T): Promise<T> {
     try {
@@ -276,50 +282,60 @@ export function createSunsamLocalRemoteServer(options: SunsamLocalRemoteServerOp
     );
   }
 
-  async function start(): Promise<{ server: Server; port: number }> {
+  async function writePrivate(path: string, content: string): Promise<void> {
+    // Sólo el usuario: el secreto y los equipos registrados permiten emparejar un teléfono.
+    await mkdir(dirname(path), { recursive: true, mode: 0o700 });
+    await writeFile(path, content, { encoding: "utf8", mode: 0o600 });
+  }
+
+  /** Secreto local (hace de JWT): se crea una vez y se guarda junto a la configuración. */
+  async function loadSecret(): Promise<string> {
+    try {
+      const stored = (await readFile(secretPath, "utf8")).trim();
+      if (stored.length >= 32) return stored;
+    } catch {
+      // Primera vez: se genera abajo.
+    }
+    const secret = randomBytes(32).toString("base64url");
+    await writePrivate(secretPath, secret);
+    return secret;
+  }
+
+  async function start(): Promise<{ server: Server; port: number; secret: string }> {
     const config = await readConfig();
-    const sessions = await readJson<Record<string, string>>(sessionsPath, {});
-    const relay = new SunsamLocalRelay((snapshot) => {
-      // Sólo el usuario: contiene los hashes con los que se empareja el teléfono.
-      void mkdir(dirname(sessionsPath), { recursive: true, mode: 0o700 })
-        .then(() =>
-          writeFile(sessionsPath, JSON.stringify(snapshot), { encoding: "utf8", mode: 0o600 }),
-        )
-        .catch((error: unknown) =>
-          options.logger.warn("[sunsam-remote] could not save sessions", {
-            error: String(error),
-          }),
+    const secret = await loadSecret();
+    const devices = await readJson<Record<string, SunsamRelayDeviceRecord>>(devicesPath, {});
+    const relay = new SunsamLocalRelayV2({
+      secret,
+      devices,
+      persist: (snapshot) => {
+        void writePrivate(devicesPath, JSON.stringify(snapshot)).catch((error: unknown) =>
+          options.logger.warn("[sunsam-remote] could not save devices", { error: String(error) }),
         );
-    }, sessions);
+      },
+    });
     const webRoot = resolve(options.webRoot);
     const server = createServer((request, response) => {
-      void serveStatic(webRoot, request, response).catch((error: unknown) => {
-        options.logger.warn("[sunsam-remote] static error", {
-          error: String(error),
+      void relay
+        .handleHttp(request, response)
+        .then((handled) => (handled ? undefined : serveStatic(webRoot, request, response)))
+        .catch((error: unknown) => {
+          options.logger.warn("[sunsam-remote] request error", { error: String(error) });
+          if (!response.headersSent) response.writeHead(500);
+          response.end();
         });
-        if (!response.headersSent) response.writeHead(500);
-        response.end();
-      });
-    });
-    const wss = new WebSocketServer({
-      noServer: true,
-      maxPayload: MAX_RELAY_FRAME_BYTES,
     });
     server.on("upgrade", (request, socket, head) => {
-      const pathname = new URL(request.url ?? "/", "http://local").pathname;
-      if (pathname !== RELAY_PATH) {
-        socket.destroy();
-        return;
-      }
-      wss.handleUpgrade(request, socket, head, (ws) => relay.attach(ws));
+      if (!relay.handleUpgrade(request, socket, head)) socket.destroy();
     });
+    server.on("close", () => relay.close());
     const preferredPort =
       Number.isInteger(config.port) && (config.port ?? 0) > 0 && (config.port ?? 0) < 65536
         ? (config.port as number)
         : SUNSAM_REMOTE_DEFAULT_PORT;
     const port = await listen(server, preferredPort);
     options.logger.info(`[sunsam-remote] local remote control listening on 0.0.0.0:${port}`);
-    return { server, port };
+    return { server, port, secret };
   }
 
   return {
@@ -329,16 +345,19 @@ export function createSunsamLocalRemoteServer(options: SunsamLocalRemoteServerOp
         starting = undefined;
         throw error;
       });
-      const { port } = await starting;
+      const { port, secret } = await starting;
       const addresses = listSunsamRemoteAddresses(
         networkInterfaces(),
         await detectDefaultRouteIpv4(),
       );
       const host = resolveSunsamRemoteHost(await readConfig(), addresses);
       const hostPart = host.includes(":") && !host.startsWith("[") ? `[${host}]` : host;
+      const origin = `http://127.0.0.1:${port}`;
       return {
-        relayWsUrl: `ws://127.0.0.1:${port}${RELAY_PATH}`,
-        remoteUrl: `http://${hostPart}:${port}${REMOTE_ROUTE}`,
+        origin,
+        relayWsUrl: `ws://127.0.0.1:${port}${WEB_REMOTE_CONTROL_RELAY_V2_WS_PATH}`,
+        remoteUrl: `http://${hostPart}:${port}${REMOTE_ROUTE}#k=${encodeURIComponent(secret)}`,
+        login: { userId: SUNSAM_LOCAL_USER_ID, jwt: secret },
       };
     },
     async stop(): Promise<void> {

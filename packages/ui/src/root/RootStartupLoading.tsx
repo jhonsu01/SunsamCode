@@ -26,9 +26,15 @@ export function RootStartupLoading({ label, children, busy = true }: RootStartup
 }
 
 /** 初始化与引导共用品牌图标，保持底色、描边、圆角和标志比例一致。 */
-export function ZCodeStartupLogoBadge({ animated = true }: { animated?: boolean }) {
+export function ZCodeStartupLogoBadge({
+  animated = true,
+  size = "default",
+}: {
+  animated?: boolean;
+  size?: "default" | "titlebar";
+}) {
   // Sunsam: el icono de Z se sustituye por el logo Sunsam animado (mismo nombre exportado).
-  return <SunsamStartupLogoBadge animated={animated} />;
+  return <SunsamStartupLogoBadge animated={animated} size={size} />;
 }
 
 export function ZCodeStartupLogo({

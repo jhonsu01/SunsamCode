@@ -1,7 +1,7 @@
 /**
  * Sunsam: la página móvil la sirve la app de escritorio por HTTP en la red local
  * (`http://192.168.x.x:47831/remote/v4`). Fuera de HTTPS/localhost el navegador no expone
- * `crypto.subtle` ni `crypto.randomUUID` (sólo existen en contextos seguros), así que aquí van
+ * `crypto.subtle`, `crypto.randomUUID` ni `navigator.clipboard` (sólo existen en contextos seguros), así que aquí van
  * sustitutos equivalentes. `crypto.getRandomValues` sí existe en cualquier contexto.
  */
 
@@ -73,19 +73,33 @@ export function sha256(message: Uint8Array): Uint8Array {
   return out;
 }
 
-/** HMAC-SHA256 (RFC 2104) sobre SHA-256 puro. */
-export function hmacSha256(key: Uint8Array, message: Uint8Array): Uint8Array {
-  const blockKey = new Uint8Array(64);
-  blockKey.set(key.length > 64 ? sha256(key) : key);
-  const inner = new Uint8Array(64 + message.length);
-  const outer = new Uint8Array(64 + 32);
-  for (let i = 0; i < 64; i += 1) {
-    inner[i] = blockKey[i]! ^ 0x36;
-    outer[i] = blockKey[i]! ^ 0x5c;
-  }
-  inner.set(message, 64);
-  outer.set(sha256(inner), 64);
-  return sha256(outer);
+/**
+ * `crypto.subtle` mínimo: sólo `digest("SHA-256")`, que usan los adjuntos (suma de verificación),
+ * las vistas de plugins y las referencias de PPTX. El resto de operaciones se rechaza, así que el
+ * código que dependa de ellas falla igual que sin `crypto.subtle`.
+ */
+export function createSunsamDigestOnlySubtle(): Pick<SubtleCrypto, "digest"> {
+  const unsupported = () =>
+    Promise.reject(
+      new DOMException("Only SHA-256 digest is available over HTTP", "NotSupportedError"),
+    );
+  return new Proxy(
+    {
+      digest(algorithm: AlgorithmIdentifier, data: BufferSource): Promise<ArrayBuffer> {
+        const name = typeof algorithm === "string" ? algorithm : algorithm?.name;
+        if (String(name).toUpperCase().replace("_", "-") !== "SHA-256")
+          return unsupported() as Promise<ArrayBuffer>;
+        const bytes = ArrayBuffer.isView(data)
+          ? new Uint8Array(data.buffer, data.byteOffset, data.byteLength)
+          : new Uint8Array(data as ArrayBuffer);
+        const hash = sha256(bytes);
+        return Promise.resolve(
+          hash.buffer.slice(hash.byteOffset, hash.byteOffset + hash.byteLength) as ArrayBuffer,
+        );
+      },
+    },
+    { get: (target, prop) => (prop in target ? target[prop as "digest"] : unsupported) },
+  );
 }
 
 function randomUuidFallback(): `${string}-${string}-${string}-${string}-${string}` {
@@ -100,6 +114,16 @@ function randomUuidFallback(): `${string}-${string}-${string}-${string}-${string
 /** Añade `crypto.randomUUID` cuando la página no está en un contexto seguro. */
 export function installSunsamInsecureContextPolyfills(): void {
   const cryptoObject = globalThis.crypto as Crypto | undefined;
+  if (cryptoObject && !cryptoObject.subtle) {
+    try {
+      Object.defineProperty(cryptoObject, "subtle", {
+        value: createSunsamDigestOnlySubtle(),
+        configurable: true,
+      });
+    } catch {
+      // `crypto` congelado: los adjuntos muestran su error de siempre.
+    }
+  }
   if (cryptoObject && typeof cryptoObject.randomUUID !== "function") {
     try {
       Object.defineProperty(cryptoObject, "randomUUID", {
@@ -111,29 +135,6 @@ export function installSunsamInsecureContextPolyfills(): void {
       // Algunos navegadores congelan `crypto`: los llamadores ya tienen su propio respaldo.
     }
   }
-}
-
-/**
- * El relay vive en el mismo servidor que la página (`/ws`). Sólo una página servida por
- * zcode.z.ai sigue usando el relay de Z.ai que trae el build.
- */
-export function resolveSunsamSameOriginRelayWsUrl(
-  location: Pick<Location, "protocol" | "host" | "hostname">,
-  fallback: string,
-): string {
-  if (/(^|\.)z\.ai$/i.test(location.hostname) || !location.host) return fallback;
-  return `${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/ws`;
-}
-
-/**
- * Los datos de emparejamiento (sid, hash, t) llegan en el fragmento `#` del QR para que no viajen
- * en la petición HTTP; los enlaces antiguos los traen en la query. El fragmento manda.
- */
-export function withSunsamFragmentParams(params: URLSearchParams, hash: string): URLSearchParams {
-  const merged = new URLSearchParams(params);
-  const fragment = new URLSearchParams(hash.replace(/^#/, ""));
-  for (const [key, value] of fragment) merged.set(key, value);
-  return merged;
 }
 
 /**
@@ -173,7 +174,8 @@ export function copyTextWithExecCommand(text: string, doc: Document = document):
  * portapapeles o copiar imágenes sigue sin ser posible por HTTP.
  */
 export function installSunsamClipboardFallback(nav: Navigator = navigator): void {
-  if (nav.clipboard?.writeText) return;
+  // `clipboard` no existe fuera de HTTPS aunque los tipos del DOM lo declaren siempre.
+  if (typeof (nav.clipboard as Clipboard | undefined)?.writeText === "function") return;
   const fallback = {
     writeText: (text: string) =>
       copyTextWithExecCommand(String(text))

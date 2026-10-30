@@ -36,8 +36,9 @@ Les installateurs sont publiés dans les **[Releases](https://github.com/jhonsu0
 
 L'app **se met à jour toute seule** depuis ces Releases : sous Windows et avec l'AppImage Linux, le bouton de mise à jour apparaît (au démarrage, toutes les heures ou via _Aide → Rechercher des mises à jour_) ; sous macOS, téléchargez le nouveau `.dmg`.
 
-## Nouveautés de la 3.15.1-sunsam.15
+## Nouveautés de la 3.17.1-sunsam.1
 
+- **Basé sur ZCode 3.17.1** : synchronisation des données vers les appareils distants (skills, MCP, plugins et réglages des modèles), nouvel assistant de connexion distante pour SSH, WSL et Docker qui continue en arrière-plan, gestion des projets, visionneuses intégrées pour Word, PDF, PowerPoint et Excel, éditeur d'images, groupes de tâches, instructions personnalisées et recherche d'outils. Le contrôle à distance depuis le téléphone a été adapté au nouveau protocole d'appairage et reste entièrement sur votre réseau, sans compte Z.ai. Toute l'interface est traduite dans les langues de Sunsam.
 - **Les boutons de copie fonctionnent sur le téléphone** : dans le contrôle à distance, les icônes de copie (tableaux, code, messages) échouaient avec « clipboard-unavailable » car la page est servie en HTTP sur votre réseau ; elles copient désormais directement.
 - **Contrôle à distance depuis le téléphone sans serveur externe** : l'app sert elle-même la page mobile et le relais d'appairage sur votre réseau local (le relais Z.ai refusait les versions Sunsam avec « Not found »). Scannez le QR sur le même Wi-Fi ; hors de chez vous, installez Tailscale sur les deux appareils.
 - **Retour des mises à jour automatiques** : le bouton de mise à jour réapparaît quand une version sort, et _Aide → Rechercher des mises à jour_ indique si vous avez la plus récente. L'interface est désormais entièrement traduite en espagnol, portugais, français, russe et coréen.

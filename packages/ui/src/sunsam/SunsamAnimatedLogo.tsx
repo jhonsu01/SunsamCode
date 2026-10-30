@@ -47,16 +47,26 @@ export function SunsamAnimatedMark({ className, animated = true }: { className?:
 }
 
 /** Placa del icono de la app usada en el arranque y en la introducción. */
-export function SunsamStartupLogoBadge({ animated = true }: { animated?: boolean }) {
+export function SunsamStartupLogoBadge({
+  animated = true,
+  size = "default",
+}: {
+  animated?: boolean;
+  /** "titlebar": insignia de 20px de la barra de título (upstream 3.17). */
+  size?: "default" | "titlebar";
+}) {
+  const titlebar = size === "titlebar";
   return (
     <div
+      data-desktop-logo-badge={titlebar ? "true" : undefined}
       className={cn(
-        "relative flex size-24 items-center justify-center rounded-3xl bg-[linear-gradient(180deg,#1a1622_0%,#100e15_100%)] shadow-xl/20",
+        "relative flex items-center justify-center bg-[linear-gradient(180deg,#1a1622_0%,#100e15_100%)]",
         "before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:border before:border-[rgba(255,255,255,0.1)] before:content-['']",
+        titlebar ? "size-5 rounded shadow-sm/20" : "size-24 rounded-3xl shadow-xl/20",
         animated && "sunsam-logo-badge--animated",
       )}
     >
-      <SunsamAnimatedMark className="h-auto w-16" animated={animated} />
+      <SunsamAnimatedMark className={titlebar ? "h-auto w-3.5" : "h-auto w-16"} animated={animated} />
     </div>
   );
 }
