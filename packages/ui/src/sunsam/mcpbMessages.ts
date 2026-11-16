@@ -1,7 +1,9 @@
 /** Sunsam: textos del instalador de extensiones MCP (.mcpb / .dxt). */
 import type { Locale } from "@zcode/shared";
 
-export const SUNSAM_MCPB_MESSAGES: Record<Locale, Record<string, string>> = {
+// ja-JP no tiene tabla propia: cae al inglés.
+export const SUNSAM_MCPB_MESSAGES: Record<"en-US", Record<string, string>> &
+  Partial<Record<Locale, Record<string, string>>> = {
   "en-US": {
     "sunsam.mcpb.install": "Install extension (.mcpb / .dxt)",
     "sunsam.mcpb.installing": "Installing…",

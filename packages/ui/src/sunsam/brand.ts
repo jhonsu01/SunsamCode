@@ -34,7 +34,9 @@ const SUNSAM_LOCALE_LABELS: Record<string, string> = Object.fromEntries(
   ]),
 );
 
-const SUNSAM_MESSAGES: Record<Locale, Record<string, string>> = {
+// ja-JP no tiene tabla propia: cae al inglés.
+const SUNSAM_MESSAGES: Record<"en-US", Record<string, string>> &
+  Partial<Record<Locale, Record<string, string>>> = {
   "en-US": {
     ...SUNSAM_LOCALE_LABELS,
     "sunsam.modelProvider.customOnlyEmpty":

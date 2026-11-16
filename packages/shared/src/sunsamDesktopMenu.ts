@@ -5,9 +5,9 @@
 import type { DesktopMenuLocaleMessages } from "./desktopMenu.js";
 import type { BaseLocale, Locale } from "./protocol.js";
 
-export const SUNSAM_DESKTOP_MENU_MESSAGES: Record<
-  Exclude<Locale, BaseLocale>,
-  DesktopMenuLocaleMessages
+// Sunsam: ja-JP no tiene tabla propia y cae al inglés, como en upstream.
+export const SUNSAM_DESKTOP_MENU_MESSAGES: Partial<
+  Record<Exclude<Locale, BaseLocale>, DesktopMenuLocaleMessages>
 > = {
   "es-ES": {
     "titleBar.menu.file": "Archivo",

@@ -1,13 +1,10 @@
-import type {
-  AboutPanelOptionsOptions,
-  BrowserWindow,
-  MessageBoxReturnValue,
-} from "electron";
+import type { AboutPanelOptionsOptions, BrowserWindow, MessageBoxReturnValue } from "electron";
 import { existsSync, readFileSync } from "node:fs";
 import { arch, hostname, platform, release, type, version as osVersion } from "node:os";
 import { join } from "node:path";
 import {
   DEFAULT_LOCALE,
+  toZhOrEnLocale,
   type Locale,
   ZCODE_BUILD_TIME,
   ZCODE_COMMIT,
@@ -62,16 +59,18 @@ const ABOUT_APPLICATION_NAME = "SunsamCode Desktop App";
 // 这里给 BrowserWindow 额外留出背景呼吸空间，避免正式 About 看起来比 demo 更局促。
 const ABOUT_WINDOW_WIDTH = 256;
 const ABOUT_WINDOW_HEIGHT = 312;
-const ABOUT_MESSAGES: Record<
-  Locale,
-  {
-    aboutTitle: string;
-    versionLabel: string;
-    okButtonLabel: string;
-    optimizedForAppleSilicon: string;
-    copyright: (year: number) => string;
-  }
-> = {
+// 关于窗口只内置中英；其它界面语言用英文（以前回退 DEFAULT_LOCALE 会显示中文）。
+interface AboutMessages {
+  aboutTitle: string;
+  versionLabel: string;
+  okButtonLabel: string;
+  optimizedForAppleSilicon: string;
+  copyright: (year: number) => string;
+}
+
+// Sunsam: además de zh/en, textos propios para los idiomas que añade Sunsam.
+const ABOUT_MESSAGES: Record<"zh-CN" | "en-US", AboutMessages> &
+  Partial<Record<Locale, AboutMessages>> = {
   "zh-CN": {
     aboutTitle: "关于 SunsamCode",
     versionLabel: "版本",
@@ -138,8 +137,8 @@ function normalizePackageVersion(version: string | undefined): string {
   return normalized === "unknown" ? normalized : normalized.replace(/^[^\d]*/, "") || normalized;
 }
 
-function getAboutMessages(locale: Locale): (typeof ABOUT_MESSAGES)[Locale] {
-  return ABOUT_MESSAGES[locale] ?? ABOUT_MESSAGES[DEFAULT_LOCALE];
+function getAboutMessages(locale: Locale): (typeof ABOUT_MESSAGES)["en-US"] {
+  return ABOUT_MESSAGES[locale] ?? ABOUT_MESSAGES[toZhOrEnLocale(locale)];
 }
 
 function readJsonFile<T>(filePath: string): T | null {

@@ -9,7 +9,7 @@
 
 import { mkdir, open, rm, type FileHandle } from "node:fs/promises";
 import { basename, join } from "node:path";
-import type { Locale } from "@zcode/shared";
+import { toZhOrEnLocale, type Locale } from "@zcode/shared";
 import {
   MobileLogPullError,
   type MobileLogPullErrorCode,
@@ -223,8 +223,8 @@ export async function pullAndExportMobileLogs(
   windowId: number | undefined,
   dependencies: MobileLogPullExportDependencies,
 ): Promise<MobileLogPullExportResult> {
-  // Sunsam: los idiomas añadidos por Sunsam usan el texto en inglés.
-  const text = dependencies.locale === "zh-CN" ? TEXT["zh-CN"] : TEXT["en-US"];
+  // 提示框只内置中英；其它界面语言用英文。
+  const text = TEXT[toZhOrEnLocale(dependencies.locale)];
   const now = dependencies.now ?? (() => new Date());
   const showResult = async (input: {
     type: "info" | "warning";

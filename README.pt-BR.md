@@ -36,8 +36,9 @@ Os instaladores são publicados em **[Releases](https://github.com/jhonsu01/Suns
 
 O app **se atualiza sozinho** a partir destes Releases: no Windows e com a AppImage do Linux aparece o botão de atualizar (ao iniciar, a cada hora ou em _Ajuda → Verificar atualizações_); no macOS baixe o novo `.dmg`.
 
-## Novidades da 3.17.2-sunsam.1
+## Novidades da 3.18.2-sunsam.1
 
+- **Baseado no ZCode 3.18.2**: modo de design no navegador integrado (inspecionar e editar elementos da página, dispositivos predefinidos, exportar para PDF ou PNG, visitas recentes), entrada de voz, tarefas em worktrees Git gerenciados, edição da última mensagem ou das mensagens na fila, anotações sobre texto citado, extensões com permissões e logs, gerenciamento de conversas compartilhadas, exclusão permanente de sessões arquivadas, pesquisa nas configurações e recuperação de um armazenamento de credenciais danificado. O ZCode agora traz japonês, russo e coreano oficiais; o Sunsam mantém espanhol, português e francês e completa o restante.
 - **Baseado no ZCode 3.17.2**: pré-visualização de HTML local no navegador integrado, erros de MCP com etapas sugeridas, apps de interface MCP em sessões de rascunho, contador de não lidas na barra de tarefas do Windows e mais correções.
 - **Baseado no ZCode 3.17.1**: sincronização de dados com dispositivos remotos (skills, MCP, plugins e configurações de modelos), novo assistente de conexão remota para SSH, WSL e Docker que continua conectando em segundo plano, gerenciamento de projetos, visualizadores integrados de Word, PDF, PowerPoint e Excel, editor de imagens, grupos de tarefas, instruções personalizadas e busca de ferramentas. O controle remoto pelo celular foi adaptado ao novo protocolo de pareamento e continua funcionando só na sua rede, sem conta Z.ai. Toda a interface está traduzida para os idiomas do Sunsam.
 - **Os botões de copiar funcionam no celular**: no controle remoto, os ícones de copiar (tabelas, código, mensagens) falhavam com "clipboard-unavailable" porque a página é servida por HTTP na sua rede; agora copiam direto.

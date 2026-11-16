@@ -8,6 +8,7 @@ import { DEFAULT_LOCALE, type EditorInfo, type Locale } from "@zcode/shared";
 const FILE_EXPLORER_NAMES: Record<Locale, string> = {
   "zh-CN": "资源管理器",
   "en-US": "File Explorer",
+  "ja-JP": "エクスプローラー",
   "es-ES": "Explorador de archivos",
   "pt-BR": "Explorador de Arquivos",
   "fr-FR": "Explorateur de fichiers",

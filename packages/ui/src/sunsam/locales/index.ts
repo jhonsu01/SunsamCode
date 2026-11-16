@@ -10,7 +10,8 @@ import koKR from "./ko-KR.js";
 import ptBR from "./pt-BR.js";
 import ruRU from "./ru-RU.js";
 
-export type SunsamLocale = Exclude<Locale, BaseLocale>;
+/** Idiomas con tabla Sunsam (ja-JP sólo tiene la de upstream). */
+export type SunsamLocale = Exclude<Locale, BaseLocale | "ja-JP">;
 
 interface SunsamLocaleOption {
   locale: SunsamLocale;

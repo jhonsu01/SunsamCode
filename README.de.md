@@ -36,8 +36,9 @@ Die Installationsprogramme erscheinen unter **[Releases](https://github.com/jhon
 
 Die App **aktualisiert sich selbst** aus diesen Releases: unter Windows und mit dem Linux-AppImage erscheint die Update-Schaltfläche (beim Start, stündlich oder über _Help → Check for updates_); unter macOS das neue `.dmg` herunterladen.
 
-## Neu in 3.17.2-sunsam.1
+## Neu in 3.18.2-sunsam.1
 
+- **Basiert auf ZCode 3.18.2**: Designmodus im integrierten Browser (Seitenelemente prüfen und bearbeiten, Gerätevorlagen, Export als PDF oder PNG, zuletzt besuchte Seiten), Spracheingabe, Aufgaben in verwalteten Git-Worktrees, Bearbeiten der letzten oder wartenden Nachricht, Anmerkungen zu zitiertem Text, Erweiterungen mit Berechtigungen und Protokollen, Verwaltung geteilter Unterhaltungen, endgültiges Löschen archivierter Sitzungen, Suche in den Einstellungen und Wiederherstellung eines beschädigten Anmeldedatenspeichers. ZCode liefert jetzt offiziell Japanisch, Russisch und Koreanisch; Sunsam behält Spanisch, Portugiesisch und Französisch bei und ergänzt den Rest.
 - **Basiert auf ZCode 3.17.2**: lokale HTML-Vorschau im integrierten Browser, MCP-Fehler mit Lösungsschritten, MCP-UI-Apps in Entwurfssitzungen, Ungelesen-Zähler in der Windows-Taskleiste und weitere Korrekturen.
 - **Basiert auf ZCode 3.17.1**: Datensynchronisierung mit Remote-Geräten (Skills, MCP, Plugins und Modelleinstellungen), ein neuer Assistent für SSH-, WSL- und Docker-Verbindungen, der im Hintergrund weiterverbindet, Projektverwaltung, integrierte Viewer für Word, PDF, PowerPoint und Excel, ein Bildeditor, Aufgabengruppen, eigene Anweisungen und Tool-Suche. Die Handy-Fernsteuerung wurde an das neue Kopplungsprotokoll angepasst und läuft weiterhin nur in Ihrem Netz, ohne Z.ai-Konto. Die gesamte Oberfläche ist in die Sunsam-Sprachen übersetzt.
 - **Kopier-Schaltflächen funktionieren auf dem Handy**: In der Fernsteuerung schlugen die Kopiersymbole (Tabellen, Code, Nachrichten) mit „clipboard-unavailable“ fehl, weil die Seite per HTTP im lokalen Netz ausgeliefert wird; jetzt kopieren sie direkt.

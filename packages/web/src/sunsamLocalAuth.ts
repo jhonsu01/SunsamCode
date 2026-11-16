@@ -10,8 +10,16 @@ import type { WebAuthService } from "./auth/webAuthService.js";
 
 type EntryAuth = Pick<
   WebAuthService,
-  "getZCodeJwtToken" | "getActiveAccount" | "startLogin" | "logout"
+  | "getZCodeJwtToken"
+  | "getActiveAccount"
+  | "startLogin"
+  | "logout"
+  | "subscribeSessionChange"
+  | "getSessionRevision"
 >;
+
+/** El secreto local no caduca ni rota: la sesión es siempre la misma mientras dure la página. */
+const SUNSAM_LOCAL_SESSION_REVISION = "sunsam-local";
 
 const STORAGE_KEY = "sunsam-remote-local-key";
 
@@ -51,6 +59,8 @@ export function resolveSunsamEntryAuth(
   return {
     getZCodeJwtToken: () => key,
     getActiveAccount: () => null,
+    getSessionRevision: () => SUNSAM_LOCAL_SESSION_REVISION,
+    subscribeSessionChange: () => () => undefined,
     startLogin: (...args: Parameters<EntryAuth["startLogin"]>) => base.startLogin(...args),
     logout: async () => {
       // "Cambiar de cuenta" olvida este equipo: hará falta escanear de nuevo su QR.

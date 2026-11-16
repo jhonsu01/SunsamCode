@@ -1,12 +1,9 @@
-import { isSupportedLocale, resolveLocaleFromLanguageTag } from "@zcode/shared";
-import { withEnglishFallback } from "@/sunsam/locales/index.js";
 import { Component } from "react";
 import type { ErrorInfo, ReactNode } from "react";
 import type { Locale } from "@zcode/shared";
-import { DEFAULT_LOCALE } from "@zcode/shared";
+import { DEFAULT_LOCALE, isLocale, resolveLocaleFromLanguageTag } from "@zcode/shared";
 import { DesktopWindowFrame } from "@/DesktopWindowFrame.js";
-import zhCN from "@/i18n/locales/zh-CN.js";
-import enUS from "@/i18n/locales/en-US.js";
+import { LOCALE_MESSAGES } from "@/i18n/localeMessages.js";
 import { logger } from "@/logger.js";
 import { reportReactErrorToArms } from "@/lib/reactErrorArmsTelemetry.js";
 import { cn } from "@/components/lib/utils.js";
@@ -68,7 +65,7 @@ function resolveBoundaryLocale(): Locale {
   if (typeof localStorage !== "undefined" && typeof localStorage.getItem === "function") {
     try {
       const storedPreference = localStorage.getItem(LOCALE_PREFERENCE_KEY);
-      if (isSupportedLocale(storedPreference)) {
+      if (isLocale(storedPreference)) {
         return storedPreference;
       }
     } catch {
@@ -87,9 +84,7 @@ function resolveBoundaryLocale(): Locale {
 
 function formatBoundaryMessage(id: string): string {
   const locale = resolveBoundaryLocale();
-  // Sunsam: la pantalla de error usa el idioma elegido si hay traducción y, si no, inglés.
-  const messages =
-    locale === "zh-CN" ? zhCN : locale === "en-US" ? enUS : withEnglishFallback(enUS, locale);
+  const messages = LOCALE_MESSAGES[locale];
   return messages[id] ?? id;
 }
 
