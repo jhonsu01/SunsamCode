@@ -238,7 +238,9 @@ function finishLogin(loginId: string, code: string): Promise<{ account?: string 
       clearTimeout(pending.timer);
       logins.delete(loginId);
       if (exitCode === 0) resolve({ account: output.match(/Logged in as (\S+)/)?.[1] });
-      else reject(new Error(output.trim().split("\n").pop() || `agy terminó con código ${exitCode}`));
+      else if (/invalid_grant|malformed|auth code/i.test(output)) {
+        reject(new Error("El código no es válido o caducó. Vuelve a iniciar sesión y pega el código nuevo."));
+      } else reject(new Error(`No se pudo iniciar sesión (agy terminó con código ${exitCode ?? "?"}).`));
     });
     pending.child.stdin.write(`${code.trim()}\n`);
   });
@@ -251,6 +253,20 @@ function cancelLogin(loginId: string): null {
   logins.delete(loginId);
   pending.child.kill();
   return null;
+}
+
+/**
+ * La salida de agy no viaja por IPC ni al log: puede llevar datos de la cuenta. Solo se usa para
+ * elegir uno de estos mensajes fijos.
+ */
+function classifyAgyFailure(command: string, raw: string, code: number | null): Error {
+  if (/sign[- ]?in|log ?in|unauthenticated|not authenticated|credential|oauth/i.test(raw)) {
+    return new Error("Antigravity no tiene una sesión de Google activa. Inicia sesión desde la tarjeta de la cuenta.");
+  }
+  if (/quota|rate.?limit|exhausted/i.test(raw)) {
+    return new Error(`agy ${command}: la cuenta no tiene cuota disponible ahora.`);
+  }
+  return new Error(`agy ${command} falló (código ${code ?? "?"}).`);
 }
 
 /**
@@ -282,12 +298,12 @@ function runAgyReadOnlyCommand(agyPath: string, command: "/usage" | "/credits"):
       try {
         const parsed = JSON.parse(json) as { status?: string; error?: string };
         if (parsed.status && parsed.status !== "SUCCESS") {
-          reject(new Error(parsed.error ?? `agy ${command}: ${parsed.status}`));
+          reject(classifyAgyFailure(command, `${parsed.error ?? ""} ${err}`, code));
           return;
         }
         resolve(parsed);
       } catch {
-        reject(new Error((err || out).trim().split("\n").pop() || `agy ${command} terminó con código ${code}`));
+        reject(classifyAgyFailure(command, `${err} ${out}`, code));
       }
     });
   });
