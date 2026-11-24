@@ -42,8 +42,9 @@ Installers are published under **[Releases](https://github.com/jhonsu01/SunsamCo
 The app **updates itself** from these Releases: on Windows and with the Linux AppImage the update button
 appears (on launch, every hour or via _Help → Check for updates_); on macOS download the new `.dmg`.
 
-## What's new in 3.18.2-sunsam.1
+## What's new in 4.0.0-sunsam.1
 
+- **Based on ZCode 4.0.0**: preinstalled document tools (Python, LibreOffice, Pandoc, Poppler and qpdf) so the agent can work with Word, PDF and spreadsheets, an agent reply language setting, an option to always run subagents in the background, a token budget reminder, project plugins that must be trusted before they load, automatic restart after a window crash and more detailed errors when sharing conversations. In Sunsam the document tools are not downloaded automatically: install them from Help → Preinstalled tools.
 - **Based on ZCode 3.18.2**: design mode in the built-in browser (inspect and edit page elements, device presets, export to PDF or PNG, recent visits), voice input, tasks in managed Git worktrees, editing your last or queued message, annotations on quoted text, extensions with permissions and logs, management of shared conversations, permanent deletion of archived sessions, settings search and recovery of a damaged credential store. ZCode now ships official Japanese, Russian and Korean; Sunsam keeps Spanish, Portuguese and French and completes the rest.
 - **Based on ZCode 3.17.2**: local HTML preview in the built-in browser, MCP errors with suggested steps, MCP UI apps in draft sessions, unread badge on the Windows taskbar and more fixes.
 - **Based on ZCode 3.17.1**: data sync to remote devices (skills, MCP, plugins and model settings), a redesigned remote connection wizard for SSH, WSL and Docker that keeps connecting in the background, project management, built-in viewers for Word, PDF, PowerPoint and Excel, an image editor, task groups, custom instructions and tool search. Phone remote control was adapted to the new pairing protocol and still runs entirely on your network, without a Z.ai account. The whole interface is translated into the Sunsam languages.
