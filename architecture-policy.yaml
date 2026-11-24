@@ -2052,6 +2052,18 @@ global:
   acceptedUpstreamSnapshot: scripts/architecture/upstream-snapshot.json
 
 exceptions:
+  - id: sunsam-antigravity-provider
+    rule: unmanaged-new-file
+    paths:
+      - apps/zcode-cli/packages/adapters/src/model/sunsam-antigravity/agy-process.ts
+      - apps/zcode-cli/packages/adapters/src/model/sunsam-antigravity/conversation.ts
+      - apps/zcode-cli/packages/adapters/src/model/sunsam-antigravity/language-model.ts
+      - apps/zcode-cli/packages/adapters/src/model/sunsam-antigravity/prompt.ts
+      - packages/desktop/src/main/sunsamAntigravityIpc.ts
+      - packages/shared/src/sunsamAntigravity.ts
+      - packages/ui/src/sunsam/SunsamAntigravityCard.tsx
+      - packages/ui/src/sunsam/antigravityMessages.ts
+    reason: Capa Sunsam del fork (proveedor Google vía agy acp), aislada en archivos propios para facilitar las fusiones con upstream; no cambia límites de módulos de upstream ni se registra como módulo gestionado.
   - id: region-copy-suggested-prompts-edit
     rule: unmanaged-new-file
     paths: [packages/ui/src/v4/featureSuggestedPrompts.ts]
