@@ -17,6 +17,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button.js";
 import { useZCodeIntl } from "@/i18n/IntlProvider.js";
 import type { ProviderSettingsFormProvider } from "@/lib/providerSettingsFormTypes.js";
+import { SunsamAntigravityQuotaView, useSunsamAntigravityQuota } from "./SunsamAntigravityQuota.js";
 
 type AntigravityWindow = Window & { zcode?: { sunsamAntigravity?: SunsamAntigravityBridge } };
 
@@ -158,6 +159,7 @@ export function SunsamAntigravityCard({
 
   const status = state.kind === "ready" ? state.status : undefined;
   const missing = status?.models.filter((model) => !listed.has(model.id)) ?? [];
+  const quota = useSunsamAntigravityQuota(Boolean(status?.signedIn));
 
   return (
     <section className="space-y-4 rounded-xl border border-border bg-surface p-4" data-sunsam-antigravity-card>
@@ -238,6 +240,8 @@ export function SunsamAntigravityCard({
       ) : null}
 
       {notice ? <p className="text-ui-sm text-foreground-subtle">{notice}</p> : null}
+
+      <SunsamAntigravityQuotaView state={quota.state} onRefresh={() => void quota.refresh(true)} />
 
       {status?.signedIn && status.models.length > 0 ? (
         <div className="space-y-2">

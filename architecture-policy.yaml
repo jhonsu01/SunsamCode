@@ -2063,6 +2063,7 @@ exceptions:
       - packages/shared/src/sunsamAntigravity.ts
       - packages/ui/src/sunsam/SunsamAntigravityCard.tsx
       - packages/ui/src/sunsam/antigravityMessages.ts
+      - packages/ui/src/sunsam/SunsamAntigravityQuota.tsx
     reason: Capa Sunsam del fork (proveedor Google vía agy acp), aislada en archivos propios para facilitar las fusiones con upstream; no cambia límites de módulos de upstream ni se registra como módulo gestionado.
   - id: region-copy-suggested-prompts-edit
     rule: unmanaged-new-file

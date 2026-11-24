@@ -106,15 +106,21 @@ function finishReason(stopReason: string): { unified: string; raw: string } {
   return { unified, raw: stopReason };
 }
 
-function toUsage(usage: AgyUsage | undefined) {
-  const input = usage?.inputTokens;
+/**
+ * agy informa `inputTokens` SIN los leídos de caché: totalTokens = input + output + cachedRead
+ * (medido: 25 780 + 1 091 + 50 619 = 77 490). El total de entrada para Sunsam es la suma; si no,
+ * la tasa de aciertos de caché sale por encima del 100 %.
+ */
+export function toUsage(usage: AgyUsage | undefined) {
+  const uncached = usage?.inputTokens;
   const cached = usage?.cachedReadTokens;
+  const total = uncached === undefined && cached === undefined ? undefined : (uncached ?? 0) + (cached ?? 0);
   return {
     inputTokens: {
-      total: input,
-      noCache: input !== undefined && cached !== undefined ? Math.max(0, input - cached) : undefined,
+      total,
+      noCache: uncached,
       cacheRead: cached,
-      cacheWrite: undefined,
+      cacheWrite: usage?.cachedWriteTokens,
     },
     outputTokens: { total: usage?.outputTokens, text: undefined, reasoning: usage?.thoughtTokens },
     ...(usage ? { raw: { ...usage } } : {}),

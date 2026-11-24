@@ -10,6 +10,7 @@ import {
   createAntigravityProvider,
   isAntigravityBaseUrl,
   readDecision,
+  toUsage,
 } from "../src/model/sunsam-antigravity/language-model.js";
 import { extractWorkingDirectory } from "../src/model/sunsam-antigravity/prompt.js";
 
@@ -128,6 +129,14 @@ describe("Sunsam Antigravity provider", () => {
     // Un solo session/prompt: la respuesta continúa el turno aparcado, no abre otro.
     const prompts = recorded().filter((e) => e.method === "session/prompt" && JSON.stringify(e.params).includes("SCRIPT:EDIT"));
     expect(prompts).toHaveLength(1);
+  });
+
+  it("suma la caché al total de entrada (agy la informa aparte)", () => {
+    // Medido con agy 1.5.15: inputTokens 25780 + output 1091 + cachedRead 50619 = totalTokens 77490.
+    const usage = toUsage({ inputTokens: 25_780, outputTokens: 1_091, cachedReadTokens: 50_619, thoughtTokens: 682 });
+    expect(usage.inputTokens).toMatchObject({ total: 76_399, noCache: 25_780, cacheRead: 50_619 });
+    expect(usage.inputTokens.cacheRead! / usage.inputTokens.total!).toBeLessThanOrEqual(1);
+    expect(usage.outputTokens).toMatchObject({ total: 1_091, reasoning: 682 });
   });
 
   it("solo acepta la opción elegida, no texto de agy repetido en la pregunta", () => {

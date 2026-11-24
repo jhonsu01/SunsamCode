@@ -7,6 +7,7 @@ import {
   useState,
   useSyncExternalStore,
   type CSSProperties,
+  type ReactNode,
 } from "react";
 import {
   type CodingPlanResetType,
@@ -265,7 +266,10 @@ export function ChatContextUsage({
   selectedProvider: _selectedProvider,
   intl,
   locale,
+  extraUsage,
 }: {
+  /** Sunsam: uso restante de otro proveedor (Google Antigravity); se refresca al abrir. */
+  extraUsage?: { readonly content: ReactNode; readonly onOpen?: () => void };
   codingPlanUsageRemaining?: ChatCodingPlanUsageRemainingConfig;
   startPlanBalance?: ChatStartPlanBalanceConfig;
   taskUsage: {
@@ -297,6 +301,7 @@ export function ChatContextUsage({
         return;
       }
       setContextOpen(open);
+      if (open) extraUsage?.onOpen?.();
       // hover 刷新入口不能只认 Coding Plan 的 onAccess：Start Plan（今日余额）与
       // Coding Plan 连接方式互斥，start plan 用户 hover 时整条刷新链路都不触发，余额只能被动等
       // 设置页/侧栏刷新。改为两段配置任一提供 onAccess 即发起本次静默 access 刷新（互斥下实际只有一个存在）。
@@ -316,7 +321,7 @@ export function ChatContextUsage({
         }
       });
     },
-    [codingPlanUsageRemaining?.onAccess, startPlanBalance?.onAccess],
+    [codingPlanUsageRemaining?.onAccess, startPlanBalance?.onAccess, extraUsage],
   );
   const handleQuotaResetDialogOpenChange = useCallback((open: boolean) => {
     quotaResetDialogOpenRef.current = open;
@@ -897,7 +902,8 @@ export function ChatContextUsage({
   if (
     (!renderableTaskUsage || !contextUsageLabel) &&
     !hasCodingPlanUsageRemaining &&
-    !hasStartPlanBalance
+    !hasStartPlanBalance &&
+    !extraUsage
   ) {
     return null;
   }
@@ -1095,6 +1101,19 @@ export function ChatContextUsage({
                 hasCodingPlanUsageRemaining,
               )}
             />
+          ) : null}
+          {extraUsage ? (
+            <div
+              className={cn(
+                (renderableTaskUsage && compactTokenUsageLabel) ||
+                  hasCodingPlanUsageRemaining ||
+                  hasStartPlanBalance
+                  ? "border-t border-border pt-3"
+                  : undefined,
+              )}
+            >
+              {extraUsage.content}
+            </div>
           ) : null}
         </ContextContentBody>
       </ContextContent>

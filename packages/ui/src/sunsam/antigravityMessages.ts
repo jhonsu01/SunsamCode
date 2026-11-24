@@ -2,6 +2,14 @@
 import type { Locale } from "@zcode/shared";
 
 const EN: Record<string, string> = {
+  "sunsam.antigravity.quota.title": "Google usage remaining",
+  "sunsam.antigravity.quota.refresh": "Refresh usage",
+  "sunsam.antigravity.quota.weekly": "Weekly",
+  "sunsam.antigravity.quota.fiveHour": "5 hours",
+  "sunsam.antigravity.quota.daily": "Daily",
+  "sunsam.antigravity.quota.resets": "renews {time}",
+  "sunsam.antigravity.quota.disabled": "Disabled",
+  "sunsam.antigravity.quota.credits": "AI credits",
   "sunsam.antigravity.templateLabel": "Google (Antigravity)",
   "sunsam.antigravity.templateHint": "Your Google subscription, through the official Antigravity CLI",
   "sunsam.antigravity.title": "Google account",
@@ -36,6 +44,14 @@ const EN: Record<string, string> = {
 };
 
 const ES: Record<string, string> = {
+  "sunsam.antigravity.quota.title": "Uso restante de Google",
+  "sunsam.antigravity.quota.refresh": "Actualizar uso",
+  "sunsam.antigravity.quota.weekly": "Semanal",
+  "sunsam.antigravity.quota.fiveHour": "5 horas",
+  "sunsam.antigravity.quota.daily": "Diario",
+  "sunsam.antigravity.quota.resets": "se renueva {time}",
+  "sunsam.antigravity.quota.disabled": "Desactivado",
+  "sunsam.antigravity.quota.credits": "Créditos de IA",
   "sunsam.antigravity.templateLabel": "Google (Antigravity)",
   "sunsam.antigravity.templateHint": "Tu suscripción de Google, a través del CLI oficial de Antigravity",
   "sunsam.antigravity.title": "Cuenta de Google",
@@ -70,6 +86,14 @@ const ES: Record<string, string> = {
 };
 
 const PT: Record<string, string> = {
+  "sunsam.antigravity.quota.title": "Uso restante do Google",
+  "sunsam.antigravity.quota.refresh": "Atualizar uso",
+  "sunsam.antigravity.quota.weekly": "Semanal",
+  "sunsam.antigravity.quota.fiveHour": "5 horas",
+  "sunsam.antigravity.quota.daily": "Diário",
+  "sunsam.antigravity.quota.resets": "renova {time}",
+  "sunsam.antigravity.quota.disabled": "Desativado",
+  "sunsam.antigravity.quota.credits": "Créditos de IA",
   "sunsam.antigravity.templateHint": "Sua assinatura do Google, pelo CLI oficial do Antigravity",
   "sunsam.antigravity.title": "Conta do Google",
   "sunsam.antigravity.checking": "Verificando o Antigravity…",
@@ -101,6 +125,14 @@ const PT: Record<string, string> = {
 };
 
 const FR: Record<string, string> = {
+  "sunsam.antigravity.quota.title": "Utilisation Google restante",
+  "sunsam.antigravity.quota.refresh": "Actualiser l'utilisation",
+  "sunsam.antigravity.quota.weekly": "Hebdomadaire",
+  "sunsam.antigravity.quota.fiveHour": "5 heures",
+  "sunsam.antigravity.quota.daily": "Quotidien",
+  "sunsam.antigravity.quota.resets": "renouvelé {time}",
+  "sunsam.antigravity.quota.disabled": "Désactivé",
+  "sunsam.antigravity.quota.credits": "Crédits IA",
   "sunsam.antigravity.templateHint": "Votre abonnement Google, via le CLI officiel d'Antigravity",
   "sunsam.antigravity.title": "Compte Google",
   "sunsam.antigravity.checking": "Vérification d'Antigravity…",
@@ -132,6 +164,14 @@ const FR: Record<string, string> = {
 };
 
 const ZH: Record<string, string> = {
+  "sunsam.antigravity.quota.title": "Google 剩余用量",
+  "sunsam.antigravity.quota.refresh": "刷新用量",
+  "sunsam.antigravity.quota.weekly": "每周",
+  "sunsam.antigravity.quota.fiveHour": "5 小时",
+  "sunsam.antigravity.quota.daily": "每日",
+  "sunsam.antigravity.quota.resets": "{time} 重置",
+  "sunsam.antigravity.quota.disabled": "已停用",
+  "sunsam.antigravity.quota.credits": "AI 积分",
   "sunsam.antigravity.templateHint": "通过 Antigravity 官方 CLI 使用你的 Google 订阅",
   "sunsam.antigravity.title": "Google 账号",
   "sunsam.antigravity.checking": "正在检查 Antigravity…",

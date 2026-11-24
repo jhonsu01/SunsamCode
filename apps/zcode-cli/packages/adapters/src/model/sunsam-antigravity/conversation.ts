@@ -36,6 +36,7 @@ export interface AgyUsage {
   readonly inputTokens?: number;
   readonly outputTokens?: number;
   readonly cachedReadTokens?: number;
+  readonly cachedWriteTokens?: number;
   readonly thoughtTokens?: number;
 }
 

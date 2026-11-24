@@ -9,6 +9,8 @@ import path from "node:path";
 import { ipcMain, shell } from "electron";
 import {
   SUNSAM_ANTIGRAVITY_CHANNELS,
+  parseSunsamAntigravityQuota,
+  type SunsamAntigravityQuota,
   type SunsamAntigravityModel,
   type SunsamAntigravityResult,
   type SunsamAntigravityStatus,
@@ -251,6 +253,69 @@ function cancelLogin(loginId: string): null {
   return null;
 }
 
+/**
+ * Ejecuta un comando de solo lectura de agy en modo no interactivo (`-p "/usage"`). agy responde
+ * localmente, sin turno de modelo (0 tokens). Nunca se lanza agy sin `-p`: abriría su TUI.
+ */
+function runAgyReadOnlyCommand(agyPath: string, command: "/usage" | "/credits"): Promise<unknown> {
+  return new Promise((resolve, reject) => {
+    const child = spawn(agyPath, ["-p", command, "--output-format", "json"], {
+      stdio: ["ignore", "pipe", "pipe"],
+      windowsHide: true,
+      cwd: tmpdir(),
+    });
+    let out = "";
+    let err = "";
+    const timer = setTimeout(() => {
+      child.kill();
+      reject(new Error(`agy ${command} no respondió a tiempo`));
+    }, 30_000);
+    child.stdout.on("data", (chunk: Buffer) => (out += chunk.toString("utf8")));
+    child.stderr.on("data", (chunk: Buffer) => (err += chunk.toString("utf8")));
+    child.on("error", (error) => {
+      clearTimeout(timer);
+      reject(error);
+    });
+    child.on("exit", (code) => {
+      clearTimeout(timer);
+      const json = out.slice(out.indexOf("{"), out.lastIndexOf("}") + 1);
+      try {
+        const parsed = JSON.parse(json) as { status?: string; error?: string };
+        if (parsed.status && parsed.status !== "SUCCESS") {
+          reject(new Error(parsed.error ?? `agy ${command}: ${parsed.status}`));
+          return;
+        }
+        resolve(parsed);
+      } catch {
+        reject(new Error((err || out).trim().split("\n").pop() || `agy ${command} terminó con código ${code}`));
+      }
+    });
+  });
+}
+
+const QUOTA_CACHE_MS = 60_000;
+let quotaCache: { at: number; value: SunsamAntigravityQuota } | undefined;
+let quotaInFlight: Promise<SunsamAntigravityQuota> | undefined;
+
+async function readQuota(force: boolean): Promise<SunsamAntigravityQuota> {
+  if (!force && quotaCache && Date.now() - quotaCache.at < QUOTA_CACHE_MS) return quotaCache.value;
+  if (quotaInFlight) return quotaInFlight;
+  const agyPath = resolveSunsamAgyPath();
+  if (!agyPath) throw new Error("No se encontró el CLI de Antigravity (agy).");
+  quotaInFlight = (async () => {
+    const [usage, credits] = await Promise.all([
+      runAgyReadOnlyCommand(agyPath, "/usage"),
+      runAgyReadOnlyCommand(agyPath, "/credits").catch(() => undefined),
+    ]);
+    const value = parseSunsamAntigravityQuota(usage, credits);
+    quotaCache = { at: Date.now(), value };
+    return value;
+  })().finally(() => {
+    quotaInFlight = undefined;
+  });
+  return quotaInFlight;
+}
+
 async function wrap<T>(run: () => Promise<T> | T, logger: Logger): Promise<SunsamAntigravityResult<T>> {
   try {
     return { ok: true, value: await run() };
@@ -269,5 +334,8 @@ export function registerSunsamAntigravityIpcHandlers(logger: Logger): void {
   );
   ipcMain.handle(SUNSAM_ANTIGRAVITY_CHANNELS.loginCancel, (_event, loginId: string) =>
     wrap(() => cancelLogin(loginId), logger),
+  );
+  ipcMain.handle(SUNSAM_ANTIGRAVITY_CHANNELS.quota, (_event, force?: boolean) =>
+    wrap(() => readQuota(force === true), logger),
   );
 }

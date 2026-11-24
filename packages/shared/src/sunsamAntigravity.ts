@@ -17,7 +17,78 @@ export const SUNSAM_ANTIGRAVITY_CHANNELS = {
   loginStart: "sunsam:antigravity:login-start",
   loginFinish: "sunsam:antigravity:login-finish",
   loginCancel: "sunsam:antigravity:login-cancel",
+  quota: "sunsam:antigravity:quota",
 } as const;
+
+/**
+ * Cuota de la cuenta: `agy -p "/usage" --output-format json` y `/credits`. Son respuestas locales del
+ * CLI (0 tokens): no pasan por el modelo. Dentro de cada grupo los modelos comparten límites
+ * semanal y de 5 horas; el consumo es proporcional al coste de los tokens.
+ */
+export interface SunsamAntigravityQuotaBucket {
+  readonly id: string;
+  readonly name: string;
+  /** `weekly`, `five_hour`… tal como lo nombra agy. */
+  readonly window?: string;
+  /** 0..1; ausente si el cubo está desactivado. */
+  readonly remainingFraction?: number;
+  /** ISO 8601 (UTC). */
+  readonly resetTime?: string;
+  readonly description?: string;
+}
+
+export interface SunsamAntigravityQuotaGroup {
+  readonly name: string;
+  readonly description?: string;
+  readonly buckets: readonly SunsamAntigravityQuotaBucket[];
+}
+
+export interface SunsamAntigravityQuota {
+  readonly groups: readonly SunsamAntigravityQuotaGroup[];
+  readonly description?: string;
+  readonly credits?: { readonly remaining?: number; readonly upgradeUri?: string };
+  readonly fetchedAt: string;
+}
+
+/** Convierte la salida JSON de `/usage` (y opcionalmente `/credits`) en la forma de Sunsam. */
+export function parseSunsamAntigravityQuota(
+  usageJson: unknown,
+  creditsJson?: unknown,
+  now: Date = new Date(),
+): SunsamAntigravityQuota {
+  const data = (usageJson as { command?: { data?: Record<string, unknown> } } | null)?.command?.data ?? {};
+  const rawGroups = Array.isArray(data.groups) ? (data.groups as Record<string, unknown>[]) : [];
+  const groups = rawGroups.map((group) => ({
+    name: String(group.name ?? ""),
+    ...(typeof group.description === "string" ? { description: group.description } : {}),
+    buckets: (Array.isArray(group.buckets) ? (group.buckets as Record<string, unknown>[]) : []).map(
+      (bucket) => ({
+        id: String(bucket.id ?? bucket.name ?? ""),
+        name: String(bucket.name ?? ""),
+        ...(typeof bucket.window === "string" ? { window: bucket.window } : {}),
+        ...(typeof bucket.remaining_fraction === "number"
+          ? { remainingFraction: Math.min(1, Math.max(0, bucket.remaining_fraction)) }
+          : {}),
+        ...(typeof bucket.reset_time === "string" ? { resetTime: bucket.reset_time } : {}),
+        ...(typeof bucket.description === "string" ? { description: bucket.description } : {}),
+      }),
+    ),
+  }));
+  const credits = (creditsJson as { command?: { data?: Record<string, unknown> } } | null)?.command?.data;
+  return {
+    groups,
+    ...(typeof data.description === "string" ? { description: data.description } : {}),
+    ...(credits
+      ? {
+          credits: {
+            ...(typeof credits.remaining_credits === "number" ? { remaining: credits.remaining_credits } : {}),
+            ...(typeof credits.upgrade_uri === "string" ? { upgradeUri: credits.upgrade_uri } : {}),
+          },
+        }
+      : {}),
+    fetchedAt: now.toISOString(),
+  };
+}
 
 export interface SunsamAntigravityModel {
   /** Id que acepta `session/set_config_option` (sin sufijo de nivel). */
@@ -51,6 +122,8 @@ export interface SunsamAntigravityBridge {
   loginStart(): Promise<SunsamAntigravityResult<SunsamAntigravityLoginStart>>;
   loginFinish(loginId: string, code: string): Promise<SunsamAntigravityResult<{ account?: string }>>;
   loginCancel(loginId: string): Promise<SunsamAntigravityResult<null>>;
+  /** `force` ignora la caché corta del proceso principal. */
+  quota(force?: boolean): Promise<SunsamAntigravityResult<SunsamAntigravityQuota>>;
 }
 
 export function isSunsamAntigravityBaseUrl(baseUrl: string | null | undefined): boolean {

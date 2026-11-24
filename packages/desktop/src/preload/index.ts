@@ -1075,6 +1075,7 @@ contextBridge.exposeInMainWorld("zcode", {
       ipcRenderer.invoke(SUNSAM_ANTIGRAVITY_CHANNELS.loginFinish, loginId, code),
     loginCancel: (loginId: string) =>
       ipcRenderer.invoke(SUNSAM_ANTIGRAVITY_CHANNELS.loginCancel, loginId),
+    quota: (force?: boolean) => ipcRenderer.invoke(SUNSAM_ANTIGRAVITY_CHANNELS.quota, force),
   } satisfies SunsamAntigravityBridge,
   /** 同步标题栏亮暗色 */
   setTitleBarTheme: (theme: DesktopTitleBarTheme) =>

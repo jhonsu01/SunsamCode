@@ -854,6 +854,26 @@ function V4ComposerModelControlsImpl({
     providerSourcesLoading,
     refreshTaskEntitlements,
   ]);
+  // Sunsam: cuota de la cuenta de Google cuando el modelo elegido es de Google (Antigravity).
+  const antigravitySelected = useIsSunsamAntigravityProvider(effectiveConfig?.provider);
+  const antigravityQuota = useSunsamAntigravityQuota(antigravitySelected);
+  const antigravityUsage = useMemo(
+    () =>
+      antigravitySelected
+        ? {
+            content: (
+              <SunsamAntigravityQuotaView
+                compact
+                state={antigravityQuota.state}
+                onRefresh={() => void antigravityQuota.refresh(true)}
+              />
+            ),
+            onOpen: () => void antigravityQuota.refresh(false),
+          }
+        : undefined,
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- state y refresh son las partes estables del hook.
+    [antigravitySelected, antigravityQuota.state, antigravityQuota.refresh],
+  );
   const codingPlanUsageRemaining =
     codingPlanUsageRemainingConfig &&
     hasChatCodingPlanUsageRemaining(codingPlanUsageRemainingConfig)
@@ -1302,6 +1322,7 @@ function V4ComposerModelControlsImpl({
       {/* Highspeed 卡激活即锁定模型；不能等动效交接完成才隐藏，否则 usage 圈圈会短暂闪现。 */}
       {!modelLocked ? (
         <ChatContextUsage
+          extraUsage={antigravityUsage}
           codingPlanUsageRemaining={codingPlanUsageRemaining}
           taskUsage={taskUsage}
           startPlanBalance={contextStartPlanBalance}
@@ -1430,3 +1451,8 @@ function V4ComposerModelControlsImpl({
 
 export const V4ComposerModelControls = memo(V4ComposerModelControlsImpl);
 import { isApiKeyAccess } from "@zcode/provider";
+import {
+  SunsamAntigravityQuotaView,
+  useIsSunsamAntigravityProvider,
+  useSunsamAntigravityQuota,
+} from "@/sunsam/SunsamAntigravityQuota.js";
