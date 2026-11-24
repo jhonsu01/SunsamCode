@@ -28,6 +28,10 @@ import {
 } from "./constants.js";
 import { InlineEditableProviderCard } from "./InlineEditableProviderCard.js";
 import {
+  SunsamAntigravityCard,
+  isSunsamAntigravityProvider,
+} from "@/sunsam/SunsamAntigravityCard.js";
+import {
   ModelProviderLoadingCard,
   PresetProviderPlaceholderCard,
   CodingPlanStatusPanel,
@@ -837,6 +841,36 @@ export function ModelProviderSectionDetail({
   const customApiKeyUrl = customProvider.templateId
     ? getProviderFormApiKeyManagementUrl(customProvider)
     : undefined;
+  // Sunsam: Google (Antigravity) no tiene endpoint ni clave que editar; muestra la cuenta y sus modelos.
+  if (isSunsamAntigravityProvider(customProvider)) {
+    return (
+      <InlineEditableProviderCard
+        provider={customProvider}
+        onSave={onSave}
+        {...modelEditingProps}
+        onDelete={() => onDelete(customProvider)}
+        onReorderModelIds={
+          onReorderProviderModels
+            ? (modelIds) => onReorderProviderModels(customProvider.providerId, modelIds)
+            : undefined
+        }
+        onTestModel={onTestModel}
+        readOnlyEndpoints
+        nameEditable
+        keepHeaderWithStatus
+        statusSection={
+          onAddPersonalModel ? (
+            <SunsamAntigravityCard
+              provider={customProvider}
+              onAddModel={(providerId, modelId, config, useRecommended) =>
+                onAddPersonalModel(providerId, modelId, config, useRecommended)
+              }
+            />
+          ) : undefined
+        }
+      />
+    );
+  }
   return (
     // 仅展示预设模板声明的入口，不根据地址猜测自定义 Provider 的 Key 控制台。
     <InlineEditableProviderCard

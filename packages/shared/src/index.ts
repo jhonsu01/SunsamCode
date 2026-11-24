@@ -400,6 +400,7 @@ export * from "./session-debug.js";
 export { redactFeedbackText } from "./feedbackPrivacy.js";
 export * from "./sunsamMcpb.js";
 export * from "./sunsamMarketplace.js";
+export * from "./sunsamAntigravity.js";
 export { API_KEY_USAGE_SCENE, type ApiKeyCreationUsageScene } from "./api-key-usage-scene.js";
 export {
   isProjectTokenTransportFailureCode,

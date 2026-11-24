@@ -11,6 +11,7 @@
 import { SUNSAM_PRODUCT_NAME, applySunsamBrandToText, type Locale } from "@zcode/shared";
 import { SUNSAM_LOCALE_OPTIONS } from "./locales/index.js";
 import { SUNSAM_MCPB_MESSAGES } from "./mcpbMessages.js";
+import { sunsamAntigravityMessages } from "./antigravityMessages.js";
 
 export const SUNSAM_BRAND = Object.freeze({
   productName: SUNSAM_PRODUCT_NAME,
@@ -102,6 +103,7 @@ export function applySunsamBrandToMessages(
     SUNSAM_MCPB_MESSAGES[locale as keyof typeof SUNSAM_MCPB_MESSAGES] ??
       SUNSAM_MCPB_MESSAGES["en-US"],
   );
+  Object.assign(branded, sunsamAntigravityMessages(locale));
   brandedMessagesCache.set(messages, branded);
   return branded;
 }

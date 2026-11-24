@@ -23,6 +23,10 @@ import {
 import type { RegistryProviderConfig } from "@zcode/provider";
 import { withOpenRouterAttributionHeaders } from "@zcode/shared";
 import { createAnthropicCompatFetch } from "./anthropic-stream-compat.js";
+import {
+  createAntigravityProvider,
+  isAntigravityBaseUrl,
+} from "./sunsam-antigravity/language-model.js";
 import { createModelRequestSecurityState } from "./request-security-edition/index.js";
 import type { ModelRequestSecurityState, ModelRequestSecurityPort } from "./request-security.js";
 import { createOpenAIResponsesJsonCompatFetch } from "./openai-responses-json-compat.js";
@@ -294,6 +298,13 @@ export class AiSdkModelExecution {
     supportsJsonSchemaOutput: boolean,
     apiKeyId?: string,
   ): LanguageModelFactory {
+    // Sunsam: Google Antigravity no es una API HTTP; el modelo habla ACP con el CLI oficial `agy`.
+    if (isAntigravityBaseUrl(providerConfig.baseURL)) {
+      return createAntigravityProvider({
+        name: providerConfig.name ?? providerId,
+        reasoningLevel: optionValues?.reasoningLevel,
+      }) as unknown as LanguageModelFactory;
+    }
     const apiKey = this.resolveApiKey(providerConfig);
     // SDK 会合并 factory 默认 header；必须在这里去掉静态来源，才能保证缺失时真正省略。
     const headers = withoutContextOwnedModelHeaders(providerConfig.headers);

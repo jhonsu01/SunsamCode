@@ -36,8 +36,9 @@ Sunsam Code 是 [ZCode](https://github.com/zai-org/ZCode)（Z.ai）的开源分�
 
 应用会从这些 Releases **自动更新**：在 Windows 和 Linux AppImage 上会出现更新按钮（启动时、每小时或通过 _帮助 → 检查更新_）；macOS 请下载新的 `.dmg`。
 
-## 4.0.0-sunsam.1 新内容
+## 4.0.0-sunsam.2 新内容
 
+- **新供应商：Google（Antigravity）**：通过官方 Antigravity CLI（`agy`）在 Sunsam 中直接使用你的 Google 订阅模型（Gemini 以及你的套餐包含的其他模型）。在 模型设置 → 添加供应商 → Google（Antigravity） 中添加，使用 Google 登录后即可看到你的套餐和账号提供的模型。Gemini 使用 Antigravity 自带的工具（文件、命令、网页搜索、你的 Antigravity 插件），在编辑或执行任何操作前会在对话中请求你的许可。
 - **基于 ZCode 4.0.0**：预装文档工具（Python、LibreOffice、Pandoc、Poppler、qpdf），让智能体处理 Word、PDF 和电子表格；智能体回复语言设置；子智能体始终后台运行的选项；token 预算提醒；需先信任才会加载的项目插件；窗口崩溃后重启；分享会话时更详细的错误。在 Sunsam 中文档工具不会自动下载：请从 帮助 → 预装工具 安装。
 - **基于 ZCode 3.18.2**：内置浏览器设计模式（检查和编辑页面元素、设备预设、导出 PDF/PNG、最近访问）、语音输入、在托管 Git worktree 中运行任务、编辑最后一条或排队中的消息、引用文本批注、带权限和日志的扩展、分享会话管理、彻底删除已归档会话、设置搜索、损坏凭据存储的恢复。ZCode 现已官方支持日语、俄语和韩语；Sunsam 保留西班牙语、葡萄牙语和法语并补全其余内容。
 - **基于 ZCode 3.17.2**：内置浏览器的本地 HTML 预览、附带建议步骤的 MCP 错误提示、草稿会话中的 MCP UI 应用、Windows 任务栏未读角标及更多修复。

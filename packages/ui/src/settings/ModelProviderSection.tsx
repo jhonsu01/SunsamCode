@@ -1,5 +1,5 @@
 /* eslint-disable max-lines -- Model Provider 设置页需要集中编排导航、表单和 OAuth 交互，后续整体拆分时再收敛。 */
-import { toBaseLocale } from "@zcode/shared";
+import { isSunsamAntigravityBaseUrl, toBaseLocale } from "@zcode/shared";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useStore } from "zustand";
 import { marketingNavigation, finishMarketingNavigation } from "@/lib/marketingNavigation.js";
@@ -46,6 +46,10 @@ import {
 import { ModelProviderSectionDetail } from "./model-provider-section/Detail.js";
 import { PresetProviderPlaceholderCard } from "./model-provider-section/StatusCards.js";
 import { SUNSAM_BRAND } from "@/sunsam/brand.js";
+import {
+  createSunsamAntigravityProvider,
+  getSunsamAntigravityBridge,
+} from "@/sunsam/SunsamAntigravityCard.js";
 import { ModelProviderSectionLayout } from "./model-provider-section/SectionLayout.js";
 import { ProviderTemplatePicker } from "./model-provider-section/ProviderTemplatePicker.js";
 import type { CodingPlanLoginOptions } from "./model-provider-section/codingPlanPricingCards.js";
@@ -258,7 +262,7 @@ export function ModelProviderSection({
   const { intl, locale } = useZCodeIntl();
   const confirmDialog = useConfirmDialog();
   const platform = usePlatform();
-  const { modelSelectionService, oauthService } = useServices();
+  const { modelSelectionService, oauthService, providerSettingsService } = useServices();
   const {
     modelProviders,
     providerTemplates,
@@ -1042,6 +1046,36 @@ export function ModelProviderSection({
     [createPersonalProvider, locale],
   );
 
+  // Sunsam: proveedor Google (Antigravity) con su configuración fija y el modelo de la cuenta.
+  const handleCreateAntigravity = useCallback(async () => {
+    // Un solo proveedor por cuenta: si ya existe, se abre en vez de duplicarlo.
+    const existing = providerSettingsView?.providers.find((provider) =>
+      isSunsamAntigravityBaseUrl(provider.effectiveConfig.api?.baseUrl),
+    );
+    if (existing) {
+      setSelectedNodeKey(createCustomProviderNodeKey(existing.providerId));
+      setTemplatePickerOpen(false);
+      return;
+    }
+    setCreatingProvider(true);
+    try {
+      const providerId = await createSunsamAntigravityProvider({
+        createPersonalProvider: (input) =>
+          createPersonalProvider({ ...input, locale: toZhOrEnLocale(locale) }),
+        providerSettingsService,
+        addPersonalModel,
+      });
+      setPendingCreatedProviderId(providerId);
+      setSelectedNodeKey(createCustomProviderNodeKey(providerId));
+      setTemplatePickerOpen(false);
+    } catch (error) {
+      setPendingCreatedProviderId(null);
+      throw error;
+    } finally {
+      setCreatingProvider(false);
+    }
+  }, [addPersonalModel, createPersonalProvider, locale, providerSettingsService, providerSettingsView]);
+
   const marketingRequest = useStore(marketingNavigation, (state) => state.request);
   useEffect(() => {
     if (marketingRequest?.target.page !== "settings" || !marketingRequest.target.provider_id)
@@ -1186,6 +1220,7 @@ export function ModelProviderSection({
           onCreateCustom={(label) => {
             return handleCreateProvider({ providerName: label });
           }}
+          onCreateAntigravity={getSunsamAntigravityBridge() ? handleCreateAntigravity : undefined}
         />
       ) : SUNSAM_BRAND.hideBuiltinModelProviders && !loading && navigationItems.length === 0 ? (
         // Sunsam: sin providers integrados, el detalle vacío quedaría en loading permanente.

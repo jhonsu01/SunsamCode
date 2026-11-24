@@ -1,6 +1,7 @@
 import { decorateRequestSecurityLogArgs } from "./request-security-edition/index.js";
 /* eslint-disable max-lines -- 桌面平台 IPC 集中装配，拆散会让权限边界更难审计；行数随平台能力增长。 */
 import { registerSunsamMcpbIpcHandlers } from "./sunsamMcpbIpc.js";
+import { registerSunsamAntigravityIpcHandlers } from "./sunsamAntigravityIpc.js";
 import { registerSunsamMarketplaceIpcHandlers } from "./sunsamMarketplaceIpc.js";
 import { localizeSunsamEditors } from "./sunsamLocalizedEditors.js";
 import { BrowserWindow, dialog, ipcMain, nativeTheme } from "electron";
@@ -170,6 +171,8 @@ export function registerPlatformIpcHandlers(options: {
   // Sunsam: instalador de extensiones MCP .mcpb / .dxt.
   registerSunsamMcpbIpcHandlers(options.logger);
   registerSunsamMarketplaceIpcHandlers(options.logger);
+  // Sunsam: cuenta de Google (Antigravity) para el proveedor de modelos.
+  registerSunsamAntigravityIpcHandlers(options.logger);
   registerDesktopMicrophoneIpcHandlers(options.logger);
   registerDesktopCaptureBrowserGuestPageIpcHandler(options.logger);
 

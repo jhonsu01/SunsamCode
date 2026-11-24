@@ -24,8 +24,10 @@ import {
 /* eslint-disable max-lines -- preload bridge 集中暴露桌面平台 IPC，拆散会让 contextBridge 权限边界更难审计。 */
 import { contextBridge, ipcRenderer, webFrame, webUtils } from "electron";
 import {
+  SUNSAM_ANTIGRAVITY_CHANNELS,
   SUNSAM_MARKETPLACE_CHANNELS,
   SUNSAM_MCPB_CHANNELS,
+  type SunsamAntigravityBridge,
   type SunsamMarketplaceBridge,
   type SunsamMcpbBridge,
   type SunsamMcpbUserValues,
@@ -1065,6 +1067,15 @@ contextBridge.exposeInMainWorld("zcode", {
     install: (source: string, connectorName: string) =>
       ipcRenderer.invoke(SUNSAM_MARKETPLACE_CHANNELS.install, source, connectorName),
   } satisfies SunsamMarketplaceBridge,
+  /** Sunsam: cuenta de Google (Antigravity) para el proveedor de modelos */
+  sunsamAntigravity: {
+    status: () => ipcRenderer.invoke(SUNSAM_ANTIGRAVITY_CHANNELS.status),
+    loginStart: () => ipcRenderer.invoke(SUNSAM_ANTIGRAVITY_CHANNELS.loginStart),
+    loginFinish: (loginId: string, code: string) =>
+      ipcRenderer.invoke(SUNSAM_ANTIGRAVITY_CHANNELS.loginFinish, loginId, code),
+    loginCancel: (loginId: string) =>
+      ipcRenderer.invoke(SUNSAM_ANTIGRAVITY_CHANNELS.loginCancel, loginId),
+  } satisfies SunsamAntigravityBridge,
   /** 同步标题栏亮暗色 */
   setTitleBarTheme: (theme: DesktopTitleBarTheme) =>
     ipcRenderer.invoke(PlatformChannels.SetTitleBarTheme, theme),

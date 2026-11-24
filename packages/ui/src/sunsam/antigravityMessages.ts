@@ -1,0 +1,172 @@
+/** Sunsam: textos del proveedor Google (Antigravity). El inglés rellena lo que falte en cada idioma. */
+import type { Locale } from "@zcode/shared";
+
+const EN: Record<string, string> = {
+  "sunsam.antigravity.templateLabel": "Google (Antigravity)",
+  "sunsam.antigravity.templateHint": "Your Google subscription, through the official Antigravity CLI",
+  "sunsam.antigravity.title": "Google account",
+  "sunsam.antigravity.checking": "Checking Antigravity…",
+  "sunsam.antigravity.notInstalled":
+    "The Antigravity CLI (agy) is not installed. Install Google Antigravity and press Check again.",
+  "sunsam.antigravity.signedOut": "Not signed in to Google.",
+  "sunsam.antigravity.signedIn": "Connected",
+  "sunsam.antigravity.plan": "Plan: {plan}",
+  "sunsam.antigravity.upgrade": "Upgrade",
+  "sunsam.antigravity.version": "agy {version}",
+  "sunsam.antigravity.recheck": "Check again",
+  "sunsam.antigravity.signIn": "Sign in with Google",
+  "sunsam.antigravity.reconnect": "Sign in again",
+  "sunsam.antigravity.codeHint":
+    "A Google page opened in your browser. Sign in, copy the code it shows and paste it here.",
+  "sunsam.antigravity.codePlaceholder": "Authorization code",
+  "sunsam.antigravity.codeSubmit": "Connect",
+  "sunsam.antigravity.cancel": "Cancel",
+  "sunsam.antigravity.loginDone": "Connected{account}.",
+  "sunsam.antigravity.modelsTitle": "Models offered by your account",
+  "sunsam.antigravity.modelsHint":
+    "Antigravity lists every model of the service; your plan may only allow some of them. Turn off the ones you cannot use.",
+  "sunsam.antigravity.inList": "In the list",
+  "sunsam.antigravity.addModel": "Add",
+  "sunsam.antigravity.addAll": "Add missing models",
+  "sunsam.antigravity.levels": "Reasoning: {levels}",
+  "sunsam.antigravity.error": "Antigravity: {error}",
+  "sunsam.antigravity.createFailed": "Could not create the Google provider: {error}",
+  "sunsam.antigravity.tools":
+    "Gemini works with Antigravity's own tools (files, commands, web search, your Antigravity plugins). Edits and commands ask for your permission in the chat.",
+};
+
+const ES: Record<string, string> = {
+  "sunsam.antigravity.templateLabel": "Google (Antigravity)",
+  "sunsam.antigravity.templateHint": "Tu suscripción de Google, a través del CLI oficial de Antigravity",
+  "sunsam.antigravity.title": "Cuenta de Google",
+  "sunsam.antigravity.checking": "Comprobando Antigravity…",
+  "sunsam.antigravity.notInstalled":
+    "El CLI de Antigravity (agy) no está instalado. Instala Google Antigravity y pulsa Comprobar de nuevo.",
+  "sunsam.antigravity.signedOut": "No has iniciado sesión en Google.",
+  "sunsam.antigravity.signedIn": "Conectada",
+  "sunsam.antigravity.plan": "Plan: {plan}",
+  "sunsam.antigravity.upgrade": "Mejorar",
+  "sunsam.antigravity.version": "agy {version}",
+  "sunsam.antigravity.recheck": "Comprobar de nuevo",
+  "sunsam.antigravity.signIn": "Iniciar sesión con Google",
+  "sunsam.antigravity.reconnect": "Volver a iniciar sesión",
+  "sunsam.antigravity.codeHint":
+    "Se abrió una página de Google en tu navegador. Inicia sesión, copia el código que muestra y pégalo aquí.",
+  "sunsam.antigravity.codePlaceholder": "Código de autorización",
+  "sunsam.antigravity.codeSubmit": "Conectar",
+  "sunsam.antigravity.cancel": "Cancelar",
+  "sunsam.antigravity.loginDone": "Conectada{account}.",
+  "sunsam.antigravity.modelsTitle": "Modelos que ofrece tu cuenta",
+  "sunsam.antigravity.modelsHint":
+    "Antigravity lista todos los modelos del servicio; tu plan puede permitir solo algunos. Desactiva los que no puedas usar.",
+  "sunsam.antigravity.inList": "En la lista",
+  "sunsam.antigravity.addModel": "Añadir",
+  "sunsam.antigravity.addAll": "Añadir los que faltan",
+  "sunsam.antigravity.levels": "Razonamiento: {levels}",
+  "sunsam.antigravity.error": "Antigravity: {error}",
+  "sunsam.antigravity.createFailed": "No se pudo crear el proveedor de Google: {error}",
+  "sunsam.antigravity.tools":
+    "Gemini trabaja con las herramientas de Antigravity (archivos, comandos, búsqueda web, tus plugins de Antigravity). Las ediciones y los comandos te piden permiso en el chat.",
+};
+
+const PT: Record<string, string> = {
+  "sunsam.antigravity.templateHint": "Sua assinatura do Google, pelo CLI oficial do Antigravity",
+  "sunsam.antigravity.title": "Conta do Google",
+  "sunsam.antigravity.checking": "Verificando o Antigravity…",
+  "sunsam.antigravity.notInstalled":
+    "O CLI do Antigravity (agy) não está instalado. Instale o Google Antigravity e clique em Verificar novamente.",
+  "sunsam.antigravity.signedOut": "Você não entrou no Google.",
+  "sunsam.antigravity.signedIn": "Conectada",
+  "sunsam.antigravity.plan": "Plano: {plan}",
+  "sunsam.antigravity.upgrade": "Melhorar",
+  "sunsam.antigravity.recheck": "Verificar novamente",
+  "sunsam.antigravity.signIn": "Entrar com o Google",
+  "sunsam.antigravity.reconnect": "Entrar novamente",
+  "sunsam.antigravity.codeHint":
+    "Uma página do Google abriu no navegador. Entre, copie o código exibido e cole aqui.",
+  "sunsam.antigravity.codePlaceholder": "Código de autorização",
+  "sunsam.antigravity.codeSubmit": "Conectar",
+  "sunsam.antigravity.cancel": "Cancelar",
+  "sunsam.antigravity.loginDone": "Conectada{account}.",
+  "sunsam.antigravity.modelsTitle": "Modelos oferecidos pela sua conta",
+  "sunsam.antigravity.modelsHint":
+    "O Antigravity lista todos os modelos do serviço; seu plano pode permitir só alguns. Desative os que você não pode usar.",
+  "sunsam.antigravity.inList": "Na lista",
+  "sunsam.antigravity.addModel": "Adicionar",
+  "sunsam.antigravity.addAll": "Adicionar os que faltam",
+  "sunsam.antigravity.levels": "Raciocínio: {levels}",
+  "sunsam.antigravity.createFailed": "Não foi possível criar o provedor do Google: {error}",
+  "sunsam.antigravity.tools":
+    "O Gemini trabalha com as ferramentas do Antigravity (arquivos, comandos, busca na web, seus plugins). Edições e comandos pedem sua permissão no chat.",
+};
+
+const FR: Record<string, string> = {
+  "sunsam.antigravity.templateHint": "Votre abonnement Google, via le CLI officiel d'Antigravity",
+  "sunsam.antigravity.title": "Compte Google",
+  "sunsam.antigravity.checking": "Vérification d'Antigravity…",
+  "sunsam.antigravity.notInstalled":
+    "Le CLI d'Antigravity (agy) n'est pas installé. Installez Google Antigravity puis cliquez sur Vérifier à nouveau.",
+  "sunsam.antigravity.signedOut": "Vous n'êtes pas connecté à Google.",
+  "sunsam.antigravity.signedIn": "Connecté",
+  "sunsam.antigravity.plan": "Forfait : {plan}",
+  "sunsam.antigravity.upgrade": "Améliorer",
+  "sunsam.antigravity.recheck": "Vérifier à nouveau",
+  "sunsam.antigravity.signIn": "Se connecter avec Google",
+  "sunsam.antigravity.reconnect": "Se reconnecter",
+  "sunsam.antigravity.codeHint":
+    "Une page Google s'est ouverte dans le navigateur. Connectez-vous, copiez le code affiché et collez-le ici.",
+  "sunsam.antigravity.codePlaceholder": "Code d'autorisation",
+  "sunsam.antigravity.codeSubmit": "Connecter",
+  "sunsam.antigravity.cancel": "Annuler",
+  "sunsam.antigravity.loginDone": "Connecté{account}.",
+  "sunsam.antigravity.modelsTitle": "Modèles proposés par votre compte",
+  "sunsam.antigravity.modelsHint":
+    "Antigravity liste tous les modèles du service ; votre forfait peut n'en autoriser que certains. Désactivez ceux que vous ne pouvez pas utiliser.",
+  "sunsam.antigravity.inList": "Dans la liste",
+  "sunsam.antigravity.addModel": "Ajouter",
+  "sunsam.antigravity.addAll": "Ajouter ceux qui manquent",
+  "sunsam.antigravity.levels": "Raisonnement : {levels}",
+  "sunsam.antigravity.createFailed": "Impossible de créer le fournisseur Google : {error}",
+  "sunsam.antigravity.tools":
+    "Gemini utilise les outils d'Antigravity (fichiers, commandes, recherche web, vos plugins). Les modifications et les commandes demandent votre autorisation dans le chat.",
+};
+
+const ZH: Record<string, string> = {
+  "sunsam.antigravity.templateHint": "通过 Antigravity 官方 CLI 使用你的 Google 订阅",
+  "sunsam.antigravity.title": "Google 账号",
+  "sunsam.antigravity.checking": "正在检查 Antigravity…",
+  "sunsam.antigravity.notInstalled": "未安装 Antigravity CLI（agy）。安装 Google Antigravity 后点击重新检查。",
+  "sunsam.antigravity.signedOut": "尚未登录 Google。",
+  "sunsam.antigravity.signedIn": "已连接",
+  "sunsam.antigravity.plan": "套餐：{plan}",
+  "sunsam.antigravity.upgrade": "升级",
+  "sunsam.antigravity.recheck": "重新检查",
+  "sunsam.antigravity.signIn": "使用 Google 登录",
+  "sunsam.antigravity.reconnect": "重新登录",
+  "sunsam.antigravity.codeHint": "浏览器中已打开 Google 页面。登录后复制页面显示的代码并粘贴到这里。",
+  "sunsam.antigravity.codePlaceholder": "授权代码",
+  "sunsam.antigravity.codeSubmit": "连接",
+  "sunsam.antigravity.cancel": "取消",
+  "sunsam.antigravity.loginDone": "已连接{account}。",
+  "sunsam.antigravity.modelsTitle": "你的账号提供的模型",
+  "sunsam.antigravity.modelsHint": "Antigravity 会列出服务的所有模型，你的套餐可能只允许其中一部分。请关闭无法使用的模型。",
+  "sunsam.antigravity.inList": "已在列表中",
+  "sunsam.antigravity.addModel": "添加",
+  "sunsam.antigravity.addAll": "添加缺少的模型",
+  "sunsam.antigravity.levels": "推理：{levels}",
+  "sunsam.antigravity.createFailed": "无法创建 Google 供应商：{error}",
+  "sunsam.antigravity.tools":
+    "Gemini 使用 Antigravity 自带的工具（文件、命令、网页搜索、你的 Antigravity 插件）。编辑和命令会在对话中请求你的许可。",
+};
+
+const TABLES: Partial<Record<Locale, Record<string, string>>> = {
+  "en-US": EN,
+  "es-ES": ES,
+  "pt-BR": PT,
+  "fr-FR": FR,
+  "zh-CN": ZH,
+};
+
+export function sunsamAntigravityMessages(locale: Locale | string): Record<string, string> {
+  return { ...EN, ...(TABLES[locale as Locale] ?? {}) };
+}

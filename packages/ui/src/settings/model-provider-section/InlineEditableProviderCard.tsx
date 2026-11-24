@@ -155,6 +155,7 @@ export function InlineEditableProviderCard({
   headerVisible = true,
   headerActionsVisible,
   settingsRevision,
+  keepHeaderWithStatus,
 }: {
   provider: ProviderSettingsFormProvider;
   onSave: (config: ProviderSettingsFormProvider) => void | Promise<void>;
@@ -182,6 +183,8 @@ export function InlineEditableProviderCard({
   headerVisible?: boolean;
   headerActionsVisible?: boolean;
   settingsRevision?: number;
+  /** Sunsam: mantener la cabecera aunque haya `statusSection`. */
+  keepHeaderWithStatus?: boolean;
 }) {
   const { intl } = useZCodeIntl();
   const { dismissFeedback, showFeedback } = useProviderDetailFeedback();
@@ -748,7 +751,9 @@ export function InlineEditableProviderCard({
   const headerProviderName = providerDisplayName;
   const isAccountProvider = provider.config.access?.type === "zhipu-account";
   const isApiKeyProvider = isApiKeyAccess(provider.config.access);
-  const effectiveHeaderVisible = headerVisible && statusSection === undefined;
+  // Sunsam: Google (Antigravity) lleva tarjeta de cuenta y también cabecera (nombre, activar, eliminar).
+  const effectiveHeaderVisible =
+    headerVisible && (statusSection === undefined || keepHeaderWithStatus === true);
 
   return (
     <div className="space-y-3">

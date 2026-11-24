@@ -1,6 +1,6 @@
 {
   "name": "zcode",
-  "version": "4.0.0-sunsam.1",
+  "version": "4.0.0-sunsam.2",
   "private": true,
   "type": "module",
   "imports": {
@@ -26,7 +26,7 @@
     "dev:server": "pnpm --filter @zcode/server dev",
     "sunsam:mesh": "pnpm --filter @sunsam/mesh start --",
     "sunsam:mesh:init": "pnpm --filter @sunsam/mesh init-config --",
-    "sunsam:test": "pnpm --filter @sunsam/mesh test && tsx --tsconfig packages/ui/tsconfig.json --test packages/ui/test/sunsamBrand.test.ts packages/ui/test/sunsamLocales.test.ts packages/ui/test/sunsamMcpb.test.ts && node --import tsx --test packages/services/test/sunsamSettingsCompat.test.ts packages/services/test/sunsamLocaleUpgrade.test.ts apps/zcode-cli/packages/adapters/test/sunsamAnyTypeSchema.test.ts",
+    "sunsam:test": "pnpm --filter @sunsam/mesh test && tsx --tsconfig packages/ui/tsconfig.json --test packages/ui/test/sunsamBrand.test.ts packages/ui/test/sunsamLocales.test.ts packages/ui/test/sunsamMcpb.test.ts && node --import tsx --test packages/services/test/sunsamSettingsCompat.test.ts packages/services/test/sunsamLocaleUpgrade.test.ts packages/services/test/sunsamAntigravity.test.ts apps/zcode-cli/packages/adapters/test/sunsamAnyTypeSchema.test.ts",
     "dev:official-mcp": "node scripts/dev-official-mcp-server.mjs",
     "prepare": "husky && pnpm build:cua",
     "prepare:desktop-runtime": "pnpm --filter @zcode/desktop prepare:runtime-assets",

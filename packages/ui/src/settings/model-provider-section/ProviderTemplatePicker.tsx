@@ -25,12 +25,15 @@ export function ProviderTemplatePicker({
   onBack,
   onCreateFromTemplate,
   onCreateCustom,
+  onCreateAntigravity,
   creating,
 }: {
   templates: ProviderSettingsView["providerTemplates"];
   onBack: () => void;
   onCreateFromTemplate: ProviderTemplateCreate;
   onCreateCustom: CustomProviderCreate;
+  /** Sunsam: crea el proveedor Google (Antigravity). Solo en escritorio. */
+  onCreateAntigravity?: () => Promise<void>;
   creating: boolean;
 }) {
   const { intl, locale } = useZCodeIntl();
@@ -107,6 +110,20 @@ export function ProviderTemplatePicker({
                     </span>
                   }
                   onClick={() => void createWithFeedback(() => onCreateCustom(customLabel))}
+                />
+              ) : null}
+              {group.id === "other" && onCreateAntigravity ? (
+                // Sunsam: suscripción de Google a través del CLI oficial de Antigravity.
+                <ProviderTemplateCard
+                  label={intl.formatMessage({ id: "sunsam.antigravity.templateLabel" })}
+                  disabled={creating}
+                  testId={testId(TID_MODEL_PROVIDER_TEMPLATE_ITEM, "sunsam-antigravity")}
+                  icon={
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-hover text-ui-lg font-semibold text-foreground">
+                      G
+                    </span>
+                  }
+                  onClick={() => void createWithFeedback(onCreateAntigravity)}
                 />
               ) : null}
               {group.templates.map((template) => {

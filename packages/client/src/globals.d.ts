@@ -408,6 +408,8 @@ declare global {
       getSystemLocale?(): Promise<Locale>;
       /** Sunsam: extensiones MCP .mcpb / .dxt (sólo escritorio) */
       sunsamMcpb?: import("@zcode/shared").SunsamMcpbBridge;
+      /** Sunsam: cuenta de Google (Antigravity) (sólo escritorio) */
+      sunsamAntigravity?: import("@zcode/shared").SunsamAntigravityBridge;
       /** 同步标题栏亮暗色 */
       setTitleBarTheme(theme: DesktopTitleBarTheme): Promise<void>;
     };
