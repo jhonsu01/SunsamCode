@@ -1,5 +1,5 @@
 // Sunsam: proveedor Google Antigravity (agy acp) a través del AI SDK real, con un agy simulado.
-import { mkdtempSync, readFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -13,6 +13,8 @@ import {
   toUsage,
 } from "../src/model/sunsam-antigravity/language-model.js";
 import { extractWorkingDirectory } from "../src/model/sunsam-antigravity/prompt.js";
+import { mcpStem, readAgyPluginMcpStems, toAcpMcpServers } from "../src/model/sunsam-antigravity/mcp-servers.js";
+import type { McpServerConfig } from "@zcode/contracts";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const workDir = mkdtempSync(path.join(tmpdir(), "sunsam-agy-"));
@@ -162,5 +164,84 @@ describe("Sunsam Antigravity provider", () => {
     const { parts } = await run([{ role: "user", content: "x SCRIPT:ERR" }], "s-err");
     const error = parts.find((p) => p.type === "error");
     expect(String((error?.error as Error | undefined)?.message)).toContain("Quota exceeded");
+  });
+});
+
+describe("Sunsam Antigravity: MCP de Sunsam en agy", () => {
+  const servers: Record<string, McpServerConfig> = {
+    "photocraft-mcp-server": { type: "stdio", command: "node", args: ["C:/x/photo.cjs"], env: { PHOTO_DIR: "C:/P" } },
+    "gridcraft-mcp-server": { type: "stdio", command: "node", args: ["C:/x/grid.cjs"] },
+    "DeckCraft Bridge": { type: "stdio", command: "node", args: ["C:/x/deck.cjs"], enabled: false },
+    proyecto: { type: "stdio", command: "node", source: { kind: "workspace" } },
+    node_repl: { type: "stdio", command: "node_repl.exe" },
+    "antigravity-acp-mcp": { type: "stdio", command: "node", args: ["C:/x/agy.js"] },
+    oficial: { type: "http", url: "https://z.ai/mcp", auth: { type: "zcode_official", provider: "jwt_token" } },
+    oauth: { type: "http", url: "https://a.example/mcp", oauth: { type: "authorization_code" } },
+    Composio: { type: "http", url: "https://connect.example/mcp", headers: { "x-api-key": "k" } },
+  };
+
+  it("normaliza nombres para comparar con los plugins de agy", () => {
+    expect(mcpStem("gridcraft-mcp-server")).toBe("gridcraft");
+    expect(mcpStem("gridcraft_mcp")).toBe("gridcraft");
+    expect(mcpStem("GridCraft Bridge")).toBe("gridcraft");
+    expect(mcpStem("MCP_DOCKER")).toBe("docker");
+  });
+
+  it("pasa solo los servidores utilizables y no duplica los plugins de agy", () => {
+    const { servers: acp, skipped } = toAcpMcpServers(servers, new Set(["gridcraft"]));
+    expect(acp).toEqual([
+      { name: "photocraft-mcp-server", command: "node", args: ["C:/x/photo.cjs"], env: [{ name: "PHOTO_DIR", value: "C:/P" }] },
+      { type: "http", name: "Composio", url: "https://connect.example/mcp", headers: [{ name: "x-api-key", value: "k" }] },
+    ]);
+    expect(Object.fromEntries(skipped.map((s) => [s.name, s.reason]))).toEqual({
+      "gridcraft-mcp-server": "agy-plugin",
+      "DeckCraft Bridge": "disabled",
+      proyecto: "workspace",
+      node_repl: "builtin",
+      "antigravity-acp-mcp": "antigravity-bridge",
+      oficial: "official-auth",
+      oauth: "oauth",
+    });
+  });
+
+  it("lee los plugins de agy instalados y respeta los desactivados", () => {
+    const home = mkdtempSync(path.join(tmpdir(), "sunsam-agy-home-"));
+    const plugins = path.join(home, ".gemini", "config", "plugins");
+    for (const name of ["wordcraft", "apagado", "sin-mcp"]) mkdirSync(path.join(plugins, name), { recursive: true });
+    writeFileSync(path.join(plugins, "wordcraft", "mcp_config.json"), JSON.stringify({ mcpServers: { wordcraft_mcp: {} } }));
+    writeFileSync(path.join(plugins, "apagado", "mcp_config.json"), JSON.stringify({ mcpServers: { apagado_mcp: {} } }));
+    writeFileSync(
+      path.join(home, ".gemini", "config", "config.json"),
+      JSON.stringify({ plugins: { apagado: { enabled: false } } }),
+    );
+    expect([...readAgyPluginMcpStems(home)]).toEqual(["wordcraft"]);
+  });
+
+  it("abre la sesión de agy con los MCP de Sunsam y la reabre si cambian", async () => {
+    let current: Record<string, McpServerConfig> = { "photocraft-mcp-server": servers["photocraft-mcp-server"]! };
+    const withMcp = createAntigravityProvider({ name: "Google (Antigravity)", getMcpServers: () => current })(
+      "gemini-3.8-flash",
+    ) as unknown as LanguageModel;
+    const ask = async (content: string) => {
+      const result = streamText({
+        model: withMcp,
+        system,
+        messages: [{ role: "user", content }],
+        headers: { "x-session-id": "s-mcp", "x-zcode-query-source": "main_turn" },
+      });
+      for await (const _ of result.fullStream) void _;
+    };
+    const sessions = () => recorded().filter((r) => r.method === "session/new");
+    const before = sessions().length;
+    await ask("hola SCRIPT:TEXT");
+    await ask("otra vez SCRIPT:TEXT");
+    expect(sessions().length - before).toBe(1);
+    expect(sessions().at(-1)?.mcpServers).toEqual([
+      { name: "photocraft-mcp-server", command: "node", args: ["C:/x/photo.cjs"], env: [{ name: "PHOTO_DIR", value: "C:/P" }] },
+    ]);
+    current = {};
+    await ask("sin mcp SCRIPT:TEXT");
+    expect(sessions().length - before).toBe(2);
+    expect(sessions().at(-1)?.mcpServers).toEqual([]);
   });
 });

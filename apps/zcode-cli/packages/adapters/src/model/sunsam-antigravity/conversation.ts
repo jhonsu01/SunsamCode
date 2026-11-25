@@ -1,6 +1,7 @@
 // Sunsam: una conversación de Sunsam = una sesión de `agy acp`. El turno de agy puede sobrevivir a
 // varias llamadas al modelo: cuando agy pide permiso, el stream de Sunsam termina con una pregunta
 // al usuario y el turno queda aparcado hasta que llega la respuesta en la siguiente llamada.
+import { acpMcpFingerprint, type AcpMcpServer } from "./mcp-servers.js";
 import {
   AgyProcess,
   isAgyAuthError,
@@ -113,7 +114,13 @@ export class AgyConversation {
     readonly cwd: string,
     private readonly onClosed: (conversation: AgyConversation) => void,
     private readonly env: Record<string, string | undefined> = process.env,
-  ) {}
+    /** Servidores MCP de Sunsam que agy recibe al abrir la sesión. */
+    readonly mcpServers: readonly AcpMcpServer[] = [],
+  ) {
+    this.mcpFingerprint = acpMcpFingerprint(mcpServers);
+  }
+
+  readonly mcpFingerprint: string;
 
   ensureReady(): Promise<void> {
     if (this.ready && this.process?.alive) return this.ready;
@@ -141,7 +148,7 @@ export class AgyConversation {
     this.tier = readTier(auth);
     const created = await agy.request<AgySessionNewResult>(
       "session/new",
-      { cwd: this.cwd, mcpServers: [] },
+      { cwd: this.cwd, mcpServers: this.mcpServers },
       60_000,
     );
     this.sessionId = created.sessionId;

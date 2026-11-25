@@ -771,12 +771,24 @@ export async function createZCodeApp(options: ZCodeAppOptions): Promise<ZCodeApp
       await prepareResume(boundaryOptions?.traceContext, boundaryOptions?.abortSignal);
     };
 
-    const modelExecutionConfig = createRuntimeAiSdkModelExecutionConfig(options.env, {
-      appVersion,
-      endpointRoutingPort: providerEndpointRoutingPort,
-      network: configResult.config.network,
-      sourceTitle: options.sourceTitle,
-    });
+    const modelExecutionConfig = {
+      ...createRuntimeAiSdkModelExecutionConfig(options.env, {
+        appVersion,
+        endpointRoutingPort: providerEndpointRoutingPort,
+        network: configResult.config.network,
+        sourceTitle: options.sourceTitle,
+      }),
+      // Sunsam: el proveedor de Google (agy) ejecuta él mismo los MCP; recibe los vigentes de la
+      // sesión salvo los del proyecto, que siguen necesitando la confianza que concede Sunsam.
+      sunsamMcpServers: () =>
+        Object.fromEntries(
+          Object.entries(mcpConfigurationSource?.getSnapshot().servers ?? configuredMcpServers).filter(
+            ([name, config]) =>
+              config.source?.kind !== "workspace" &&
+              !(config.source === undefined && configResult.sources.mcp.serverSources[name] === "project"),
+          ),
+        ),
+    };
     const modelAdapter =
       options.modelAdapter ??
       createModelAdapter({

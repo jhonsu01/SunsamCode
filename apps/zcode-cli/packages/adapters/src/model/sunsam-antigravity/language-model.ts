@@ -2,6 +2,8 @@
 // agy ejecuta sus propias herramientas; Sunsam las muestra como herramientas del proveedor
 // (providerExecuted) y convierte cada petición de permiso de agy en una pregunta en el chat.
 import { randomUUID } from "node:crypto";
+import type { McpServerConfig } from "@zcode/contracts";
+import { readAgyPluginMcpStems, toAcpMcpServers, acpMcpFingerprint, type AcpMcpServer } from "./mcp-servers.js";
 import { AgyConversation, toFriendlyError, type AgyPermissionRequest, type AgyUsage } from "./conversation.js";
 import {
   analyzeTail,
@@ -135,7 +137,18 @@ export class AntigravityLanguageModel {
     readonly provider: string,
     readonly modelId: string,
     private readonly reasoningLevel: string | undefined,
+    private readonly getMcpServers?: () => Readonly<Record<string, McpServerConfig>> | undefined,
   ) {}
+
+  /** Servidores MCP de Sunsam para la sesión de agy; un fallo al leerlos no impide chatear. */
+  private resolveMcpServers(): AcpMcpServer[] {
+    if (!this.getMcpServers) return [];
+    try {
+      return toAcpMcpServers(this.getMcpServers(), readAgyPluginMcpStems()).servers;
+    } catch {
+      return [];
+    }
+  }
 
   async doGenerate(options: CallOptions) {
     const { stream } = await this.doStream(options);
@@ -177,13 +190,29 @@ export class AntigravityLanguageModel {
     if (auxiliary) {
       conversation = new AgyConversation(`aux-${randomUUID()}`, cwd, () => undefined);
     } else {
-      const existing = conversations.get(sessionKey!);
-      if (existing && existing.cwd !== cwd) existing.close();
+      const mcpServers = this.resolveMcpServers();
+      let existing = conversations.get(sessionKey!);
+      // Si cambian la carpeta o los MCP de Sunsam se abre otra sesión de agy (con la transcripción);
+      // nunca con un permiso pendiente, que pertenece a la sesión abierta.
+      const stale =
+        existing &&
+        (existing.cwd !== cwd ||
+          (!existing.parked && existing.mcpFingerprint !== acpMcpFingerprint(mcpServers)));
+      if (existing && stale) {
+        existing.close();
+        existing = undefined;
+      }
       conversation =
-        (existing && existing.cwd === cwd ? existing : undefined) ??
-        new AgyConversation(sessionKey!, cwd, (closed) => {
-          if (conversations.get(closed.key) === closed) conversations.delete(closed.key);
-        });
+        existing ??
+        new AgyConversation(
+          sessionKey!,
+          cwd,
+          (closed) => {
+            if (conversations.get(closed.key) === closed) conversations.delete(closed.key);
+          },
+          process.env,
+          mcpServers,
+        );
       conversations.set(sessionKey!, conversation);
     }
 
@@ -384,8 +413,13 @@ export class AntigravityLanguageModel {
 }
 
 /** Fábrica compatible con la de los SDK: un modelo por id. */
-export function createAntigravityProvider(options: { readonly name: string; readonly reasoningLevel?: string }) {
-  return (modelId: string) => new AntigravityLanguageModel(options.name, modelId, options.reasoningLevel);
+export function createAntigravityProvider(options: {
+  readonly name: string;
+  readonly reasoningLevel?: string;
+  readonly getMcpServers?: () => Readonly<Record<string, McpServerConfig>> | undefined;
+}) {
+  return (modelId: string) =>
+    new AntigravityLanguageModel(options.name, modelId, options.reasoningLevel, options.getMcpServers);
 }
 
 /** Solo para pruebas y apagado: cierra todas las sesiones de agy abiertas. */

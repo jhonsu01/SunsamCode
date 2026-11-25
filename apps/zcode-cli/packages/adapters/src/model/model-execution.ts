@@ -15,6 +15,7 @@ import {
 } from "@zcode/model-option-map";
 import {
   type Logger,
+  type McpServerConfig,
   type ModelId,
   type ModelProviderId,
   type ModelRequestAuth,
@@ -62,6 +63,8 @@ export interface AiSdkModelExecutionConfig {
   endpointRoutingPort?: ProviderEndpointRoutingPort;
   env?: EnvRecord;
   network?: AiSdkNetworkConfig;
+  /** Sunsam: servidores MCP vigentes de la sesión, para proveedores que los ejecutan ellos mismos (agy). */
+  sunsamMcpServers?: () => Readonly<Record<string, McpServerConfig>> | undefined;
 }
 
 export interface AiSdkModelExecutionOptions {
@@ -179,6 +182,7 @@ export class AiSdkModelExecution {
   private readonly defaultHeaders: Record<string, string>;
   private readonly network: AiSdkNetworkConfig;
   private readonly endpointRoutingPort?: ProviderEndpointRoutingPort;
+  private readonly sunsamMcpServers?: AiSdkModelExecutionConfig["sunsamMcpServers"];
   private readonly logger?: Logger;
   private readonly baseTransport?: ProviderFetch;
   private readonly observeTransport?: AiSdkModelExecutionOptions["observeTransport"];
@@ -190,6 +194,7 @@ export class AiSdkModelExecution {
     this.defaultHeaders = { ...config.defaultHeaders };
     this.network = { ...config.network };
     this.endpointRoutingPort = config.endpointRoutingPort;
+    this.sunsamMcpServers = config.sunsamMcpServers;
     this.logger = options.logger;
     this.baseTransport = options.transport;
     this.observeTransport = options.observeTransport;
@@ -303,6 +308,7 @@ export class AiSdkModelExecution {
       return createAntigravityProvider({
         name: providerConfig.name ?? providerId,
         reasoningLevel: optionValues?.reasoningLevel,
+        getMcpServers: this.sunsamMcpServers,
       }) as unknown as LanguageModelFactory;
     }
     const apiKey = this.resolveApiKey(providerConfig);
