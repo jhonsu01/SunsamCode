@@ -1,6 +1,6 @@
 {
   "name": "zcode",
-  "version": "4.0.0-sunsam.3",
+  "version": "4.0.0-sunsam.4",
   "private": true,
   "type": "module",
   "imports": {

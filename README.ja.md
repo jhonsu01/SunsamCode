@@ -36,8 +36,9 @@ Sunsam Code は [ZCode](https://github.com/zai-org/ZCode)（Z.ai）のオープ�
 
 アプリはこれらの Releases から**自動更新**されます。Windows と Linux の AppImage では更新ボタンが表示されます（起動時、1 時間ごと、または _Help → Check for updates_）。macOS では新しい `.dmg` をダウンロードしてください。
 
-## 4.0.0-sunsam.3 の新機能
+## 4.0.0-sunsam.4 の新機能
 
+- **Google で自分の MCP サーバーを利用**：Google（Antigravity）のモデルが、Antigravity にインストールしたプラグインに加えて、Sunsam で有効にしている MCP サーバーを使えるようになりました。Antigravity に既にあるサーバーは重複せず、プロジェクトのサーバー、Sunsam しか認証できない接続、Antigravity ブリッジ自体は除外されます。
 - **Google の使用量をひと目で**：Google（Antigravity）のモデルを選ぶと、チャットのコンテキストポップオーバーとモデル設定の Google アカウントカードに、モデルグループごとのプランの残り（週間と 5 時間の上限）、更新日時、AI クレジットが表示されます。Antigravity CLI からローカルに読み取るため、クォータは消費しません。Google モデルのキャッシュヒット率の表示も修正しました。
 - **新しいプロバイダー：Google（Antigravity）**：公式 Antigravity CLI（`agy`）を通じて、Google サブスクリプションのモデル（Gemini とプランに含まれるその他のモデル）を Sunsam 内で直接使えます。モデル設定 → プロバイダーを追加 → Google（Antigravity）から追加し、Google でサインインするとプランとアカウントで使えるモデルが表示されます。Gemini は Antigravity のツール（ファイル、コマンド、Web 検索、Antigravity プラグイン）で作業し、編集や実行の前にチャットで許可を求めます。
 - **ZCode 4.0.0 ベース**：エージェントが Word・PDF・スプレッドシートを扱えるようにするプリインストール文書ツール（Python、LibreOffice、Pandoc、Poppler、qpdf）、エージェントの応答言語の設定、サブエージェントを常にバックグラウンドで実行するオプション、トークン予算のリマインダー、読み込み前に信頼が必要なプロジェクトプラグイン、ウィンドウクラッシュ後の再起動、会話共有時のより詳しいエラー。Sunsam では文書ツールは自動でダウンロードされません。ヘルプ → プリインストールツールからインストールしてください。

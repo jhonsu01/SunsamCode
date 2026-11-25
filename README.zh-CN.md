@@ -36,8 +36,9 @@ Sunsam Code 是 [ZCode](https://github.com/zai-org/ZCode)（Z.ai）的开源分�
 
 应用会从这些 Releases **自动更新**：在 Windows 和 Linux AppImage 上会出现更新按钮（启动时、每小时或通过 _帮助 → 检查更新_）；macOS 请下载新的 `.dmg`。
 
-## 4.0.0-sunsam.3 新内容
+## 4.0.0-sunsam.4 新内容
 
+- **在 Google 中使用你的 MCP 服务器**：Google（Antigravity）模型现在除了 Antigravity 中安装的插件外，还可以使用你在 Sunsam 中启用的 MCP 服务器。Antigravity 已有的服务器不会重复加载；项目服务器、只有 Sunsam 能认证的连接以及 Antigravity 桥接本身不会传递。
 - **Google 用量一目了然**：选择 Google（Antigravity）模型后，对话中的上下文弹窗和 模型设置 中的 Google 账号卡片会显示每个模型组的套餐剩余量（每周和 5 小时限额）、重置时间以及 AI 积分。数据通过 Antigravity CLI 在本地读取，不消耗额度。同时修复了 Google 模型的缓存命中率显示。
 - **新供应商：Google（Antigravity）**：通过官方 Antigravity CLI（`agy`）在 Sunsam 中直接使用你的 Google 订阅模型（Gemini 以及你的套餐包含的其他模型）。在 模型设置 → 添加供应商 → Google（Antigravity） 中添加，使用 Google 登录后即可看到你的套餐和账号提供的模型。Gemini 使用 Antigravity 自带的工具（文件、命令、网页搜索、你的 Antigravity 插件），在编辑或执行任何操作前会在对话中请求你的许可。
 - **基于 ZCode 4.0.0**：预装文档工具（Python、LibreOffice、Pandoc、Poppler、qpdf），让智能体处理 Word、PDF 和电子表格；智能体回复语言设置；子智能体始终后台运行的选项；token 预算提醒；需先信任才会加载的项目插件；窗口崩溃后重启；分享会话时更详细的错误。在 Sunsam 中文档工具不会自动下载：请从 帮助 → 预装工具 安装。

@@ -36,8 +36,9 @@ Sunsam Code는 [ZCode](https://github.com/zai-org/ZCode)(Z.ai)의 오픈 소스 
 
 앱은 이 Releases에서 **스스로 업데이트**됩니다. Windows와 Linux AppImage에서는 업데이트 버튼이 나타나고(시작 시, 매시간 또는 _도움말 → 업데이트 확인_), macOS에서는 새 `.dmg`를 내려받으세요.
 
-## 4.0.0-sunsam.3의 새 기능
+## 4.0.0-sunsam.4의 새 기능
 
+- **Google에서 내 MCP 서버 사용**: 이제 Google(Antigravity) 모델이 Antigravity에 설치된 플러그인과 함께 Sunsam에서 활성화한 MCP 서버를 사용할 수 있습니다. Antigravity에 이미 있는 서버는 중복되지 않으며, 프로젝트 서버, Sunsam만 인증할 수 있는 연결, Antigravity 브리지 자체는 제외됩니다.
 - **Google 사용량 한눈에 보기**: Google(Antigravity) 모델을 선택하면 채팅의 컨텍스트 팝오버와 모델 설정의 Google 계정 카드에 모델 그룹별 남은 요금제 사용량(주간 및 5시간 한도), 갱신 시점, AI 크레딧이 표시됩니다. Antigravity CLI에서 로컬로 읽으며 할당량을 쓰지 않습니다. Google 모델의 캐시 적중률 표시도 수정했습니다.
 - **새 공급자: Google (Antigravity)**: 공식 Antigravity CLI(`agy`)를 통해 Google 구독 모델(Gemini 및 요금제에 포함된 다른 모델)을 Sunsam 안에서 바로 사용하세요. 모델 설정 → 공급자 추가 → Google (Antigravity)에서 추가하고 Google로 로그인하면 요금제와 계정에서 제공하는 모델을 볼 수 있습니다. Gemini는 Antigravity 도구(파일, 명령, 웹 검색, Antigravity 플러그인)로 작업하며, 무언가를 편집하거나 실행하기 전에 채팅에서 허락을 구합니다.
 - **ZCode 4.0.0 기반**: 에이전트가 Word, PDF, 스프레드시트를 다룰 수 있도록 사전 설치 문서 도구(Python, LibreOffice, Pandoc, Poppler, qpdf), 에이전트 응답 언어 설정, 하위 에이전트를 항상 백그라운드에서 실행하는 옵션, 토큰 예산 알림, 로드 전에 신뢰해야 하는 프로젝트 플러그인, 창 충돌 후 다시 시작, 대화 공유 시 더 자세한 오류. Sunsam에서는 문서 도구가 자동으로 다운로드되지 않습니다. 도움말 → 사전 설치 도구에서 설치하세요.
